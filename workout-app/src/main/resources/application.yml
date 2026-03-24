@@ -1,0 +1,9 @@
+spring:
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/workout_db
+server:
+  port: 8080
+#jwt:
+#  secret: ${JWT_SECRET:your-dev-secret-key-min-32-chars}
+#  expiration: 86400000  # 24 години
