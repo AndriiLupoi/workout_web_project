@@ -21,7 +21,8 @@ public class UserProfileDocument {
     private String goal;
     private String level;
     private int workoutsPerWeek;
-    private Double weight;
+    private Double currentWeight;
+    private Double targetWeight;
     private Double height;
     private Integer age;
 }

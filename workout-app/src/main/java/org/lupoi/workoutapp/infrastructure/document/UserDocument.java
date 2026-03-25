@@ -19,6 +19,8 @@ public class UserDocument {
     private String id;
     @Indexed(unique = true)
     private String email;
+    private String firstName;
+    private String lastName;
     private String passwordHash;
     private LocalDateTime createdAt;
 }

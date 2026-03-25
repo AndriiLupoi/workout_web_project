@@ -21,5 +21,7 @@ public class User {
     private String id;
     private String email;
     private String passwordHash;
+    private String firstName;
+    private String lastName;
     private LocalDateTime createdAt;
 }

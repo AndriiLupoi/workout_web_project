@@ -23,7 +23,8 @@ public class UserProfile {
     private TrainingGoal goal;
     private FitnessLevel level;
     private int workoutsPerWeek;
-    private Double weight;
+    private Double currentWeight;
+    private Double targetWeight;
     private Double height;
     private Integer age;
 }
