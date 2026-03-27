@@ -1,10 +1,9 @@
-import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
+import { Routes } from '@angular/router';
 
-const routes: Routes = [];
-
-@NgModule({
-  imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule],
-})
-export class ExercisesRoutingModule {}
+export const EXERCISES_ROUTES: Routes = [
+  {
+    path: '',
+    loadComponent: () =>
+      import('./exercises').then(m => m.ExercisesComponent)
+  }
+];
