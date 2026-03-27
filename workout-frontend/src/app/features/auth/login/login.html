@@ -1,0 +1,53 @@
+<div class="auth-container">
+  <div class="auth-card">
+    <h2>Welcome back</h2>
+    <p class="subtitle">Sign in to your account</p>
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+
+      <div class="field">
+        <label for="email">Email</label>
+        <input
+          id="email"
+          type="email"
+          formControlName="email"
+          placeholder="you@example.com"
+          [class.error]="form.get('email')?.invalid && form.get('email')?.touched"
+        />
+        <span class="error-text"
+              *ngIf="form.get('email')?.invalid && form.get('email')?.touched">
+          Valid email is required
+        </span>
+      </div>
+
+      <div class="field">
+        <label for="password">Password</label>
+        <input
+          id="password"
+          type="password"
+          formControlName="password"
+          placeholder="Min 8 characters"
+          [class.error]="form.get('password')?.invalid && form.get('password')?.touched"
+        />
+        <span class="error-text"
+              *ngIf="form.get('password')?.invalid && form.get('password')?.touched">
+          Password must be at least 8 characters
+        </span>
+      </div>
+
+      <div class="error-banner" *ngIf="errorMessage">
+        {{ errorMessage }}
+      </div>
+
+      <button type="submit" [disabled]="loading" class="btn-primary">
+        {{ loading ? 'Signing in...' : 'Sign in' }}
+      </button>
+
+    </form>
+
+    <p class="switch-link">
+      Don't have an account?
+      <a routerLink="/auth/register">Register</a>
+    </p>
+  </div>
+</div>

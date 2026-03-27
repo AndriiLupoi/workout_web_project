@@ -1,0 +1,85 @@
+<div class="auth-container">
+  <div class="auth-card">
+    <h2>Create account</h2>
+    <p class="subtitle">Start your fitness journey</p>
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+
+      <div class="row">
+        <div class="field">
+          <label for="firstName">First name</label>
+          <input
+            id="firstName"
+            type="text"
+            formControlName="firstName"
+            placeholder="John"
+            [class.error]="form.get('firstName')?.invalid && form.get('firstName')?.touched"
+          />
+          <span class="error-text"
+                *ngIf="form.get('firstName')?.invalid && form.get('firstName')?.touched">
+            Required
+          </span>
+        </div>
+
+        <div class="field">
+          <label for="lastName">Last name</label>
+          <input
+            id="lastName"
+            type="text"
+            formControlName="lastName"
+            placeholder="Doe"
+            [class.error]="form.get('lastName')?.invalid && form.get('lastName')?.touched"
+          />
+          <span class="error-text"
+                *ngIf="form.get('lastName')?.invalid && form.get('lastName')?.touched">
+            Required
+          </span>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="email">Email</label>
+        <input
+          id="email"
+          type="email"
+          formControlName="email"
+          placeholder="you@example.com"
+          [class.error]="form.get('email')?.invalid && form.get('email')?.touched"
+        />
+        <span class="error-text"
+              *ngIf="form.get('email')?.invalid && form.get('email')?.touched">
+          Valid email is required
+        </span>
+      </div>
+
+      <div class="field">
+        <label for="password">Password</label>
+        <input
+          id="password"
+          type="password"
+          formControlName="password"
+          placeholder="Min 8 characters"
+          [class.error]="form.get('password')?.invalid && form.get('password')?.touched"
+        />
+        <span class="error-text"
+              *ngIf="form.get('password')?.invalid && form.get('password')?.touched">
+          Password must be at least 8 characters
+        </span>
+      </div>
+
+      <div class="error-banner" *ngIf="errorMessage">
+        {{ errorMessage }}
+      </div>
+
+      <button type="submit" [disabled]="loading" class="btn-primary">
+        {{ loading ? 'Creating account...' : 'Create account' }}
+      </button>
+
+    </form>
+
+    <p class="switch-link">
+      Already have an account?
+      <a routerLink="/auth/login">Sign in</a>
+    </p>
+  </div>
+</div>
