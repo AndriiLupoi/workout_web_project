@@ -1,7 +1,7 @@
 spring:
-  data:
-    mongodb:
-      uri: mongodb://localhost:27017/workout_db
+  mongodb:
+    database: workout_db
+    uri: mongodb://localhost:27017/workout_db
 server:
   port: 8080
 application:
