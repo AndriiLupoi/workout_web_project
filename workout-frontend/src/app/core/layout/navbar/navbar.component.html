@@ -1,0 +1,21 @@
+<nav class="navbar">
+  <div class="navbar-brand">
+    <a routerLink="/plans">💪 WorkoutApp</a>
+  </div>
+
+  <div class="navbar-links">
+    <a routerLink="/plans" routerLinkActive="active">Plans</a>
+    <a routerLink="/exercises" routerLinkActive="active">Exercises</a>
+    <a routerLink="/profile" routerLinkActive="active">Profile</a>
+  </div>
+
+  <div class="navbar-actions">
+    <button class="theme-toggle" (click)="toggleTheme()">
+      <div class="theme-toggle-track" [class.active]="isDarkTheme()">
+        <div class="theme-toggle-thumb"></div>
+      </div>
+      <span class="theme-toggle-icon">{{ isDarkTheme() ? '☀️' : '🌙' }}</span>
+    </button>
+    <button (click)="logout()" class="btn-logout">Logout</button>
+  </div>
+</nav>

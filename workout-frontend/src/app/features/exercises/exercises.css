@@ -1,0 +1,149 @@
+.exercises-container {
+  padding: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+h1 {
+  font-size: 32px;
+  margin: 0 0 8px;
+}
+
+.subtitle {
+  font-size: 16px;
+  margin-bottom: 32px;
+}
+
+.filters {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 32px;
+  align-items: end;
+}
+
+.search-input {
+  flex: 1;
+  min-width: 280px;
+  padding: 12px 16px;
+  border: 1.5px solid #ddd;
+  border-radius: 10px;
+  font-size: 15px;
+  outline: none;
+  transition: all 0.2s;
+}
+
+.search-input:focus {
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+}
+
+select {
+  padding: 12px 16px;
+  border: 1.5px solid #ddd;
+  border-radius: 10px;
+  font-size: 15px;
+  min-width: 180px;
+  outline: none;
+  cursor: pointer;
+}
+
+select:focus {
+  border-color: #4f46e5;
+}
+
+.btn-secondary {
+  padding: 12px 20px;
+  background: #f1f1f1;
+  color: #333;
+  border: none;
+  border-radius: 10px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-secondary:hover {
+  background: #e0e0e0;
+}
+
+/* Grid вправ */
+.exercises-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 20px;
+}
+
+.exercise-card {
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
+  transition: transform 0.2s, box-shadow 0.2s;
+  border: 1px solid #f0f0f0;
+}
+
+.exercise-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.exercise-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+
+.exercise-header h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  flex: 1;
+}
+
+.difficulty {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 20px;
+  text-transform: uppercase;
+}
+
+.difficulty.beginner { background: #d1fae5; color: #10b981; }
+.difficulty.intermediate { background: #fef3c7; color: #f59e0b; }
+.difficulty.advanced { background: #fee2e2; color: #ef4444; }
+
+.muscle-group {
+  font-weight: 500;
+  color: #4f46e5;
+  margin: 8px 0;
+  font-size: 15px;
+}
+
+.equipment {
+  font-size: 14px;
+  margin-bottom: 12px;
+}
+
+.description {
+  font-size: 14px;
+  line-height: 1.5;
+  margin-top: 8px;
+}
+
+.no-results {
+  text-align: center;
+  padding: 60px 20px;
+  font-size: 18px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .filters {
+    flex-direction: column;
+  }
+
+  .search-input, select {
+    width: 100%;
+  }
+}

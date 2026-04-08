@@ -1,1 +1,57 @@
-<p>exercises works!</p>
+<div class="exercises-container">
+  <h1>База вправ</h1>
+  <p class="subtitle">Знайдіть вправи для свого плану тренувань</p>
+
+  <!-- Фільтри -->
+  <div class="filters">
+    <input
+      type="text"
+      [(ngModel)]="searchTerm"
+      (ngModelChange)="onFilterChange()"
+      placeholder="Пошук вправи..."
+      class="search-input">
+
+    <select [(ngModel)]="selectedMuscleGroup" (ngModelChange)="onFilterChange()">
+      <option value="">Всі групи м’язів</option>
+      <option *ngFor="let group of muscleGroups" [value]="group">{{ group }}</option>
+    </select>
+
+    <select [(ngModel)]="selectedDifficulty" (ngModelChange)="onFilterChange()">
+      <option value="">Вся складність</option>
+      <option value="beginner">Початківець</option>
+      <option value="intermediate">Середній</option>
+      <option value="advanced">Просунутий</option>
+    </select>
+
+    <button (click)="clearFilters()" class="btn-secondary">Очистити фільтри</button>
+  </div>
+
+  <!-- Список вправ -->
+  <div class="exercises-grid">
+    @for (exercise of filteredExercises(); track exercise.id) {
+      <div class="exercise-card">
+        <div class="exercise-header">
+          <h3>{{ exercise.name }}</h3>
+          <span class="difficulty" [class]="exercise.difficulty">
+            {{ exercise.difficulty }}
+          </span>
+        </div>
+
+        <p class="muscle-group">{{ exercise.muscleGroup }}</p>
+        <p class="equipment">Обладнання: {{ exercise.equipment }}</p>
+
+        @if (exercise.description) {
+          <p class="description">{{ exercise.description }}</p>
+        }
+
+        <!-- Тут пізніше можна додати кнопку "Додати в план" або "Детальніше" -->
+      </div>
+    }
+  </div>
+
+  @if (filteredExercises().length === 0) {
+    <div class="no-results">
+      <p>Вправ за вашим запитом не знайдено 😔</p>
+    </div>
+  }
+</div>

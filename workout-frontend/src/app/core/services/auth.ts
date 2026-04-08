@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, tap, map } from 'rxjs';
+import { Observable, tap, map, BehaviorSubject } from 'rxjs';
 
 export interface RegisterRequest {
   email: string;
@@ -31,7 +31,14 @@ export class AuthService {
   private readonly tokenKey = 'jwt_token';
   private readonly apiUrl = '/api/v1/auth';
 
+  private isAuthenticatedSubject = new BehaviorSubject<boolean>(this.hasToken());
+  public isAuthenticated$ = this.isAuthenticatedSubject.asObservable();
+
   constructor(private http: HttpClient) {}
+
+  private hasToken(): boolean {
+    return !!localStorage.getItem(this.tokenKey);
+  }
 
   register(request: RegisterRequest): Observable<UserResponse> {
     return this.http.post<UserResponse>(`${this.apiUrl}/register`, request);
@@ -39,13 +46,17 @@ export class AuthService {
 
   login(request: LoginRequest): Observable<void> {
     return this.http.post<JwtResponse>(`${this.apiUrl}/login`, request).pipe(
-      tap(res => localStorage.setItem(this.tokenKey, res.accessToken)),
+      tap(res => {
+        localStorage.setItem(this.tokenKey, res.accessToken);
+        this.isAuthenticatedSubject.next(true);
+      }),
       map(() => void 0)
     );
   }
 
   logout(): void {
     localStorage.removeItem(this.tokenKey);
+    this.isAuthenticatedSubject.next(false);
   }
 
   getToken(): string | null {
@@ -53,6 +64,6 @@ export class AuthService {
   }
 
   isLoggedIn(): boolean {
-    return !!this.getToken();
+    return this.isAuthenticatedSubject.value;
   }
 }

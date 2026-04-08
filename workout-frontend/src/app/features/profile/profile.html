@@ -1,1 +1,125 @@
-<p>profile works!</p>
+<div class="profile-container">
+
+  <!-- Header -->
+  <div class="profile-header">
+    <h1>Мій профіль</h1>
+    <div class="header-actions">
+      <button class="edit-btn" (click)="toggleEditMode()">
+        {{ isEditMode() ? 'Скасувати' : 'Редагувати профіль' }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Режим перегляду (View Mode) -->
+  @if (!isEditMode()) {
+    <div class="profile-view">
+      <p class="view-placeholder">View Mode буде тут (гарний перегляд профілю)</p>
+      <!-- Сюди пізніше додамо красиву картку профілю -->
+    </div>
+  }
+
+  <!-- Режим редагування (Edit Mode) -->
+  @if (isEditMode()) {
+    <div class="profile-edit">
+      <form [formGroup]="profileForm" (ngSubmit)="onSubmit()">
+
+        <!-- Особисті дані -->
+        <div class="form-section">
+          <h2>Особисті дані</h2>
+          <div class="form-grid">
+            <div class="form-field">
+              <label>Ім'я</label>
+              <input formControlName="firstName" type="text" placeholder="Ваше ім'я">
+            </div>
+            <div class="form-field">
+              <label>Прізвище</label>
+              <input formControlName="lastName" type="text" placeholder="Ваше прізвище">
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <div class="form-field">
+              <label>Вік (роки)</label>
+              <input formControlName="age" type="number" placeholder="Наприклад: 25">
+            </div>
+            <div class="form-field">
+              <label>Зріст (см)</label>
+              <input formControlName="height" type="number" placeholder="Наприклад: 180">
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <div class="form-field">
+              <label>Поточна вага (кг)</label>
+              <input formControlName="currentWeight" type="number" step="0.1" placeholder="Наприклад: 78.5">
+            </div>
+            <div class="form-field">
+              <label>Бажана вага (кг)</label>
+              <input formControlName="targetWeight" type="number" step="0.1" placeholder="Наприклад: 75">
+            </div>
+          </div>
+        </div>
+
+        <!-- Цілі та рівень -->
+        <div class="form-section">
+          <h2>Цілі та рівень підготовки</h2>
+
+          <div class="form-field">
+            <label>Ціль тренувань</label>
+            <select formControlName="goal">
+              <option *ngFor="let g of goals" [value]="g.value">{{ g.label }}</option>
+            </select>
+          </div>
+
+          <div class="form-field">
+            <label>Рівень підготовки</label>
+            <select formControlName="experienceLevel">
+              <option *ngFor="let level of experienceLevels" [value]="level.value">{{ level.label }}</option>
+            </select>
+          </div>
+
+          <div class="form-field">
+            <label>Кількість тренувань на тиждень</label>
+            <input formControlName="trainingDaysPerWeek"
+                   type="number"
+                   min="2"
+                   max="6"
+                   placeholder="3-6 днів">
+          </div>
+        </div>
+
+        <!-- Доступне обладнання -->
+        <div class="form-section">
+          <h2>Доступне обладнання</h2>
+          <div class="checkbox-group">
+            <label *ngFor="let eq of equipmentOptions" class="checkbox-label">
+              <input
+                type="checkbox"
+                [value]="eq.value"
+                [checked]="isEquipmentSelected(eq.value)"
+                (change)="onEquipmentChange($event)" />
+              <span>{{ eq.label }}</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Повідомлення про успіх / помилку -->
+        <div class="messages">
+          @if (successMessage()) {
+            <div class="success-message">{{ successMessage() }}</div>
+          }
+          @if (errorMessage()) {
+            <div class="error-message">{{ errorMessage() }}</div>
+          }
+        </div>
+
+        <!-- Кнопка збереження -->
+        <button type="submit" class="btn-primary" [disabled]="isLoading()">
+          {{ isLoading() ? 'Збереження...' : 'Зберегти зміни' }}
+        </button>
+
+      </form>
+    </div>
+  }
+
+</div>
