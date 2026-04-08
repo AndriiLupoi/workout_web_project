@@ -27,6 +27,7 @@ public class SaveUserProfileUseCase {
                 .targetWeight(command.targetWeight())
                 .height(command.height())
                 .age(command.age())
+                .availableEquipment(command.availableEquipment())
                 .build();
 
         return userProfileRepository.save(profile);

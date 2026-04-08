@@ -18,7 +18,8 @@ public interface ProfileDtoMapper {
                 request.currentWeight(),
                 request.targetWeight(),
                 request.height(),
-                request.age()
+                request.age(),
+                request.availableEquipment()
         );
     }
 

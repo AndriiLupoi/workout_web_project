@@ -8,6 +8,8 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.List;
+
 @Document(collection = "user_profiles")
 @Data
 @Builder
@@ -20,9 +22,11 @@ public class UserProfileDocument {
     private String userId;
     private String goal;
     private String level;
-    private int workoutsPerWeek;
+    private Integer workoutsPerWeek;
     private Double currentWeight;
     private Double targetWeight;
     private Double height;
     private Integer age;
+
+    private List<String> availableEquipment;
 }

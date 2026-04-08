@@ -6,6 +6,8 @@ import jakarta.validation.constraints.NotNull;
 import org.lupoi.workoutapp.domain.enums.FitnessLevel;
 import org.lupoi.workoutapp.domain.enums.TrainingGoal;
 
+import java.util.List;
+
 public record SaveProfileRequest(
         @NotNull(message = "Goal is required")
         TrainingGoal goal,
@@ -14,12 +16,14 @@ public record SaveProfileRequest(
         FitnessLevel level,
 
         @Min(value = 1) @Max(value = 7)
-        int workoutsPerWeek,
+        Integer workoutsPerWeek,
 
         Double currentWeight,
         Double targetWeight,
         Double height,
 
         @Min(value = 10) @Max(value = 100)
-        Integer age
+        Integer age,
+
+        List<String> availableEquipment
 ) {}

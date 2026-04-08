@@ -13,6 +13,8 @@ import lombok.NoArgsConstructor;
 import org.lupoi.workoutapp.domain.enums.FitnessLevel;
 import org.lupoi.workoutapp.domain.enums.TrainingGoal;
 
+import java.util.List;
+
 @Getter
 @Builder
 @NoArgsConstructor
@@ -22,9 +24,10 @@ public class UserProfile {
     private String userId;
     private TrainingGoal goal;
     private FitnessLevel level;
-    private int workoutsPerWeek;
+    private Integer workoutsPerWeek;
     private Double currentWeight;
     private Double targetWeight;
     private Double height;
     private Integer age;
+    private List<String> availableEquipment;
 }
