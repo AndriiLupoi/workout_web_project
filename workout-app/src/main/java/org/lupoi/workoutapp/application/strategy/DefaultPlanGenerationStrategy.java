@@ -92,7 +92,7 @@ public class DefaultPlanGenerationStrategy implements PlanGenerationStrategy {
                 int restSeconds = getRestSeconds(profile.getGoal());
 
                 result.add(WorkoutExercise.builder()
-                        .exerciseId(exercise.getId())
+                        .exerciseId(String.valueOf(exercise.getId()))
                         .exerciseName(exercise.getName())
                         .sets(setsReps[0])
                         .reps(setsReps[0] + "-" + setsReps[1])
