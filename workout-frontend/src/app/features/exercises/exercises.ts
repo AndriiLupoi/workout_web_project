@@ -1,3 +1,4 @@
+// exercises.ts — додається лише selectedSortBy і sortExercises()
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -11,6 +12,12 @@ export interface Exercise {
   equipment: string;
   description?: string;
 }
+
+const DIFFICULTY_ORDER: Record<string, number> = {
+  beginner: 1,
+  intermediate: 2,
+  advanced: 3
+};
 
 @Component({
   selector: 'app-exercises',
@@ -29,10 +36,21 @@ export class ExercisesComponent implements OnInit {
   searchTerm = '';
   selectedMuscleGroup = '';
   selectedDifficulty = '';
+  selectedSortBy: 'name' | 'difficulty' | 'muscleGroup' = 'name';
 
   muscleGroups = [
-    'Груди', 'Спина', 'Ноги', 'Плечі', 'Біцепс', 'Трицепс',
-    'Прес', 'Передпліччя', 'Сідниці', 'Стегна', 'Ікри'
+    { label: 'Груди',       value: 'CHEST' },
+    { label: 'Спина',       value: 'BACK' },
+    { label: 'Ноги',        value: 'LEGS' },
+    { label: 'Плечі',       value: 'SHOULDERS' },
+    { label: 'Біцепс',      value: 'BICEPS' },
+    { label: 'Трицепс',     value: 'TRICEPS' },
+    { label: 'Прес',        value: 'ABS' },
+    { label: 'Передпліччя', value: 'FOREARMS' },
+    { label: 'Сідниці',     value: 'GLUTES' },
+    { label: 'Стегна',      value: 'HAMSTRINGS' },
+    { label: 'Ікри',        value: 'CALVES' },
+    { label: 'Кардіо',      value: 'CARDIO' },
   ];
 
   ngOnInit(): void {
@@ -47,13 +65,13 @@ export class ExercisesComponent implements OnInit {
       },
       error: (err) => {
         console.error('Помилка при завантаженні вправ з сервера:', err);
-        this.filteredExercises.set([]);   // очищаємо на випадок помилки
+        this.filteredExercises.set([]);
       }
     });
   }
 
   applyFilters(): void {
-    let result = this.exercises();
+    let result = [...this.exercises()];
 
     if (this.searchTerm.trim()) {
       const term = this.searchTerm.toLowerCase().trim();
@@ -71,6 +89,18 @@ export class ExercisesComponent implements OnInit {
       result = result.filter(ex => ex.difficulty === this.selectedDifficulty);
     }
 
+    result.sort((a, b) => {
+      switch (this.selectedSortBy) {
+        case 'name':
+          return a.name.localeCompare(b.name, 'uk');
+        case 'difficulty':
+          return (DIFFICULTY_ORDER[a.difficulty] ?? 0)
+            - (DIFFICULTY_ORDER[b.difficulty] ?? 0);
+        case 'muscleGroup':
+          return a.muscleGroup.localeCompare(b.muscleGroup, 'uk');
+      }
+    });
+
     this.filteredExercises.set(result);
   }
 
@@ -82,6 +112,7 @@ export class ExercisesComponent implements OnInit {
     this.searchTerm = '';
     this.selectedMuscleGroup = '';
     this.selectedDifficulty = '';
+    this.selectedSortBy = 'name';
     this.applyFilters();
   }
 }

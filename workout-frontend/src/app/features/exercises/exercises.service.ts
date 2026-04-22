@@ -1,3 +1,4 @@
+// exercises.service.ts
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
@@ -23,9 +24,4 @@ export class ExercisesService {
   getAllExercises(): Observable<Exercise[]> {
     return this.http.get<Exercise[]>(this.apiUrl);
   }
-
-  // Можна розкоментувати пізніше, коли бекенд підтримає фільтри
-  // getExercisesByMuscleGroup(muscleGroup: string): Observable<Exercise[]> {
-  //   return this.http.get<Exercise[]>(`${this.apiUrl}?muscleGroup=${muscleGroup}`);
-  // }
 }

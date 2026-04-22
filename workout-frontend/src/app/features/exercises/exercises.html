@@ -1,8 +1,8 @@
+<!-- exercises.html — додано лише один select -->
 <div class="exercises-container">
   <h1>База вправ</h1>
   <p class="subtitle">Знайдіть вправи для свого плану тренувань</p>
 
-  <!-- Фільтри -->
   <div class="filters">
     <input
       type="text"
@@ -12,8 +12,10 @@
       class="search-input">
 
     <select [(ngModel)]="selectedMuscleGroup" (ngModelChange)="onFilterChange()">
-      <option value="">Всі групи м’язів</option>
-      <option *ngFor="let group of muscleGroups" [value]="group">{{ group }}</option>
+      <option value="">Всі групи м'язів</option>
+      <option *ngFor="let group of muscleGroups" [value]="group.value">
+        {{ group.label }}
+      </option>
     </select>
 
     <select [(ngModel)]="selectedDifficulty" (ngModelChange)="onFilterChange()">
@@ -23,10 +25,15 @@
       <option value="advanced">Просунутий</option>
     </select>
 
+    <select [(ngModel)]="selectedSortBy" (ngModelChange)="onFilterChange()">
+      <option value="name">За назвою</option>
+      <option value="difficulty">За складністю</option>
+      <option value="muscleGroup">За групою м'язів</option>
+    </select>
+
     <button (click)="clearFilters()" class="btn-secondary">Очистити фільтри</button>
   </div>
 
-  <!-- Список вправ -->
   <div class="exercises-grid">
     @for (exercise of filteredExercises(); track exercise.id) {
       <div class="exercise-card">
@@ -43,8 +50,6 @@
         @if (exercise.description) {
           <p class="description">{{ exercise.description }}</p>
         }
-
-        <!-- Тут пізніше можна додати кнопку "Додати в план" або "Детальніше" -->
       </div>
     }
   </div>

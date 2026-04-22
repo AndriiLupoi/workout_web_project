@@ -1,5 +1,8 @@
 package org.lupoi.workoutapp.infrastructure.repository;
 
+import org.lupoi.workoutapp.domain.enums.Difficulty;
+import org.lupoi.workoutapp.domain.enums.EquipmentType;
+import org.lupoi.workoutapp.domain.enums.MuscleGroup;
 import org.lupoi.workoutapp.infrastructure.document.ExerciseDocument;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
