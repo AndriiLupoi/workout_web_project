@@ -1,1 +1,89 @@
-<p>workout-plan works!</p>
+<div class="workout-plan-container">
+
+  <div class="page-header">
+    <div>
+      <h1>Мій план тренувань</h1>
+      <p class="subtitle">Персоналізований план на основі твого профілю</p>
+    </div>
+    <button class="btn-primary" (click)="generate()" [disabled]="generating()">
+      {{ generating() ? 'Генерація...' : 'Згенерувати новий план' }}
+    </button>
+  </div>
+
+  @if (error()) {
+    <div class="error-banner">{{ error() }}</div>
+  }
+
+  @if (loading()) {
+    <div class="loading">Завантаження...</div>
+  }
+
+  @if (plans().length > 1) {
+    <div class="plans-list">
+      @for (plan of plans(); track plan.id) {
+        <button class="plan-tab"
+                [class.active]="activePlan()?.id === plan.id"
+                (click)="selectPlan(plan)">
+          {{ plan.title }}
+        </button>
+      }
+    </div>
+  }
+
+  @if (activePlan(); as plan) {
+
+    <!-- Мета інфо -->
+    <div class="plan-meta">
+      <span class="badge">{{ goalLabel(plan.goal) }}</span>
+      <span class="badge">{{ planTypeLabel(plan.planType) }}</span>
+      <span class="meta-text">{{ plan.durationWeeks }} тижнів</span>
+    </div>
+
+    <!-- Навігація по тижнях -->
+    <div class="weeks-nav">
+      @for (week of weeks(); track week) {
+        <button class="week-btn"
+                [class.active]="activeWeek() === week"
+                (click)="selectWeek(week)">
+          Тиждень {{ week }}
+        </button>
+      }
+    </div>
+
+    <!-- Дні поточного тижня -->
+    <div class="days-grid">
+      @for (day of currentDays(); track day.dayNumber) {
+        <div class="day-card">
+          <div class="day-header">
+            <span class="day-number">День {{ day.dayNumber }}</span>
+            <div class="day-header-right">
+              <span class="day-focus">{{ day.focus }}</span>
+              <span class="intensity-badge intensity-{{ day.intensityType | lowercase }}">
+                {{ intensityLabel(day.intensityType) }}
+              </span>
+            </div>
+          </div>
+
+          <div class="exercises-list">
+            @for (ex of day.exercises; track ex.exerciseId) {
+              <div class="exercise-row">
+                <span class="ex-name">{{ ex.exerciseName }}</span>
+                <span class="ex-params">{{ ex.sets }} × {{ ex.reps }}</span>
+                <span class="ex-rest">{{ ex.restSeconds }}с</span>
+              </div>
+            }
+          </div>
+        </div>
+      }
+    </div>
+
+  } @else if (!loading()) {
+    <div class="empty-state">
+      <p>У тебе ще немає плану тренувань</p>
+      <button class="btn-primary" (click)="generate()" [disabled]="generating()">
+        Згенерувати план
+      </button>
+    </div>
+  }
+
+</div>

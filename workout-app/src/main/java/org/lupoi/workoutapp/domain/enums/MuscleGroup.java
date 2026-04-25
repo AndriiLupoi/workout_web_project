@@ -7,5 +7,15 @@ package org.lupoi.workoutapp.domain.enums;/*
 */
 
 public enum MuscleGroup {
-    CHEST, BACK, LEGS, SHOULDERS, BICEPS, TRICEPS, ABS, CARDIO
+    CHEST,
+    BACK,
+    LEGS,
+    SHOULDERS,
+    BICEPS,
+    TRICEPS,
+    ABS,
+    CARDIO,
+    FOREARMS,
+    CALVES,
+    TRAPS
 }

@@ -7,5 +7,8 @@ package org.lupoi.workoutapp.domain.enums;/*
 */
 
 public enum FitnessLevel {
-    BEGINNER, INTERMEDIATE
+    BEGINNER,
+    RETURNING,
+    INTERMEDIATE,
+    ADVANCED
 }

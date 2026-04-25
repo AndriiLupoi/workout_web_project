@@ -1,0 +1,238 @@
+.workout-plan-container {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+}
+
+/* ── Header ── */
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 2rem;
+  gap: 1rem;
+}
+
+.page-header h1 { margin-bottom: 0.25rem; }
+
+/* ── Error / Loading ── */
+.loading {
+  text-align: center;
+  padding: 3rem 0;
+  color: var(--text-secondary);
+  font-size: 0.9375rem;
+}
+
+/* ── Plan tabs ── */
+.plans-list {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.plan-tab {
+  padding: 6px 16px;
+  background: var(--bg-surface);
+  color: var(--text-secondary);
+  border: 1.5px solid var(--border);
+  border-radius: 999px;
+  font-family: inherit;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color var(--transition), border-color 0.15s, color 0.15s;
+}
+
+.plan-tab:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.plan-tab.active {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* ── Plan meta ── */
+.plan-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 1.75rem;
+  flex-wrap: wrap;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 14px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  border: 1px solid var(--accent-glow);
+  border-radius: 999px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+}
+
+.meta-text {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+/* ── Days grid ── */
+.days-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+  gap: 1rem;
+}
+
+/* ── Day card ── */
+.day-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+  transition: background-color 0.4s ease, border-color var(--transition), box-shadow var(--transition);
+}
+
+.day-card:hover {
+  border-color: var(--accent);
+  box-shadow: var(--shadow-lg);
+}
+
+.day-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border);
+  transition: background-color 0.4s ease;
+}
+
+.day-number {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.day-focus {
+  font-size: 0.8rem;
+  color: var(--accent);
+  font-weight: 500;
+}
+
+/* ── Exercises ── */
+.exercises-list { padding: 0.25rem 0; }
+
+.exercise-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.55rem 1rem;
+  gap: 8px;
+  border-bottom: 1px solid var(--border);
+  transition: background-color var(--transition);
+}
+
+.exercise-row:last-child { border-bottom: none; }
+
+.exercise-row:hover { background: var(--bg-surface); }
+
+.ex-name {
+  flex: 1;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.ex-params {
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.ex-rest {
+  font-size: 0.775rem;
+  color: var(--accent);
+  white-space: nowrap;
+  opacity: 0.8;
+}
+
+/* ── Empty state ── */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+  padding: 5rem 0;
+  text-align: center;
+}
+
+.empty-state p {
+  font-size: 1rem;
+  color: var(--text-secondary);
+}
+
+/* ── Responsive ── */
+@media (max-width: 600px) {
+  .page-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .page-header .btn-primary {
+    width: 100%;
+  }
+
+  .days-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+/* до існуючого файлу додати: */
+
+.weeks-nav {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+}
+
+.week-btn {
+  padding: 6px 14px;
+  background: var(--bg-surface);
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  font-family: inherit;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.week-btn:hover  { border-color: var(--accent); color: var(--accent); }
+.week-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+.day-header-right {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.intensity-badge {
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+
+.intensity-heavy     { background: var(--error-soft);   color: var(--error);   }
+.intensity-medium    { background: rgba(245,158,11,0.12); color: #f59e0b;      }
+.intensity-sets      { background: var(--accent-soft);  color: var(--accent);  }
+.intensity-full_body { background: var(--success-soft); color: var(--success); }

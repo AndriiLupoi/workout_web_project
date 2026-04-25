@@ -13,6 +13,8 @@ import java.util.List;
 @AllArgsConstructor
 public class WorkoutDayDocument {
     private int dayNumber;
+    private int weekNumber;
     private String focus;
+    private String intensityType;
     private List<WorkoutExerciseDocument> exercises;
 }

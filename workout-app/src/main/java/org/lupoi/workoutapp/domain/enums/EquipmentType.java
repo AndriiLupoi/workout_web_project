@@ -7,5 +7,11 @@ package org.lupoi.workoutapp.domain.enums;/*
 */
 
 public enum EquipmentType {
-    BARBELL, DUMBBELL, MACHINE, CABLE, BODYWEIGHT, BENCH, PULL_UP
+    BARBELL,
+    DUMBBELL,
+    MACHINE,
+    CABLE,
+    BODYWEIGHT,
+    BENCH,
+    PULL_UP
 }

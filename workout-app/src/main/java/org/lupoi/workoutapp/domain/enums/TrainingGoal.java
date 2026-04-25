@@ -7,5 +7,11 @@ package org.lupoi.workoutapp.domain.enums;/*
 */
 
 public enum TrainingGoal {
-    MASS, LOSS, ENDURANCE
+    MASS,
+    LOSS,
+    ENDURANCE,
+
+    //сила
+    STRENGTH,
+    STRENGTH_AND_MASS // сила + маса
 }

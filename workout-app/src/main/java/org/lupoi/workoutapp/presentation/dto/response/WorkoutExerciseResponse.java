@@ -5,5 +5,6 @@ public record WorkoutExerciseResponse(
         String exerciseName,
         int sets,
         String reps,
-        int restSeconds
+        int restSeconds,
+        Double plannedWeight
 ) {}

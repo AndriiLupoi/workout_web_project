@@ -21,4 +21,5 @@ public class WorkoutExercise {
     private int sets;
     private String reps;
     private int restSeconds;
+    private Double plannedWeight;
 }

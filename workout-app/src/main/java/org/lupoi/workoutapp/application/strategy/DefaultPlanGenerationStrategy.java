@@ -14,127 +14,231 @@ import java.util.stream.Collectors;
 @Component
 public class DefaultPlanGenerationStrategy implements PlanGenerationStrategy {
 
+    // скільки тижнів для кожного типу плану
+    private static final Map<PlanType, Integer> PLAN_DURATION = Map.of(
+            PlanType.HYPERTROPHY,             8,
+            PlanType.STRENGTH,               10,
+            PlanType.STRENGTH_HYPERTROPHY,    9,
+            PlanType.FAT_LOSS,                8,
+            PlanType.ENDURANCE,               8
+    );
+
+    // скільки тижнів Full Body на старті залежно від рівня
+    private static final Map<FitnessLevel, Integer> FULL_BODY_WEEKS = Map.of(
+            FitnessLevel.BEGINNER,     2,
+            FitnessLevel.RETURNING,    1,
+            FitnessLevel.INTERMEDIATE, 0,
+            FitnessLevel.ADVANCED,     0
+    );
+
+    // цикл інтенсивності: HEAVY → MEDIUM → SETS → повторюється
+    private static final List<IntensityType> INTENSITY_CYCLE = List.of(
+            IntensityType.HEAVY,
+            IntensityType.MEDIUM,
+            IntensityType.SETS
+    );
+
+    // Кількість вправ на групу м'язів залежно від пріоритету
+    private static final Map<MuscleGroup, Integer> EXERCISE_COUNT = Map.ofEntries(
+            // Великі групи — 4 вправи
+            Map.entry(MuscleGroup.CHEST,     4),
+            Map.entry(MuscleGroup.BACK,      4),
+            Map.entry(MuscleGroup.LEGS,      4),
+            // Середні — 3 вправи
+            Map.entry(MuscleGroup.SHOULDERS, 3),
+            Map.entry(MuscleGroup.BICEPS,    3),
+            Map.entry(MuscleGroup.TRICEPS,   3),
+            // Малі — 2 вправи
+            Map.entry(MuscleGroup.FOREARMS,  2),
+            Map.entry(MuscleGroup.CALVES,    2),
+            Map.entry(MuscleGroup.TRAPS,     2),
+            Map.entry(MuscleGroup.ABS,       2)
+    );
+
     private static final Map<Integer, List<List<MuscleGroup>>> SPLITS = Map.of(
             3, List.of(
-                    List.of(MuscleGroup.CHEST, MuscleGroup.TRICEPS),
-                    List.of(MuscleGroup.BACK, MuscleGroup.BICEPS),
-                    List.of(MuscleGroup.LEGS, MuscleGroup.SHOULDERS)
+                    // Груди + Біцепс + Передпліччя
+                    List.of(MuscleGroup.CHEST, MuscleGroup.BICEPS, MuscleGroup.FOREARMS),
+                    // Спина + Трицепс + Трапеції
+                    List.of(MuscleGroup.BACK, MuscleGroup.TRICEPS, MuscleGroup.TRAPS),
+                    // Ноги + Плечі + Ікри
+                    List.of(MuscleGroup.LEGS, MuscleGroup.SHOULDERS, MuscleGroup.CALVES)
             ),
             4, List.of(
-                    List.of(MuscleGroup.CHEST, MuscleGroup.TRICEPS),
-                    List.of(MuscleGroup.BACK, MuscleGroup.BICEPS),
-                    List.of(MuscleGroup.LEGS),
+                    List.of(MuscleGroup.CHEST, MuscleGroup.BICEPS, MuscleGroup.FOREARMS),
+                    List.of(MuscleGroup.BACK, MuscleGroup.TRICEPS, MuscleGroup.TRAPS),
+                    List.of(MuscleGroup.LEGS, MuscleGroup.CALVES),
                     List.of(MuscleGroup.SHOULDERS, MuscleGroup.ABS)
             ),
             5, List.of(
-                    List.of(MuscleGroup.CHEST),
-                    List.of(MuscleGroup.BACK),
-                    List.of(MuscleGroup.LEGS),
-                    List.of(MuscleGroup.SHOULDERS),
-                    List.of(MuscleGroup.BICEPS, MuscleGroup.TRICEPS)
+                    List.of(MuscleGroup.CHEST, MuscleGroup.BICEPS, MuscleGroup.FOREARMS),
+                    List.of(MuscleGroup.BACK, MuscleGroup.TRICEPS, MuscleGroup.TRAPS),
+                    List.of(MuscleGroup.LEGS, MuscleGroup.CALVES),
+                    List.of(MuscleGroup.SHOULDERS, MuscleGroup.ABS),
+                    List.of(MuscleGroup.BICEPS, MuscleGroup.TRICEPS, MuscleGroup.FOREARMS)
             )
     );
 
     @Override
     public WorkoutPlan generate(UserProfile profile, List<Exercise> exercises) {
-        int workoutsPerWeek = profile.getWorkoutsPerWeek();
+        PlanType planType = profile.getPlanType() != null
+                ? profile.getPlanType()
+                : PlanType.HYPERTROPHY;
 
+        int totalWeeks     = PLAN_DURATION.get(planType);
+        int fullBodyWeeks  = FULL_BODY_WEEKS.getOrDefault(profile.getLevel(), 0);
+        int splitWeeks     = totalWeeks - fullBodyWeeks;
+
+        List<WorkoutDay> allDays = new ArrayList<>();
+
+        // --- Фаза 1: Full Body (якщо BEGINNER або RETURNING) ---
+        for (int week = 1; week <= fullBodyWeeks; week++) {
+            allDays.addAll(buildFullBodyWeek(week, exercises, profile));
+        }
+
+        // --- Фаза 2: Сплітами з циклом інтенсивності ---
         int splitKey = SPLITS.keySet().stream()
-                .min(Comparator.comparingInt(k -> Math.abs(k - workoutsPerWeek)))
+                .min(Comparator.comparingInt(k ->
+                        Math.abs(k - profile.getWorkoutsPerWeek())))
                 .orElse(3);
 
         List<List<MuscleGroup>> split = SPLITS.get(splitKey);
-        List<WorkoutDay> days = new ArrayList<>();
 
-        for (int i = 0; i < split.size(); i++) {
-            List<MuscleGroup> muscleGroups = split.get(i);
-            List<WorkoutExercise> workoutExercises = buildExercises(
-                    muscleGroups, exercises, profile
-            );
-
-            String focus = muscleGroups.stream()
-                    .map(MuscleGroup::name)
-                    .collect(Collectors.joining(" + "));
-
-            days.add(WorkoutDay.builder()
-                    .dayNumber(i + 1)
-                    .focus(focus)
-                    .exercises(workoutExercises)
-                    .build());
+        for (int week = 1; week <= splitWeeks; week++) {
+            int absoluteWeek = fullBodyWeeks + week;
+            // цикл: 1→HEAVY, 2→MEDIUM, 3→SETS, 4→HEAVY, ...
+            IntensityType intensity = INTENSITY_CYCLE.get((week - 1) % 3);
+            allDays.addAll(buildSplitWeek(absoluteWeek, split, exercises, profile, intensity));
         }
 
         return WorkoutPlan.builder()
                 .userId(profile.getUserId())
-                .title(buildTitle(profile.getGoal()))
+                .title(buildTitle(planType))
                 .goal(profile.getGoal())
-                .durationWeeks(8)
+                .planType(planType)
+                .durationWeeks(totalWeeks)
                 .status(PlanStatus.ACTIVE)
-                .days(days)
+                .days(allDays)
                 .createdAt(LocalDateTime.now())
                 .build();
     }
 
-    private List<WorkoutExercise> buildExercises(List<MuscleGroup> muscleGroups,
-                                                 List<Exercise> allExercises,
-                                                 UserProfile profile) {
+    // ── Full Body тиждень ──
+    private List<WorkoutDay> buildFullBodyWeek(int week,
+                                               List<Exercise> exercises,
+                                               UserProfile profile) {
+        List<MuscleGroup> allGroups = List.of(
+                MuscleGroup.CHEST, MuscleGroup.BACK,
+                MuscleGroup.LEGS,  MuscleGroup.SHOULDERS
+        );
+
+        List<WorkoutDay> days = new ArrayList<>();
+        int sessionsPerWeek = Math.min(profile.getWorkoutsPerWeek(), 3);
+
+        for (int day = 1; day <= sessionsPerWeek; day++) {
+            List<WorkoutExercise> exList = buildExercises(
+                    allGroups, exercises, profile, IntensityType.MEDIUM
+            );
+            days.add(WorkoutDay.builder()
+                    .weekNumber(week)
+                    .dayNumber(day)
+                    .focus("FULL BODY")
+                    .intensityType(IntensityType.FULL_BODY)
+                    .exercises(exList)
+                    .build());
+        }
+        return days;
+    }
+
+    // ── Сплітовий тиждень ──
+    private List<WorkoutDay> buildSplitWeek(int week,
+                                            List<List<MuscleGroup>> split,
+                                            List<Exercise> exercises,
+                                            UserProfile profile,
+                                            IntensityType intensity) {
+        List<WorkoutDay> days = new ArrayList<>();
+
+        for (int i = 0; i < split.size(); i++) {
+            List<MuscleGroup> groups = split.get(i);
+            String focus = groups.stream()
+                    .map(MuscleGroup::name)
+                    .collect(Collectors.joining(" + "));
+
+            days.add(WorkoutDay.builder()
+                    .weekNumber(week)
+                    .dayNumber(i + 1)
+                    .focus(focus)
+                    .intensityType(intensity)
+                    .exercises(buildExercises(groups, exercises, profile, intensity))
+                    .build());
+        }
+        return days;
+    }
+
+    // ── Вправи залежно від інтенсивності ──
+    private List<WorkoutExercise> buildExercises(List<MuscleGroup> groups,
+                                                 List<Exercise> all,
+                                                 UserProfile profile,
+                                                 IntensityType intensity) {
         List<WorkoutExercise> result = new ArrayList<>();
 
-        for (MuscleGroup group : muscleGroups) {
-            // фільтруємо вправи по групі м'язів і рівні
-            List<Exercise> filtered = allExercises.stream()
+        for (MuscleGroup group : groups) {
+            List<Exercise> filtered = all.stream()
                     .filter(e -> e.getMuscleGroup() == group)
                     .filter(e -> isLevelSuitable(e.getDifficulty(), profile.getLevel()))
                     .toList();
 
-            // беремо до 2 вправ на групу м'язів
-            filtered.stream().limit(2).forEach(exercise -> {
-                int[] setsReps = getSetsAndReps(profile.getGoal());
-                int restSeconds = getRestSeconds(profile.getGoal());
+            int count       = EXERCISE_COUNT.getOrDefault(group, 2); // ← кількість по групі
+            int[] setsReps  = getSetsAndReps(intensity);
+            int restSeconds = getRestSeconds(intensity);
 
-                result.add(WorkoutExercise.builder()
-                        .exerciseId(String.valueOf(exercise.getId()))
-                        .exerciseName(exercise.getName())
-                        .sets(setsReps[0])
-                        .reps(setsReps[0] + "-" + setsReps[1])
-                        .restSeconds(restSeconds)
-                        .build());
-            });
+            filtered.stream().limit(count).forEach(ex ->
+                    result.add(WorkoutExercise.builder()
+                            .exerciseId(ex.getId())
+                            .exerciseName(ex.getName())
+                            .sets(setsReps[0])
+                            .reps(setsReps[0] + "-" + setsReps[1])
+                            .restSeconds(restSeconds)
+                            .plannedWeight(0.0)
+                            .build())
+            );
         }
-
         return result;
     }
 
-    // початківець може робити beginner і intermediate вправи
-    // intermediate може робити всі
+    private int[] getSetsAndReps(IntensityType intensity) {
+        return switch (intensity) {
+            case HEAVY     -> new int[]{4, 6};   // 4×4-6
+            case MEDIUM    -> new int[]{4, 10};  // 4×8-10
+            case SETS      -> new int[]{3, 15};  // 3×12-15 суперсети
+            case FULL_BODY -> new int[]{3, 12};  // 3×10-12
+        };
+    }
+
+    private int getRestSeconds(IntensityType intensity) {
+        return switch (intensity) {
+            case HEAVY     -> 180;
+            case MEDIUM    -> 90;
+            case SETS      -> 45;
+            case FULL_BODY -> 60;
+        };
+    }
+
     private boolean isLevelSuitable(Difficulty difficulty, FitnessLevel level) {
-        if (level == FitnessLevel.BEGINNER) {
-            return difficulty == Difficulty.BEGINNER;
-        }
-        return difficulty == Difficulty.BEGINNER || difficulty == Difficulty.INTERMEDIATE;
-    }
-
-    // sets[0] = кількість підходів, sets[1] = верхня межа повторень
-    private int[] getSetsAndReps(TrainingGoal goal) {
-        return switch (goal) {
-            case MASS       -> new int[]{4, 10};  // 4x8-10
-            case LOSS       -> new int[]{3, 15};  // 3x12-15
-            case ENDURANCE  -> new int[]{3, 20};  // 3x15-20
+        return switch (level) {
+            case BEGINNER, RETURNING -> difficulty == Difficulty.BEGINNER;
+            case INTERMEDIATE        -> difficulty != Difficulty.ADVANCED;
+            case ADVANCED            -> true;
         };
     }
 
-    private int getRestSeconds(TrainingGoal goal) {
-        return switch (goal) {
-            case MASS       -> 90;
-            case LOSS       -> 45;
-            case ENDURANCE  -> 30;
-        };
-    }
-
-    private String buildTitle(TrainingGoal goal) {
-        return switch (goal) {
-            case MASS       -> "Mass Building Plan";
-            case LOSS       -> "Fat Loss Plan";
-            case ENDURANCE  -> "Endurance Plan";
+    private String buildTitle(PlanType planType) {
+        return switch (planType) {
+            case HYPERTROPHY          -> "Hypertrophy Plan — 8 weeks";
+            case STRENGTH             -> "Strength Plan — 10 weeks";
+            case STRENGTH_HYPERTROPHY -> "Strength & Mass Plan — 9 weeks";
+            case FAT_LOSS             -> "Fat Loss Plan — 8 weeks";
+            case ENDURANCE            -> "Endurance Plan — 8 weeks";
         };
     }
 }

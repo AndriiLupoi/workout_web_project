@@ -23,6 +23,7 @@ public class WorkoutPlanDocument {
     private String userId;
     private String title;
     private String goal;
+    private String planType;
     private String status;
     private int durationWeeks;
     private List<WorkoutDayDocument> days;

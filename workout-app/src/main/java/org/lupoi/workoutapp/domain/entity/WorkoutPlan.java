@@ -11,6 +11,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.lupoi.workoutapp.domain.enums.PlanStatus;
+import org.lupoi.workoutapp.domain.enums.PlanType;
 import org.lupoi.workoutapp.domain.enums.TrainingGoal;
 
 import java.time.LocalDateTime;
@@ -25,6 +26,7 @@ public class WorkoutPlan {
     private String userId;
     private String title;
     private TrainingGoal goal;
+    private PlanType planType;
     private int durationWeeks;
     private PlanStatus status;
     private List<WorkoutDay> days;

@@ -10,6 +10,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.lupoi.workoutapp.domain.enums.IntensityType;
 
 import java.util.List;
 
@@ -19,6 +20,8 @@ import java.util.List;
 @AllArgsConstructor
 public class WorkoutDay {
     private int dayNumber;
+    private int weekNumber;
     private String focus;
+    private IntensityType intensityType;
     private List<WorkoutExercise> exercises;
 }
