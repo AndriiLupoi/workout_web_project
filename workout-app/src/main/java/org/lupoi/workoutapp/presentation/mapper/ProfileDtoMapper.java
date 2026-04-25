@@ -14,6 +14,7 @@ public interface ProfileDtoMapper {
         return new SaveUserProfileCommand(
                 request.goal(),
                 request.level(),
+                request.planType(),
                 request.workoutsPerWeek(),
                 request.currentWeight(),
                 request.targetWeight(),
@@ -25,5 +26,6 @@ public interface ProfileDtoMapper {
 
     @Mapping(target = "goal", expression = "java(profile.getGoal() != null ? profile.getGoal().name() : null)")
     @Mapping(target = "level", expression = "java(profile.getLevel() != null ? profile.getLevel().name() : null)")
+    @Mapping(target = "planType", expression = "java(profile.getPlanType() != null ? profile.getPlanType().name() : null)")
     ProfileResponse toResponse(UserProfile profile);
 }

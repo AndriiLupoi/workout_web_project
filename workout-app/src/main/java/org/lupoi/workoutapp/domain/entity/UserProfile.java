@@ -11,6 +11,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.lupoi.workoutapp.domain.enums.FitnessLevel;
+import org.lupoi.workoutapp.domain.enums.PlanType;
 import org.lupoi.workoutapp.domain.enums.TrainingGoal;
 
 import java.util.List;
@@ -24,6 +25,7 @@ public class UserProfile {
     private String userId;
     private TrainingGoal goal;
     private FitnessLevel level;
+    private PlanType planType;
     private Integer workoutsPerWeek;
     private Double currentWeight;
     private Double targetWeight;

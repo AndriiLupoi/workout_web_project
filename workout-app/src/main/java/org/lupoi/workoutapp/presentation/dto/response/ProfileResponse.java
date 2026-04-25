@@ -6,6 +6,7 @@ public record ProfileResponse(
         String userId,
         String goal,
         String level,
+        String planType,
         Integer workoutsPerWeek,
         Double currentWeight,
         Double targetWeight,

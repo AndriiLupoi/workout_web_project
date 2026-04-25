@@ -22,6 +22,7 @@ public class SaveUserProfileUseCase {
                 .userId(userId)
                 .goal(command.goal())
                 .level(command.level())
+                .planType(command.planType())
                 .workoutsPerWeek(command.workoutsPerWeek())
                 .currentWeight(command.currentWeight())
                 .targetWeight(command.targetWeight())
