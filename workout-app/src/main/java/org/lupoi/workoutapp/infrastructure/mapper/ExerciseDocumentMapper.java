@@ -6,19 +6,20 @@ import org.lupoi.workoutapp.domain.enums.EquipmentType;
 import org.lupoi.workoutapp.domain.enums.MuscleGroup;
 import org.lupoi.workoutapp.infrastructure.document.ExerciseDocument;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 
 @Mapper(componentModel = "spring")
 public interface ExerciseDocumentMapper {
 
-    @org.mapstruct.Mapping(target = "muscleGroup", source = "muscleGroup", qualifiedByName = "stringToMuscle")
-    @org.mapstruct.Mapping(target = "difficulty", source = "difficulty", qualifiedByName = "stringToDifficulty")
-    @org.mapstruct.Mapping(target = "equipmentType", source = "equipmentType", qualifiedByName = "stringToEquipment")
+    @Mapping(target = "muscleGroup", source = "muscleGroup", qualifiedByName = "stringToMuscle")
+    @Mapping(target = "difficulty", source = "difficulty", qualifiedByName = "stringToDifficulty")
+    @Mapping(target = "equipmentType", source = "equipmentType", qualifiedByName = "stringToEquipment")
     Exercise toDomain(ExerciseDocument document);
 
-    @org.mapstruct.Mapping(target = "muscleGroup", source = "muscleGroup", qualifiedByName = "muscleToString")
-    @org.mapstruct.Mapping(target = "difficulty", source = "difficulty", qualifiedByName = "difficultyToString")
-    @org.mapstruct.Mapping(target = "equipmentType", source = "equipmentType", qualifiedByName = "equipmentToString")
+    @Mapping(target = "muscleGroup", source = "muscleGroup", qualifiedByName = "muscleToString")
+    @Mapping(target = "difficulty", source = "difficulty", qualifiedByName = "difficultyToString")
+    @Mapping(target = "equipmentType", source = "equipmentType", qualifiedByName = "equipmentToString")
     ExerciseDocument toDocument(Exercise exercise);
 
     @Named("stringToMuscle")

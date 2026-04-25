@@ -9,7 +9,7 @@ export interface Exercise {
   name: string;
   muscleGroup: string;
   difficulty: 'beginner' | 'intermediate' | 'advanced';
-  equipment: string;
+  equipmentType: string;
   description?: string;
 }
 
@@ -47,8 +47,7 @@ export class ExercisesComponent implements OnInit {
     { label: 'Трицепс',     value: 'TRICEPS' },
     { label: 'Прес',        value: 'ABS' },
     { label: 'Передпліччя', value: 'FOREARMS' },
-    { label: 'Сідниці',     value: 'GLUTES' },
-    { label: 'Стегна',      value: 'HAMSTRINGS' },
+    { label: 'Трапеція',      value: 'TRAPS' },
     { label: 'Ікри',        value: 'CALVES' },
     { label: 'Кардіо',      value: 'CARDIO' },
   ];
