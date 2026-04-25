@@ -4,7 +4,7 @@
   border-bottom: 1px solid var(--border);
   backdrop-filter: blur(20px) saturate(1.5);
   -webkit-backdrop-filter: blur(20px) saturate(1.5);
-  padding: 0 24px;
+  padding: 0 32px;
   height: 64px;
   display: flex;
   align-items: center;
@@ -15,59 +15,71 @@
   transition: background-color 0.4s ease, border-color var(--transition);
 }
 
-/* Brand */
+/* ── Brand ── */
 .navbar-brand a {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   font-size: 1.125rem;
   font-weight: 700;
   color: var(--text-primary);
   text-decoration: none;
   letter-spacing: -0.02em;
-  transition: color var(--transition);
+  transition: color var(--transition), opacity var(--transition);
 }
 
-/* Nav links */
+.navbar-brand a:hover { opacity: 0.8; }
+
+/* ── Nav links ── */
 .navbar-links {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 2px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 4px;
+  transition: background-color 0.4s ease, border-color var(--transition);
 }
 
 .navbar-links a {
   color: var(--text-secondary);
   text-decoration: none;
-  font-size: 0.9375rem;
+  font-size: 0.875rem;
   font-weight: 500;
-  padding: 6px 14px;
-  border-radius: var(--radius-md);
+  padding: 6px 18px;
+  border-radius: 999px;
   transition: background-color var(--transition), color var(--transition);
+  white-space: nowrap;
 }
 
 .navbar-links a:hover {
-  background-color: var(--bg-surface);
   color: var(--text-primary);
+  background-color: var(--bg-card);
 }
 
 .navbar-links a.active {
-  background-color: var(--accent-soft);
-  color: var(--accent);
+  background-color: var(--accent);
+  color: #fff;
+  box-shadow: 0 2px 8px var(--accent-glow);
 }
 
-/* Actions */
+/* ── Actions ── */
 .navbar-actions {
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
-/* ── Theme toggle pill ── */
+/* ── Theme toggle ── */
 .theme-toggle {
   display: flex;
   align-items: center;
   gap: 8px;
   background: var(--bg-surface);
   border: 1.5px solid var(--border);
-  border-radius: 99px;
-  padding: 5px 10px 5px 6px;
+  border-radius: 999px;
+  padding: 5px 12px 5px 6px;
   cursor: pointer;
   font-size: 0.8125rem;
   font-weight: 500;
@@ -80,20 +92,17 @@
   color: var(--accent);
 }
 
-/* The animated pill inside */
 .theme-toggle-track {
   width: 32px;
   height: 18px;
   background: var(--border);
-  border-radius: 99px;
+  border-radius: 999px;
   position: relative;
   transition: background-color 0.25s;
   flex-shrink: 0;
 }
 
-.theme-toggle-track.active {
-  background: var(--accent);
-}
+.theme-toggle-track.active { background: var(--accent); }
 
 .theme-toggle-thumb {
   position: absolute;
@@ -107,36 +116,48 @@
   box-shadow: 0 1px 3px rgba(0,0,0,0.2);
 }
 
-.theme-toggle-track.active .theme-toggle-thumb {
-  transform: translateX(14px);
-}
+.theme-toggle-track.active .theme-toggle-thumb { transform: translateX(14px); }
 
-.theme-toggle-icon {
-  font-size: 14px;
-  line-height: 1;
-}
+.theme-toggle-icon { font-size: 14px; line-height: 1; }
 
-/* Logout button */
+/* ── Logout ── */
 .btn-logout {
-  background: var(--error-soft);
-  color: var(--error);
-  border: 1.5px solid var(--error-border);
-  border-radius: var(--radius-md);
-  padding: 7px 14px;
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1.5px solid var(--border);
+  border-radius: 999px;
+  padding: 6px 16px;
   font-family: inherit;
   font-size: 0.875rem;
   font-weight: 500;
   cursor: pointer;
-  transition: background-color 0.15s, transform 0.1s, box-shadow 0.15s;
+  transition: background-color 0.15s, border-color 0.15s,
+  color 0.15s, transform 0.1s, box-shadow 0.15s;
 }
 
 .btn-logout:hover {
-  background: var(--error);
-  color: #fff;
-  box-shadow: 0 4px 14px rgba(239, 68, 68, 0.25);
+  background: var(--error-soft);
+  color: var(--error);
+  border-color: var(--error-border);
+  box-shadow: 0 4px 14px rgba(239, 68, 68, 0.15);
   transform: translateY(-1px);
 }
 
-.btn-logout:active {
-  transform: scale(0.98);
+.btn-logout:active { transform: scale(0.98); }
+
+/* ── Responsive ── */
+@media (max-width: 640px) {
+  .navbar { padding: 0 16px; }
+
+  .navbar-links {
+    gap: 0;
+    padding: 3px;
+  }
+
+  .navbar-links a {
+    padding: 6px 12px;
+    font-size: 0.8125rem;
+  }
+
+  .theme-toggle span.theme-toggle-icon { display: none; }
 }

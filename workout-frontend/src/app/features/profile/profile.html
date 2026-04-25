@@ -79,6 +79,13 @@
           </div>
 
           <div class="form-field">
+            <label>Тип плану тренувань</label>
+            <select formControlName="planType">
+              <option *ngFor="let p of planTypes" [value]="p.value">{{ p.label }}</option>
+            </select>
+          </div>
+
+          <div class="form-field">
             <label>Кількість тренувань на тиждень</label>
             <input formControlName="trainingDaysPerWeek"
                    type="number"
