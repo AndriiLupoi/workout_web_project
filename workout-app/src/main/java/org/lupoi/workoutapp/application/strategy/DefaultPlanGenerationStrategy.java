@@ -5,10 +5,7 @@ import org.lupoi.workoutapp.domain.enums.*;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
@@ -135,10 +132,48 @@ public class DefaultPlanGenerationStrategy implements PlanGenerationStrategy {
         List<WorkoutDay> days = new ArrayList<>();
         int sessionsPerWeek = Math.min(profile.getWorkoutsPerWeek(), 3);
 
+        // Перемішуємо вправи для кожної групи щоб не повторювались
+        Map<MuscleGroup, List<Exercise>> exercisePool = new HashMap<>();
+        for (MuscleGroup group : allGroups) {
+            List<Exercise> pool = exercises.stream()
+                    .filter(e -> e.getMuscleGroup() == group)
+                    .filter(e -> e.getDifficulty() == Difficulty.BEGINNER)
+                    .collect(Collectors.toCollection(ArrayList::new));
+            Collections.shuffle(pool); // випадковий порядок
+            exercisePool.put(group, pool);
+        }
+
+        // Трекер індексів щоб брати наступну вправу кожного дня
+        Map<MuscleGroup, Integer> indexTracker = new HashMap<>();
+        for (MuscleGroup group : allGroups) {
+            indexTracker.put(group, 0);
+        }
+
         for (int day = 1; day <= sessionsPerWeek; day++) {
-            List<WorkoutExercise> exList = buildExercises(
-                    allGroups, exercises, profile, IntensityType.MEDIUM
-            );
+            List<WorkoutExercise> exList = new ArrayList<>();
+            int[] setsReps  = getSetsAndReps(IntensityType.FULL_BODY);
+            int restSeconds = getRestSeconds(IntensityType.FULL_BODY);
+
+            for (MuscleGroup group : allGroups) {
+                List<Exercise> pool = exercisePool.get(group);
+                int idx = indexTracker.get(group);
+
+                if (pool.isEmpty()) continue;
+
+                // береємо вправу по індексу, якщо закінчились — по колу
+                Exercise ex = pool.get(idx % pool.size());
+                indexTracker.put(group, idx + 1);
+
+                exList.add(WorkoutExercise.builder()
+                        .exerciseId(ex.getId())
+                        .exerciseName(ex.getName())
+                        .sets(setsReps[0])
+                        .reps(setsReps[0] + "-" + setsReps[1])
+                        .restSeconds(restSeconds)
+                        .plannedWeight(0.0)
+                        .build());
+            }
+
             days.add(WorkoutDay.builder()
                     .weekNumber(week)
                     .dayNumber(day)
