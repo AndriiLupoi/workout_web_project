@@ -5,9 +5,11 @@
       <h1>Мій план тренувань</h1>
       <p class="subtitle">Персоналізований план на основі твого профілю</p>
     </div>
-    <button class="btn-primary" (click)="generate()" [disabled]="generating()">
-      {{ generating() ? 'Генерація...' : 'Згенерувати новий план' }}
-    </button>
+    @if (!isLiveMode()) {
+      <button class="btn-primary" (click)="generate()" [disabled]="generating()">
+        {{ generating() ? 'Генерація...' : 'Згенерувати новий план' }}
+      </button>
+    }
   </div>
 
   @if (error()) {
@@ -18,72 +20,193 @@
     <div class="loading">Завантаження...</div>
   }
 
-  @if (plans().length > 1) {
-    <div class="plans-list">
-      @for (plan of plans(); track plan.id) {
-        <button class="plan-tab"
-                [class.active]="activePlan()?.id === plan.id"
-                (click)="selectPlan(plan)">
-          {{ plan.title }}
-        </button>
+  <!-- ==================== LIVE РЕЖИМ ==================== -->
+  @if (isLiveMode() && liveDay(); as day) {
+    <div class="live-overlay">
+
+      <div class="live-header">
+        <div class="live-badge">
+          <span class="live-dot"></span>
+          LIVE ТРЕНУВАННЯ
+        </div>
+        <div class="live-title">
+          <h2>Тиждень {{ day.weekNumber }} · День {{ day.dayNumber }}</h2>
+          <span class="live-focus">{{ day.focus }}</span>
+        </div>
+        <button class="btn-ghost" (click)="stopLiveMode()">✕ Вийти</button>
+      </div>
+
+      <!-- Успішне збереження -->
+      @if (saveSuccess()) {
+        <div class="save-success">
+          <span class="success-icon">✓</span>
+          Тренування збережено! Повертаємось до плану...
+        </div>
       }
+
+      <!-- Таблиця вправ з вагою -->
+      <div class="live-exercises">
+        @for (ex of liveExercises(); track ex.exerciseId) {
+          <div class="live-exercise-row">
+
+            <div class="live-ex-info">
+              <span class="live-ex-name">{{ ex.exerciseName }}</span>
+              <span class="live-ex-params">{{ ex.sets }} підходи × {{ ex.reps }} повторень</span>
+            </div>
+
+            <div class="live-weight-block">
+              <!-- Підказка: попередня вага -->
+              @if (ex.previousWeight != null) {
+                <span class="prev-weight-hint">
+                  Минуло: {{ ex.previousWeight }} кг
+                </span>
+              } @else if (ex.plannedWeight != null) {
+                <span class="prev-weight-hint planned">
+                  Рекомендовано: {{ ex.plannedWeight }} кг
+                </span>
+              } @else {
+                <span class="prev-weight-hint none">Перше тренування</span>
+              }
+
+              <div class="weight-input-row">
+                <button class="weight-btn minus"
+                        (click)="updateLiveWeight(ex.exerciseId, (ex.liveWeight ?? 0) - 2.5)">
+                  −
+                </button>
+                <input
+                  class="weight-input"
+                  type="number"
+                  step="2.5"
+                  min="0"
+                  [ngModel]="ex.liveWeight"
+                  (ngModelChange)="updateLiveWeight(ex.exerciseId, $event)"
+                  placeholder="0"
+                />
+                <span class="weight-unit">кг</span>
+                <button class="weight-btn plus"
+                        (click)="updateLiveWeight(ex.exerciseId, (ex.liveWeight ?? 0) + 2.5)">
+                  +
+                </button>
+              </div>
+            </div>
+
+            <div class="live-rest">
+              <span class="rest-icon">⏱</span>
+              {{ ex.restSeconds }}с
+            </div>
+
+          </div>
+        }
+      </div>
+
+      <!-- Збереження -->
+      <div class="live-footer">
+        <button class="btn-save-workout"
+                (click)="saveWorkout()"
+                [disabled]="saving() || saveSuccess()">
+          @if (saving()) {
+            <span class="spinner"></span> Збереження...
+          } @else if (saveSuccess()) {
+            ✓ Збережено!
+          } @else {
+            💾 Завершити та зберегти тренування
+          }
+        </button>
+      </div>
+
     </div>
   }
 
-  @if (activePlan(); as plan) {
+  <!-- ==================== ЗВИЧАЙНИЙ РЕЖИМ ==================== -->
+  @if (!isLiveMode()) {
 
-    <!-- Мета інфо -->
-    <div class="plan-meta">
-      <span class="badge">{{ goalLabel(plan.goal) }}</span>
-      <span class="badge">{{ planTypeLabel(plan.planType) }}</span>
-      <span class="meta-text">{{ plan.durationWeeks }} тижнів</span>
-    </div>
+    @if (plans().length > 1) {
+      <div class="plans-list">
+        @for (plan of plans(); track plan.id) {
+          <button class="plan-tab"
+                  [class.active]="activePlan()?.id === plan.id"
+                  (click)="selectPlan(plan)">
+            {{ plan.title }}
+          </button>
+        }
+      </div>
+    }
 
-    <!-- Навігація по тижнях -->
-    <div class="weeks-nav">
-      @for (week of weeks(); track week) {
-        <button class="week-btn"
-                [class.active]="activeWeek() === week"
-                (click)="selectWeek(week)">
-          Тиждень {{ week }}
-        </button>
-      }
-    </div>
+    @if (activePlan(); as plan) {
 
-    <!-- Дні поточного тижня -->
-    <div class="days-grid">
-      @for (day of currentDays(); track day.dayNumber) {
-        <div class="day-card">
-          <div class="day-header">
-            <span class="day-number">День {{ day.dayNumber }}</span>
-            <div class="day-header-right">
-              <span class="day-focus">{{ day.focus }}</span>
-              <span class="intensity-badge intensity-{{ day.intensityType | lowercase }}">
-                {{ intensityLabel(day.intensityType) }}
-              </span>
-            </div>
-          </div>
+      <div class="plan-meta">
+        <span class="badge">{{ goalLabel(plan.goal) }}</span>
+        <span class="badge">{{ planTypeLabel(plan.planType) }}</span>
+        <span class="meta-text">{{ plan.durationWeeks }} тижнів</span>
+      </div>
 
-          <div class="exercises-list">
-            @for (ex of day.exercises; track ex.exerciseId) {
-              <div class="exercise-row">
-                <span class="ex-name">{{ ex.exerciseName }}</span>
-                <span class="ex-params">{{ ex.sets }} × {{ ex.reps }}</span>
-                <span class="ex-rest">{{ ex.restSeconds }}с</span>
+      <div class="weeks-nav">
+        @for (week of weeks(); track week) {
+          <button class="week-btn"
+                  [class.active]="activeWeek() === week"
+                  (click)="selectWeek(week)">
+            Тиждень {{ week }}
+          </button>
+        }
+      </div>
+
+      <div class="days-grid">
+        @for (day of currentDays(); track day.dayNumber) {
+          <div class="day-card">
+            <div class="day-header">
+              <span class="day-number">День {{ day.dayNumber }}</span>
+              <div class="day-header-right">
+                <span class="day-focus">{{ day.focus }}</span>
+                <span class="intensity-badge intensity-{{ day.intensityType | lowercase }}">
+                  {{ intensityLabel(day.intensityType) }}
+                </span>
               </div>
-            }
-          </div>
-        </div>
-      }
-    </div>
+            </div>
 
-  } @else if (!loading()) {
-    <div class="empty-state">
-      <p>У тебе ще немає плану тренувань</p>
-      <button class="btn-primary" (click)="generate()" [disabled]="generating()">
-        Згенерувати план
-      </button>
-    </div>
+            <!-- Вправи з вагою -->
+            <div class="exercises-list">
+              <div class="ex-table-head">
+                <span>Вправа</span>
+                <span>Підходи×Повт</span>
+                <span>Вага</span>
+                <span>Відпочинок</span>
+              </div>
+              @for (ex of day.exercises; track ex.exerciseId) {
+                <div class="exercise-row">
+                  <span class="ex-name">{{ ex.exerciseName }}</span>
+                  <span class="ex-params">{{ ex.sets }} × {{ ex.reps }}</span>
+                  <span class="ex-weight">
+                    @if (getPreviousWeight(ex.exerciseId) != null) {
+                      <span class="weight-chip logged">{{ getPreviousWeight(ex.exerciseId) }} кг</span>
+                    } @else if (ex.plannedWeight != null) {
+                      <span class="weight-chip planned">{{ ex.plannedWeight }} кг</span>
+                    } @else {
+                      <span class="weight-chip empty">—</span>
+                    }
+                  </span>
+                  <span class="ex-rest">{{ ex.restSeconds }}с</span>
+                </div>
+              }
+            </div>
+
+            <!-- Кнопка запуску тренування -->
+            <button class="btn-start-workout" (click)="startLiveMode(day)">
+              ▶ Розпочати тренування
+            </button>
+
+          </div>
+        }
+      </div>
+
+    } @else if (!loading()) {
+      <div class="empty-state">
+        <p>У тебе ще немає плану тренувань</p>
+        <button class="btn-primary" (click)="generate()" [disabled]="generating()">
+          Згенерувати план
+        </button>
+      </div>
+    }
+
   }
 
 </div>

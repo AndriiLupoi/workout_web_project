@@ -18,19 +18,19 @@ export class ProfileComponent implements OnInit {
   private profileService = inject(ProfileService);
   private userService = inject(UserService);
 
-  isEditMode = signal(false);
-  isLoading = signal(false);
+  isEditMode   = signal(false);
+  isLoading    = signal(false);
   successMessage = signal('');
-  errorMessage = signal('');
+  errorMessage   = signal('');
 
   profileForm: FormGroup;
 
   goals = [
-    { value: 'MASS',                label: 'Набір м\'язової маси' },
-    { value: 'LOSS',                label: 'Схуднення / спалення жиру' },
-    { value: 'ENDURANCE',           label: 'Розвиток витривалості' },
-    { value: 'STRENGTH',            label: 'Розвиток сили' },
-    { value: 'STRENGTH_AND_MASS',   label: 'Сила + Маса' },
+    { value: 'MASS',              label: 'Набір м\'язової маси' },
+    { value: 'LOSS',              label: 'Схуднення / спалення жиру' },
+    { value: 'ENDURANCE',         label: 'Розвиток витривалості' },
+    { value: 'STRENGTH',          label: 'Розвиток сили' },
+    { value: 'STRENGTH_AND_MASS', label: 'Сила + Маса' },
   ];
 
   experienceLevels = [
@@ -41,11 +41,11 @@ export class ProfileComponent implements OnInit {
   ];
 
   planTypes = [
-    { value: 'HYPERTROPHY',           label: 'Гіпертрофія — 8 тижнів' },
-    { value: 'STRENGTH',              label: 'Сила — 10 тижнів' },
-    { value: 'STRENGTH_HYPERTROPHY',  label: 'Сила + Маса — 9 тижнів' },
-    { value: 'FAT_LOSS',              label: 'Спалення жиру — 8 тижнів' },
-    { value: 'ENDURANCE',             label: 'Витривалість — 8 тижнів' },
+    { value: 'HYPERTROPHY',          label: 'Гіпертрофія — 8 тижнів' },
+    { value: 'STRENGTH',             label: 'Сила — 10 тижнів' },
+    { value: 'STRENGTH_HYPERTROPHY', label: 'Сила + Маса — 9 тижнів' },
+    { value: 'FAT_LOSS',             label: 'Спалення жиру — 8 тижнів' },
+    { value: 'ENDURANCE',            label: 'Витривалість — 8 тижнів' },
   ];
 
   equipmentOptions = [
@@ -60,23 +60,21 @@ export class ProfileComponent implements OnInit {
 
   constructor() {
     this.profileForm = this.fb.group({
-      firstName:          ['', [Validators.required, Validators.minLength(2)]],
-      lastName:           ['', [Validators.required, Validators.minLength(2)]],
-      age:                [null],
-      height:             [null],
-      currentWeight:      [null],
-      targetWeight:       [null],
-      goal:               ['MASS', Validators.required],
-      experienceLevel:    ['BEGINNER', Validators.required],
-      planType:           ['HYPERTROPHY', Validators.required],
-      trainingDaysPerWeek:[3, [Validators.required, Validators.min(2), Validators.max(6)]],
-      availableEquipment: [[] as string[]]
+      firstName:           ['', [Validators.required, Validators.minLength(2)]],
+      lastName:            ['', [Validators.required, Validators.minLength(2)]],
+      age:                 [null],
+      height:              [null],
+      currentWeight:       [null],
+      targetWeight:        [null],
+      goal:                ['MASS', Validators.required],
+      experienceLevel:     ['BEGINNER', Validators.required],
+      planType:            ['HYPERTROPHY', Validators.required],
+      trainingDaysPerWeek: [3, [Validators.required, Validators.min(2), Validators.max(6)]],
+      availableEquipment:  [[] as string[]]
     });
   }
 
-  ngOnInit(): void {
-    this.loadProfile();
-  }
+  ngOnInit(): void { this.loadProfile(); }
 
   loadProfile(): void {
     this.isLoading.set(true);
@@ -92,13 +90,12 @@ export class ProfileComponent implements OnInit {
           height:              profile.height,
           currentWeight:       profile.currentWeight,
           targetWeight:        profile.targetWeight,
-          goal:                profile.goal     || 'MASS',
-          experienceLevel:     profile.level    || 'BEGINNER',
-          planType:            profile.planType || 'HYPERTROPHY',
+          goal:                profile.goal          || 'MASS',
+          experienceLevel:     profile.level         || 'BEGINNER',
+          planType:            profile.planType       || 'HYPERTROPHY',
           trainingDaysPerWeek: profile.workoutsPerWeek || 3,
         });
-        this.profileForm.get('availableEquipment')
-          ?.setValue(profile.availableEquipment || []);
+        this.profileForm.get('availableEquipment')?.setValue(profile.availableEquipment || []);
         this.isLoading.set(false);
       },
       error: () => {
@@ -115,18 +112,12 @@ export class ProfileComponent implements OnInit {
 
   onSubmit(): void {
     if (this.profileForm.invalid) return;
-
     this.isLoading.set(true);
     this.successMessage.set('');
     this.errorMessage.set('');
-
     const v = this.profileForm.value;
-
     forkJoin({
-      user: this.userService.updateUser({
-        firstName: v.firstName,
-        lastName:  v.lastName
-      }),
+      user: this.userService.updateUser({ firstName: v.firstName, lastName: v.lastName }),
       profile: this.profileService.updateProfile({
         goal:               v.goal,
         level:              v.experienceLevel,
@@ -161,7 +152,58 @@ export class ProfileComponent implements OnInit {
   }
 
   isEquipmentSelected(equipment: string): boolean {
-    return (this.profileForm.get('availableEquipment')?.value as string[] || [])
-      .includes(equipment);
+    return (this.profileForm.get('availableEquipment')?.value as string[] || []).includes(equipment);
+  }
+
+  // ===== Хелпери для View Mode =====
+
+  getGoalLabel(value: string): string {
+    return this.goals.find(g => g.value === value)?.label ?? value;
+  }
+
+  getLevelLabel(value: string): string {
+    return this.experienceLevels.find(l => l.value === value)?.label ?? value;
+  }
+
+  getPlanTypeLabel(value: string): string {
+    return this.planTypes.find(p => p.value === value)?.label ?? value;
+  }
+
+  getSelectedEquipment(): { value: string; label: string }[] {
+    const selected: string[] = this.profileForm.get('availableEquipment')?.value || [];
+    return this.equipmentOptions.filter(eq => selected.includes(eq.value));
+  }
+
+  // Прогрес до цільової ваги у відсотках (0–100)
+  getWeightProgress(): number {
+    const current = +this.profileForm.get('currentWeight')?.value;
+    const target  = +this.profileForm.get('targetWeight')?.value;
+    if (!current || !target) return 0;
+
+    // Якщо ціль — схуднення
+    if (target < current) {
+      // Початкова вага невідома, рахуємо просто як % від поточного до цілі
+      // Припускаємо: старт був на 20% більше від цілі від різниці
+      const diff = current - target;
+      const progress = Math.max(0, Math.min(100, 100 - (diff / (diff + 1)) * 100));
+      return Math.round(progress);
+    }
+    // Якщо ціль — набір
+    if (target > current) {
+      const diff = target - current;
+      return Math.round(Math.max(0, Math.min(100, 100 - (diff / (diff + 1)) * 100)));
+    }
+    return 100; // досягнуто
+  }
+
+  // Різниця між поточною і цільовою вагою
+  getWeightDiff(): string {
+    const current = +this.profileForm.get('currentWeight')?.value;
+    const target  = +this.profileForm.get('targetWeight')?.value;
+    if (!current || !target) return '';
+    const diff = Math.abs(current - target);
+    if (diff === 0) return '✓ Ціль досягнута!';
+    if (target < current) return `Ще ${diff.toFixed(1)} кг до цілі`;
+    return `Ще ${diff.toFixed(1)} кг до набору`;
   }
 }

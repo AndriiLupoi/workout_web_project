@@ -1,3 +1,5 @@
+/* ===================== LAYOUT ===================== */
+
 .profile-container {
   padding: 32px 24px;
   max-width: 1000px;
@@ -5,19 +7,6 @@
   min-height: 100vh;
 }
 
-.profile-card,
-.profile-edit {
-  border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-lg);
-  padding: 40px;
-  max-width: 800px;
-  margin: 0 auto;
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  transition: background-color 0.4s ease, border-color var(--transition);
-}
-
-/* Header */
 .profile-header {
   display: flex;
   justify-content: space-between;
@@ -33,32 +22,256 @@
   margin: 0;
 }
 
-.header-actions {
+.header-actions { display: flex; gap: 12px; }
+
+/* ===================== VIEW MODE ===================== */
+
+.profile-view {
   display: flex;
-  gap: 12px;
+  flex-direction: column;
+  gap: 20px;
+  animation: fadeIn 0.3s ease;
 }
 
-.edit-btn {
-  padding: 10px 20px;
+/* Загальна картка */
+.profile-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  padding: 28px 32px;
+  box-shadow: var(--shadow-md);
+  transition: box-shadow 0.2s, border-color 0.2s;
+}
+
+.profile-card:hover {
+  box-shadow: var(--shadow-lg);
+  border-color: var(--accent);
+}
+
+/* Hero картка — аватар + ім'я */
+.hero-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.avatar-block {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.avatar {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
   background: var(--accent);
   color: white;
-  border: none;
-  border-radius: var(--radius-md);
-  font-size: 15px;
-  font-weight: 500;
-  font-family: inherit;
-  cursor: pointer;
+  font-size: 24px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   box-shadow: 0 4px 14px var(--accent-glow);
-  transition: background-color 0.15s, transform 0.1s, box-shadow 0.15s;
+  flex-shrink: 0;
+  letter-spacing: 1px;
 }
 
-.edit-btn:hover {
-  background: var(--accent-hover);
-  transform: translateY(-1px);
-  box-shadow: 0 8px 24px var(--accent-glow);
+.hero-info h2 {
+  font-size: 24px;
+  font-weight: 700;
+  margin: 0 0 6px;
 }
 
-/* ================== EDIT MODE ================== */
+.hero-level {
+  font-size: 13px;
+  color: var(--text-secondary);
+  background: rgba(var(--accent-rgb, 99,102,241), 0.1);
+  border: 1px solid rgba(var(--accent-rgb, 99,102,241), 0.2);
+  color: var(--accent);
+  padding: 3px 12px;
+  border-radius: 12px;
+  font-weight: 500;
+}
+
+/* Швидкі статси */
+.quick-stats {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.quick-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  min-width: 56px;
+}
+
+.qs-value {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1;
+}
+
+.qs-label {
+  font-size: 11px;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Ряд маленьких карток */
+.cards-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+.goal-card,
+.plan-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px 24px;
+}
+
+.card-icon {
+  font-size: 28px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.card-content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.card-content.full-width {
+  width: 100%;
+}
+
+.card-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.card-value {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* Картка прогресу ваги */
+.weight-progress-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  grid-column: 1 / -1;
+}
+
+.weight-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 8px 0 10px;
+}
+
+.weight-val {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.weight-val.current {
+  color: var(--text-primary);
+}
+
+.weight-val.target {
+  color: var(--accent);
+}
+
+.weight-arrow {
+  color: var(--text-secondary);
+  font-size: 16px;
+}
+
+.progress-bar-wrap {
+  width: 100%;
+  height: 8px;
+  background: var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), #22c55e);
+  border-radius: 4px;
+  transition: width 0.6s ease;
+  min-width: 4px;
+}
+
+.progress-label {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-top: 6px;
+  display: block;
+}
+
+/* Обладнання */
+.equipment-card {
+  padding: 24px 28px;
+}
+
+.section-title {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 16px;
+  color: var(--text-primary);
+}
+
+.equipment-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.eq-chip {
+  padding: 6px 14px;
+  border-radius: 20px;
+  background: rgba(var(--accent-rgb, 99,102,241), 0.08);
+  border: 1px solid rgba(var(--accent-rgb, 99,102,241), 0.2);
+  color: var(--accent);
+  font-size: 13px;
+  font-weight: 500;
+  transition: background-color 0.15s;
+}
+
+.eq-chip:hover {
+  background: rgba(var(--accent-rgb, 99,102,241), 0.16);
+}
+
+/* ===================== EDIT MODE ===================== */
+
+.profile-edit {
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg);
+  padding: 40px;
+  max-width: 800px;
+  margin: 0 auto;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  transition: background-color 0.4s ease, border-color var(--transition);
+  animation: fadeIn 0.3s ease;
+}
 
 .form-section {
   margin-bottom: 48px;
@@ -84,7 +297,6 @@
   gap: 8px;
 }
 
-/* Чекбокси */
 .checkbox-group {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -92,23 +304,94 @@
   margin-top: 12px;
 }
 
-/* Повідомлення */
-.messages {
-  margin: 24px 0;
+.messages { margin: 24px 0; }
+
+/* ===================== КНОПКИ ===================== */
+
+.edit-btn {
+  padding: 10px 20px;
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: 15px;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  box-shadow: 0 4px 14px var(--accent-glow);
+  transition: background-color 0.15s, transform 0.1s, box-shadow 0.15s;
 }
 
-/* Responsive */
+.edit-btn:hover {
+  background: var(--accent-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 24px var(--accent-glow);
+}
+
+.btn-primary {
+  padding: 12px 28px;
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: 15px;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  box-shadow: 0 4px 14px var(--accent-glow);
+  transition: background-color 0.15s, transform 0.1s;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: var(--accent-hover);
+  transform: translateY(-1px);
+}
+
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ===================== УТИЛІТИ ===================== */
+
+.loading {
+  text-align: center;
+  padding: 40px;
+  color: var(--text-secondary);
+}
+
+.success-message {
+  background: rgba(34, 197, 94, 0.1);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  color: #22c55e;
+  padding: 12px 16px;
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.error-message {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #ef4444;
+  padding: 12px 16px;
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ===================== RESPONSIVE ===================== */
+
 @media (max-width: 768px) {
-  .profile-edit {
-    padding: 28px 20px;
-  }
-
-  .form-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .profile-header {
-    flex-direction: column;
-    align-items: flex-start;
-  }
+  .profile-edit { padding: 28px 20px; }
+  .form-grid    { grid-template-columns: 1fr; }
+  .profile-header { flex-direction: column; align-items: flex-start; }
+  .hero-card    { flex-direction: column; align-items: flex-start; }
+  .quick-stats  { gap: 16px; }
+  .weight-progress-card { grid-column: auto; }
 }

@@ -17,15 +17,10 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface WorkoutLogDtoMapper {
 
-
     LogWorkoutCommand toCommand(LogWorkoutRequest req);
 
     LogWorkoutCommand.LoggedExerciseCommand toCommand(LogWorkoutRequest.LoggedExerciseRequest e);
 
-
-
-    @Mapping(target = "completedAt",
-            expression = "java(log.getCompletedAt() != null ? log.getCompletedAt().toString() : null)")
     WorkoutLogResponse toResponse(WorkoutLog log);
 
     @Mapping(target = "feltEasy", source = "felt_easy")
