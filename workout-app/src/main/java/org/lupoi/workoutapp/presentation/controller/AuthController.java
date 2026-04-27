@@ -2,8 +2,8 @@ package org.lupoi.workoutapp.presentation.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.lupoi.workoutapp.application.usecase.LoginUserUseCase;
-import org.lupoi.workoutapp.application.usecase.RegisterUserUseCase;
+import org.lupoi.workoutapp.application.usecase.user.LoginUserUseCase;
+import org.lupoi.workoutapp.application.usecase.user.RegisterUserUseCase;
 import org.lupoi.workoutapp.domain.entity.User;
 import org.lupoi.workoutapp.presentation.dto.request.LoginRequest;
 import org.lupoi.workoutapp.presentation.dto.request.RegisterRequest;

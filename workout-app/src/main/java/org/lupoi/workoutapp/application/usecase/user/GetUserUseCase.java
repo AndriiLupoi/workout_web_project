@@ -1,4 +1,4 @@
-package org.lupoi.workoutapp.application.usecase;/*
+package org.lupoi.workoutapp.application.usecase.user;/*
     @author Andrii
     @project workout
     @class GetUserUseCase

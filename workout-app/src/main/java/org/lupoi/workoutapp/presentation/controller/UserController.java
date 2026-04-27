@@ -8,8 +8,8 @@ package org.lupoi.workoutapp.presentation.controller;/*
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.lupoi.workoutapp.application.usecase.GetUserUseCase;
-import org.lupoi.workoutapp.application.usecase.UpdateUserUseCase;
+import org.lupoi.workoutapp.application.usecase.user.GetUserUseCase;
+import org.lupoi.workoutapp.application.usecase.user.UpdateUserUseCase;
 import org.lupoi.workoutapp.presentation.dto.request.UpdateUserRequest;
 import org.lupoi.workoutapp.presentation.dto.response.UserResponse;
 import org.lupoi.workoutapp.presentation.mapper.UserDtoMapper;

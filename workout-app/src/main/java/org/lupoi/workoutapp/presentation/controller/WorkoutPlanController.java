@@ -7,8 +7,8 @@ package org.lupoi.workoutapp.presentation.controller;/*
 */
 
 import lombok.RequiredArgsConstructor;
-import org.lupoi.workoutapp.application.usecase.GenerateWorkoutPlanUseCase;
-import org.lupoi.workoutapp.application.usecase.GetUserPlansUseCase;
+import org.lupoi.workoutapp.application.usecase.workout.GenerateWorkoutPlanUseCase;
+import org.lupoi.workoutapp.application.usecase.workout.GetUserPlansUseCase;
 import org.lupoi.workoutapp.presentation.dto.response.WorkoutPlanResponse;
 import org.lupoi.workoutapp.presentation.mapper.WorkoutPlanDtoMapper;
 import org.springframework.http.ResponseEntity;

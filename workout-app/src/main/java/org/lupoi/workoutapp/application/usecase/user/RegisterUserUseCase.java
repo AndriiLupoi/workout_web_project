@@ -1,4 +1,4 @@
-package org.lupoi.workoutapp.application.usecase;
+package org.lupoi.workoutapp.application.usecase.user;
 
 import lombok.RequiredArgsConstructor;
 import org.lupoi.workoutapp.application.command.RegisterUserCommand;

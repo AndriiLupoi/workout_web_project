@@ -1,7 +1,7 @@
 package org.lupoi.workoutapp.presentation.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.lupoi.workoutapp.application.usecase.GetExercisesUseCase;
+import org.lupoi.workoutapp.application.usecase.workout.GetExercisesUseCase;
 import org.lupoi.workoutapp.domain.entity.Exercise;
 import org.lupoi.workoutapp.domain.enums.Difficulty;
 import org.lupoi.workoutapp.domain.enums.EquipmentType;
