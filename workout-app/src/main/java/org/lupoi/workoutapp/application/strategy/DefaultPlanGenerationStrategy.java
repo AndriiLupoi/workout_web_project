@@ -11,6 +11,8 @@ import java.util.stream.Collectors;
 @Component
 public class DefaultPlanGenerationStrategy implements PlanGenerationStrategy {
 
+    private final Map<String, Integer> exerciseIndexTracker = new HashMap<>();
+
     // скільки тижнів для кожного типу плану
     private static final Map<PlanType, Integer> PLAN_DURATION = Map.of(
             PlanType.HYPERTROPHY,             8,
@@ -46,10 +48,10 @@ public class DefaultPlanGenerationStrategy implements PlanGenerationStrategy {
             Map.entry(MuscleGroup.BICEPS,    3),
             Map.entry(MuscleGroup.TRICEPS,   3),
             // Малі — 2 вправи
-            Map.entry(MuscleGroup.FOREARMS,  2),
-            Map.entry(MuscleGroup.CALVES,    2),
-            Map.entry(MuscleGroup.TRAPS,     2),
-            Map.entry(MuscleGroup.ABS,       2)
+            Map.entry(MuscleGroup.FOREARMS,  1),
+            Map.entry(MuscleGroup.CALVES,    1),
+            Map.entry(MuscleGroup.TRAPS,     1),
+            Map.entry(MuscleGroup.ABS,       1)
     );
 
     private static final Map<Integer, List<List<MuscleGroup>>> SPLITS = Map.of(
@@ -78,6 +80,9 @@ public class DefaultPlanGenerationStrategy implements PlanGenerationStrategy {
 
     @Override
     public WorkoutPlan generate(UserProfile profile, List<Exercise> exercises) {
+
+        exerciseIndexTracker.clear();
+
         PlanType planType = profile.getPlanType() != null
                 ? profile.getPlanType()
                 : PlanType.HYPERTROPHY;
@@ -204,7 +209,7 @@ public class DefaultPlanGenerationStrategy implements PlanGenerationStrategy {
                     .dayNumber(i + 1)
                     .focus(focus)
                     .intensityType(intensity)
-                    .exercises(buildExercises(groups, exercises, profile, intensity))
+                    .exercises(buildExercises(groups, exercises, profile, intensity, week))
                     .build());
         }
         return days;
@@ -214,29 +219,45 @@ public class DefaultPlanGenerationStrategy implements PlanGenerationStrategy {
     private List<WorkoutExercise> buildExercises(List<MuscleGroup> groups,
                                                  List<Exercise> all,
                                                  UserProfile profile,
-                                                 IntensityType intensity) {
+                                                 IntensityType intensity,
+                                                 int weekNumber) {
         List<WorkoutExercise> result = new ArrayList<>();
 
         for (MuscleGroup group : groups) {
             List<Exercise> filtered = all.stream()
                     .filter(e -> e.getMuscleGroup() == group)
                     .filter(e -> isLevelSuitable(e.getDifficulty(), profile.getLevel()))
-                    .toList();
+                    // Важкий тиждень — пріоритет базовим
+                    .sorted((a, b) -> {
+                        if (intensity == IntensityType.HEAVY) {
+                            return a.getDifficulty().compareTo(b.getDifficulty()); // ADVANCED перші
+                        }
+                        return 0;
+                    })
+                    .collect(Collectors.toCollection(ArrayList::new));
 
-            int count       = EXERCISE_COUNT.getOrDefault(group, 2); // ← кількість по групі
+            if (filtered.isEmpty()) continue;
+
+            // Перемішуємо але детерміновано по тижню — щоб різні тижні = різні вправи
+            Collections.shuffle(filtered, new Random(weekNumber * 31L + group.ordinal()));
+
+            int count       = EXERCISE_COUNT.getOrDefault(group, 2);
             int[] setsReps  = getSetsAndReps(intensity);
             int restSeconds = getRestSeconds(intensity);
 
-            filtered.stream().limit(count).forEach(ex ->
-                    result.add(WorkoutExercise.builder()
-                            .exerciseId(ex.getId())
-                            .exerciseName(ex.getName())
-                            .sets(setsReps[0])
-                            .reps(setsReps[0] + "-" + setsReps[1])
-                            .restSeconds(restSeconds)
-                            .plannedWeight(0.0)
-                            .build())
-            );
+            // Беремо зі зміщенням по тижню щоб вправи ротувались
+            int offset = ((weekNumber - 1) * count) % Math.max(filtered.size(), 1);
+            for (int i = 0; i < count && i < filtered.size(); i++) {
+                Exercise ex = filtered.get((offset + i) % filtered.size());
+                result.add(WorkoutExercise.builder()
+                        .exerciseId(ex.getId())
+                        .exerciseName(ex.getName())
+                        .sets(setsReps[0])
+                        .reps(setsReps[0] + "-" + setsReps[1])
+                        .restSeconds(restSeconds)
+                        .plannedWeight(0.0)
+                        .build());
+            }
         }
         return result;
     }
