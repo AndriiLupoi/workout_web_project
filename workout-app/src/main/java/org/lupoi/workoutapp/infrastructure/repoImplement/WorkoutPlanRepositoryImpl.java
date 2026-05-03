@@ -42,4 +42,10 @@ public class WorkoutPlanRepositoryImpl implements WorkoutPlanRepository {
         return mongoRepository.count();
     }
 
+    @Override
+    public void deleteById(String id) {
+        mongoRepository.deleteById(id);
+    }
+
+
 }

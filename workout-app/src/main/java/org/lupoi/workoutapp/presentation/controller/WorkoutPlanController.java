@@ -7,15 +7,13 @@ package org.lupoi.workoutapp.presentation.controller;/*
 */
 
 import lombok.RequiredArgsConstructor;
+import org.lupoi.workoutapp.application.usecase.workout.DeleteWorkoutPlanUseCase;
 import org.lupoi.workoutapp.application.usecase.workout.GenerateWorkoutPlanUseCase;
 import org.lupoi.workoutapp.application.usecase.workout.GetUserPlansUseCase;
 import org.lupoi.workoutapp.presentation.dto.response.WorkoutPlanResponse;
 import org.lupoi.workoutapp.presentation.mapper.WorkoutPlanDtoMapper;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 import java.util.List;
@@ -27,6 +25,7 @@ public class WorkoutPlanController {
 
     private final GenerateWorkoutPlanUseCase generateUseCase;
     private final GetUserPlansUseCase getPlansUseCase;
+    private final DeleteWorkoutPlanUseCase deleteUseCase;
     private final WorkoutPlanDtoMapper mapper;
 
     @PostMapping("/generate")
@@ -45,4 +44,13 @@ public class WorkoutPlanController {
                         .toList()
         );
     }
+
+    @DeleteMapping("/{planId}")
+    public ResponseEntity<Void> delete(
+            @PathVariable String planId,
+            Principal principal) {
+        deleteUseCase.execute(principal.getName(), planId);
+        return ResponseEntity.noContent().build();
+    }
+
 }

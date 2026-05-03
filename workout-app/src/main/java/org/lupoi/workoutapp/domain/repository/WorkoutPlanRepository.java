@@ -17,4 +17,6 @@ public interface WorkoutPlanRepository {
     Optional<WorkoutPlan> findByIdAndUserId(String id, String userId);
 
     long countAll();
+
+    void deleteById(String id);
 }
