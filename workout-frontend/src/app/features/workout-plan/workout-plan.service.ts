@@ -43,4 +43,8 @@ export class WorkoutPlanService {
   getAll(): Observable<WorkoutPlan[]> {
     return this.http.get<WorkoutPlan[]>(this.api);
   }
+
+  delete(planId: string): Observable<void> {
+    return this.http.delete<void>(`${this.api}/${planId}`);
+  }
 }

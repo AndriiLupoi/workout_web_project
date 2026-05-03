@@ -64,6 +64,67 @@
   flex-wrap: wrap;
 }
 
+.plan-tab-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.plan-tab-delete {
+  opacity: 0;
+  pointer-events: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  background: rgba(239, 68, 68, 0.08);
+  color: #ef4444;
+  font-size: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+}
+
+.plan-tab-delete.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.plan-tab-delete:hover {
+  background: #ef4444;
+  color: white;
+}
+
+.single-plan-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.75rem;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.btn-delete-plan {
+  padding: 8px 16px;
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  background: rgba(239, 68, 68, 0.08);
+  color: #ef4444;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.btn-delete-plan:hover {
+  background: #ef4444;
+  color: white;
+}
+
 .badge {
   display: inline-flex;
   align-items: center;

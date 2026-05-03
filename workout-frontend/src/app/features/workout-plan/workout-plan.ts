@@ -96,6 +96,19 @@ export class WorkoutPlanComponent implements OnInit {
     });
   }
 
+  deletePlan(plan: WorkoutPlan): void {
+    if (!confirm(`Видалити план "${plan.title}"?`)) return;
+    this.service.delete(plan.id).subscribe({
+      next: () => {
+        this.plans.update(list => list.filter(p => p.id !== plan.id));
+        const next = this.plans()[0] ?? null;
+        this.activePlan.set(next);
+        if (next) this.loadPlanLogs(next.id);
+      },
+      error: () => this.error.set('Помилка видалення плану')
+    });
+  }
+
   selectPlan(plan: WorkoutPlan): void {
     this.activePlan.set(plan);
     this.activeWeek.set(1);
