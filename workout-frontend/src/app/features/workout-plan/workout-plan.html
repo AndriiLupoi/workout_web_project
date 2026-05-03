@@ -36,7 +36,6 @@
         <button class="btn-ghost" (click)="stopLiveMode()">✕ Вийти</button>
       </div>
 
-      <!-- Успішне збереження -->
       @if (saveSuccess()) {
         <div class="save-success">
           <span class="success-icon">✓</span>
@@ -44,62 +43,41 @@
         </div>
       }
 
-      <!-- Таблиця вправ з вагою -->
       <div class="live-exercises">
         @for (ex of liveExercises(); track ex.exerciseId) {
           <div class="live-exercise-row">
-
             <div class="live-ex-info">
               <span class="live-ex-name">{{ ex.exerciseName }}</span>
               <span class="live-ex-params">{{ ex.sets }} підходи × {{ ex.reps }} повторень</span>
             </div>
-
             <div class="live-weight-block">
-              <!-- Підказка: попередня вага -->
               @if (ex.previousWeight != null) {
-                <span class="prev-weight-hint">
-                  Минуло: {{ ex.previousWeight }} кг
-                </span>
+                <span class="prev-weight-hint">Минуло: {{ ex.previousWeight }} кг</span>
               } @else if (ex.plannedWeight != null) {
-                <span class="prev-weight-hint planned">
-                  Рекомендовано: {{ ex.plannedWeight }} кг
-                </span>
+                <span class="prev-weight-hint planned">Рекомендовано: {{ ex.plannedWeight }} кг</span>
               } @else {
                 <span class="prev-weight-hint none">Перше тренування</span>
               }
-
               <div class="weight-input-row">
                 <button class="weight-btn minus"
-                        (click)="updateLiveWeight(ex.exerciseId, (ex.liveWeight ?? 0) - 2.5)">
-                  −
-                </button>
-                <input
-                  class="weight-input"
-                  type="number"
-                  step="2.5"
-                  min="0"
-                  [ngModel]="ex.liveWeight"
-                  (ngModelChange)="updateLiveWeight(ex.exerciseId, $event)"
-                  placeholder="0"
-                />
+                        (click)="updateLiveWeight(ex.exerciseId, (ex.liveWeight ?? 0) - 2.5)">−</button>
+                <input class="weight-input" type="number" step="2.5" min="0"
+                       [ngModel]="ex.liveWeight"
+                       (ngModelChange)="updateLiveWeight(ex.exerciseId, $event)"
+                       placeholder="0" />
                 <span class="weight-unit">кг</span>
                 <button class="weight-btn plus"
-                        (click)="updateLiveWeight(ex.exerciseId, (ex.liveWeight ?? 0) + 2.5)">
-                  +
-                </button>
+                        (click)="updateLiveWeight(ex.exerciseId, (ex.liveWeight ?? 0) + 2.5)">+</button>
               </div>
             </div>
-
             <div class="live-rest">
               <span class="rest-icon">⏱</span>
               {{ ex.restSeconds }}с
             </div>
-
           </div>
         }
       </div>
 
-      <!-- Збереження -->
       <div class="live-footer">
         <button class="btn-save-workout"
                 (click)="saveWorkout()"
@@ -123,22 +101,44 @@
     @if (plans().length > 1) {
       <div class="plans-list">
         @for (plan of plans(); track plan.id) {
-          <button class="plan-tab"
-                  [class.active]="activePlan()?.id === plan.id"
-                  (click)="selectPlan(plan)">
-            {{ plan.title }}
-          </button>
+          <div class="plan-tab-wrap">
+            <button class="plan-tab"
+                    [class.active]="activePlan()?.id === plan.id"
+                    (click)="selectPlan(plan)">
+              {{ plan.title }}
+            </button>
+            <button class="plan-tab-delete"
+                    [class.visible]="activePlan()?.id === plan.id"
+                    (click)="deletePlan(plan)"
+                    title="Видалити план">
+              ✕
+            </button>
+          </div>
         }
       </div>
     }
 
     @if (activePlan(); as plan) {
 
-      <div class="plan-meta">
-        <span class="badge">{{ goalLabel(plan.goal) }}</span>
-        <span class="badge">{{ planTypeLabel(plan.planType) }}</span>
-        <span class="meta-text">{{ plan.durationWeeks }} тижнів</span>
-      </div>
+      <!-- Якщо лише один план — кнопка видалення окремо -->
+      @if (plans().length === 1) {
+        <div class="single-plan-header">
+          <div class="plan-meta">
+            <span class="badge">{{ goalLabel(plan.goal) }}</span>
+            <span class="badge">{{ planTypeLabel(plan.planType) }}</span>
+            <span class="meta-text">{{ plan.durationWeeks }} тижнів</span>
+          </div>
+          <button class="btn-delete-plan" (click)="deletePlan(plan)" title="Видалити план">
+            🗑 Видалити план
+          </button>
+        </div>
+      } @else {
+        <div class="plan-meta">
+          <span class="badge">{{ goalLabel(plan.goal) }}</span>
+          <span class="badge">{{ planTypeLabel(plan.planType) }}</span>
+          <span class="meta-text">{{ plan.durationWeeks }} тижнів</span>
+        </div>
+      }
 
       <div class="weeks-nav">
         @for (week of weeks(); track week) {
@@ -163,7 +163,6 @@
               </div>
             </div>
 
-            <!-- Вправи з вагою -->
             <div class="exercises-list">
               <div class="ex-table-head">
                 <span>Вправа</span>
@@ -189,7 +188,6 @@
               }
             </div>
 
-            <!-- Кнопка запуску тренування -->
             <button class="btn-start-workout" (click)="startLiveMode(day)">
               ▶ Розпочати тренування
             </button>

@@ -17,7 +17,6 @@
   <!-- ===== СТАТИСТИКА ===== -->
   @if (stats(); as s) {
     <div class="stats-grid">
-
       <div class="stat-card">
         <div class="stat-icon">👤</div>
         <div class="stat-body">
@@ -25,7 +24,6 @@
           <span class="stat-label">Користувачів</span>
         </div>
       </div>
-
       <div class="stat-card">
         <div class="stat-icon">📋</div>
         <div class="stat-body">
@@ -33,7 +31,6 @@
           <span class="stat-label">Планів згенеровано</span>
         </div>
       </div>
-
       <div class="stat-card">
         <div class="stat-icon">🛡️</div>
         <div class="stat-body">
@@ -41,7 +38,6 @@
           <span class="stat-label">Адміністраторів</span>
         </div>
       </div>
-
     </div>
   }
 
@@ -59,9 +55,7 @@
           <th>Email</th>
           <th>Роль</th>
           <th>Зареєстрований</th>
-          @if (isOwner()) {
-            <th>Дії</th>
-          }
+          <th>Дії</th>
         </tr>
         </thead>
         <tbody>
@@ -80,29 +74,32 @@
                 </span>
               </td>
               <td class="user-date">{{ user.createdAt | date:'dd.MM.yyyy' }}</td>
-
-              @if (isOwner()) {
-                <td class="actions-cell">
-                  @if (user.role !== 'OWNER') {
-                    <div class="action-buttons">
-                      @if (user.role !== 'ADMIN') {
-                        <button class="btn-role admin" (click)="assignRole(user.id, 'ADMIN')">
-                          → ADMIN
-                        </button>
-                      } @else {
-                        <button class="btn-role user" (click)="assignRole(user.id, 'USER')">
-                          → USER
-                        </button>
-                      }
-                      <button class="btn-delete" (click)="deleteUser(user.id, user.email)">
-                        🗑
-                      </button>
-                    </div>
-                  } @else {
-                    <span class="protected-label">захищено</span>
+              <td class="actions-cell">
+                <div class="action-buttons">
+                  @if (isOwner()) {
+                    <button class="btn-view" (click)="openUserModal(user)" title="Переглянути профіль">
+                      👁
+                    </button>
                   }
-                </td>
-              }
+                  @if (isOwner() && user.role !== 'OWNER') {
+                    @if (user.role !== 'ADMIN') {
+                      <button class="btn-role admin" (click)="assignRole(user.id, 'ADMIN')">
+                        → ADMIN
+                      </button>
+                    } @else {
+                      <button class="btn-role user" (click)="assignRole(user.id, 'USER')">
+                        → USER
+                      </button>
+                    }
+                    <button class="btn-delete" (click)="deleteUser(user.id, user.email)">
+                      🗑
+                    </button>
+                  }
+                  @if (!isOwner()) {
+                    <span class="protected-label">—</span>
+                  }
+                </div>
+              </td>
             </tr>
           }
         </tbody>
@@ -115,3 +112,208 @@
   }
 
 </div>
+
+<!-- ===== MODAL: деталі юзера ===== -->
+@if (selectedUser(); as user) {
+  <div class="modal-backdrop" (click)="closeModal()">
+    <div class="modal-panel" (click)="$event.stopPropagation()">
+
+      <!-- Modal header -->
+      <div class="modal-header">
+        <div class="modal-user-info">
+          <div class="modal-avatar">{{ user.firstName[0] }}{{ user.lastName[0] }}</div>
+          <div>
+            <h2>{{ user.firstName }} {{ user.lastName }}</h2>
+            <span class="modal-email">{{ user.email }}</span>
+          </div>
+          <span class="role-badge {{ getRoleBadgeClass(user.role) }} modal-role-badge">
+            {{ user.role }}
+          </span>
+        </div>
+        <button class="modal-close" (click)="closeModal()">✕</button>
+      </div>
+
+      <!-- Tabs -->
+      <div class="modal-tabs">
+        <button class="modal-tab" [class.active]="activeTab() === 'profile'" (click)="activeTab.set('profile')">
+          📊 Профіль
+        </button>
+        <button class="modal-tab" [class.active]="activeTab() === 'plans'" (click)="activeTab.set('plans')">
+          📋 Плани тренувань
+          @if (selectedPlans().length) {
+            <span class="tab-count">{{ selectedPlans().length }}</span>
+          }
+        </button>
+      </div>
+
+      <!-- Modal body -->
+      <div class="modal-body">
+
+        @if (modalLoading()) {
+          <div class="modal-loading">Завантаження даних...</div>
+        }
+
+        @if (modalError()) {
+          <div class="error-banner">{{ modalError() }}</div>
+        }
+
+        @if (!modalLoading() && !modalError()) {
+
+          <!-- ===== TAB: PROFILE ===== -->
+          @if (activeTab() === 'profile') {
+            @if (selectedProfile(); as profile) {
+              <div class="profile-grid">
+
+                <div class="profile-section">
+                  <h3 class="section-label">🎯 Тренування</h3>
+                  <div class="info-rows">
+                    <div class="info-row">
+                      <span class="info-key">Ціль</span>
+                      <span class="info-val">{{ goalLabel(profile.goal) }}</span>
+                    </div>
+                    <div class="info-row">
+                      <span class="info-key">Рівень</span>
+                      <span class="info-val">{{ levelLabel(profile.level) }}</span>
+                    </div>
+                    <div class="info-row">
+                      <span class="info-key">Тип плану</span>
+                      <span class="info-val">{{ planTypeLabel(profile.planType) }}</span>
+                    </div>
+                    <div class="info-row">
+                      <span class="info-key">Тренувань/тиждень</span>
+                      <span class="info-val">{{ profile.workoutsPerWeek }}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="profile-section">
+                  <h3 class="section-label">⚖️ Фізичні дані</h3>
+                  <div class="info-rows">
+                    @if (profile.age) {
+                      <div class="info-row">
+                        <span class="info-key">Вік</span>
+                        <span class="info-val">{{ profile.age }} р.</span>
+                      </div>
+                    }
+                    @if (profile.height) {
+                      <div class="info-row">
+                        <span class="info-key">Зріст</span>
+                        <span class="info-val">{{ profile.height }} см</span>
+                      </div>
+                    }
+                    @if (profile.currentWeight) {
+                      <div class="info-row">
+                        <span class="info-key">Поточна вага</span>
+                        <span class="info-val">{{ profile.currentWeight }} кг</span>
+                      </div>
+                    }
+                    @if (profile.targetWeight) {
+                      <div class="info-row">
+                        <span class="info-key">Цільова вага</span>
+                        <span class="info-val accent">{{ profile.targetWeight }} кг</span>
+                      </div>
+                    }
+                    @if (!profile.age && !profile.height && !profile.currentWeight && !profile.targetWeight) {
+                      <p class="no-data">Не заповнено</p>
+                    }
+                  </div>
+                </div>
+
+                @if (profile.availableEquipment?.length) {
+                  <div class="profile-section full-width">
+                    <h3 class="section-label">🏋️ Доступне обладнання</h3>
+                    <div class="equipment-chips">
+                      @for (eq of profile.availableEquipment; track eq) {
+                        <span class="eq-chip">{{ equipmentLabel(eq) }}</span>
+                      }
+                    </div>
+                  </div>
+                }
+
+              </div>
+            } @else {
+              <p class="no-data center">Профіль не заповнений</p>
+            }
+          }
+
+          <!-- ===== TAB: PLANS ===== -->
+          @if (activeTab() === 'plans') {
+            @if (selectedPlans().length === 0) {
+              <p class="no-data center">Планів ще немає</p>
+            } @else {
+              <div class="plans-list-modal">
+                @for (plan of selectedPlans(); track plan.id) {
+                  <div class="plan-item" [class.expanded]="expandedPlanId() === plan.id">
+
+                    <div class="plan-item-header" (click)="togglePlan(plan.id)">
+                      <div class="plan-item-info">
+                        <span class="plan-title">{{ plan.title }}</span>
+                        <div class="plan-badges">
+                          <span class="plan-badge">{{ goalLabel(plan.goal) }}</span>
+                          <span class="plan-badge">{{ plan.durationWeeks }} тижнів</span>
+                          <span class="plan-badge" [class.active-badge]="plan.status === 'ACTIVE'">
+                            {{ plan.status === 'ACTIVE' ? 'Активний' : 'Архів' }}
+                          </span>
+                        </div>
+                      </div>
+                      <span class="plan-toggle">{{ expandedPlanId() === plan.id ? '▲' : '▼' }}</span>
+                    </div>
+
+                    @if (expandedPlanId() === plan.id) {
+                      <div class="plan-item-body">
+                        @for (week of getWeekNumbers(plan); track week) {
+                          <div class="week-block">
+                            <h4 class="week-title">Тиждень {{ week }}</h4>
+                            <div class="days-row">
+                              @for (day of getDaysForWeek(plan, week); track day.dayNumber) {
+                                <div class="day-mini-card">
+                                  <div class="day-mini-header">
+                                    <span class="day-mini-num">День {{ day.dayNumber }}</span>
+                                    <span class="day-mini-focus">{{ day.focus }}</span>
+                                  </div>
+                                  <div class="day-mini-exercises">
+                                    @for (ex of day.exercises; track ex.exerciseName) {
+                                      <div class="ex-mini-row">
+                                        <span class="ex-mini-name">{{ ex.exerciseName }}</span>
+                                        <span class="ex-mini-params">{{ ex.sets }}×{{ ex.reps }}</span>
+                                      </div>
+                                    }
+                                  </div>
+                                </div>
+                              }
+                            </div>
+                          </div>
+                        }
+                      </div>
+                    }
+
+                  </div>
+                }
+              </div>
+            }
+          }
+
+        }
+      </div>
+
+      <!-- Modal footer — дії над юзером -->
+      @if (isOwner() && selectedUser()?.role !== 'OWNER') {
+        <div class="modal-footer">
+          @if (selectedUser()?.role !== 'ADMIN') {
+            <button class="btn-role admin" (click)="assignRole(selectedUser()!.id, 'ADMIN')">
+              → Призначити ADMIN
+            </button>
+          } @else {
+            <button class="btn-role user" (click)="assignRole(selectedUser()!.id, 'USER')">
+              → Повернути USER
+            </button>
+          }
+          <button class="btn-delete-footer" (click)="deleteUser(selectedUser()!.id, selectedUser()!.email)">
+            🗑 Видалити юзера
+          </button>
+        </div>
+      }
+
+    </div>
+  </div>
+}
