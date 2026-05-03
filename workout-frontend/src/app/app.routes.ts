@@ -40,6 +40,13 @@ export const routes: Routes = [
     canActivate: [adminGuard],
     loadChildren: () => import('./features/admin/admin-routing-module')
       .then(m => m.adminRoutes)
-  }
+  },
+  {
+    path: 'progress',
+    canActivate: [authGuard],
+    loadChildren: () =>
+      import('./features/progress/progress-routing-module')
+        .then(m => m.PROGRESS_ROUTES)
+  },
 
 ];

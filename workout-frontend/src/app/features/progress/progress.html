@@ -1,0 +1,259 @@
+<div class="progress-container">
+
+  <div class="page-header">
+    <h1>📈 Мій прогрес</h1>
+    <p class="subtitle">Графіки росту сили та ваги тіла</p>
+  </div>
+
+  @if (loading()) {
+    <div class="loading">Завантаження...</div>
+  }
+
+  @if (error()) {
+    <div class="error-banner">{{ error() }}</div>
+  }
+
+  @if (!loading() && data(); as d) {
+
+    @if (d.exerciseProgress.length === 0 && d.personalRecords.length === 0) {
+      <div class="empty-state">
+        <div class="empty-icon">📊</div>
+        <h2>Ще немає даних</h2>
+        <p>Заверши кілька тренувань із вагами, і тут з'являться графіки прогресу</p>
+      </div>
+    } @else {
+
+      <!-- ===== ОСОБИСТІ РЕКОРДИ ===== -->
+      @if (d.personalRecords.length > 0) {
+        <section class="section">
+          <h2 class="section-title">🏆 Особисті рекорди</h2>
+          <div class="pr-grid">
+            @for (pr of d.personalRecords.slice(0, 6); track pr.exerciseId) {
+              <div class="pr-card">
+                <div class="pr-icon">🥇</div>
+                <div class="pr-info">
+                  <span class="pr-name">{{ pr.exerciseName }}</span>
+                  <span class="pr-date">{{ pr.date }}</span>
+                </div>
+                <div class="pr-weight">{{ pr.maxWeight }} <span class="pr-unit">кг</span></div>
+              </div>
+            }
+          </div>
+        </section>
+      }
+
+      <!-- ===== ГРАФІК ВАГИ ТІЛА ===== -->
+      @if (d.bodyWeightHistory.length >= 2) {
+        <section class="section">
+          <h2 class="section-title">⚖️ Вага тіла</h2>
+          <div class="chart-card">
+            <div class="chart-header">
+              <div>
+                <h3 class="chart-title">Динаміка ваги</h3>
+                <div class="chart-meta">
+            <span class="trend-badge trend-{{ getBodyTrend(d.bodyWeightHistory) }}">
+              {{ getBodyTrend(d.bodyWeightHistory) === 'up' ? '▲' : getBodyTrend(d.bodyWeightHistory) === 'down' ? '▼' : '→' }}
+              {{ getBodyDiff(d.bodyWeightHistory) }} кг
+            </span>
+                  <span class="chart-range">
+              {{ d.bodyWeightHistory[0].date }} — {{ d.bodyWeightHistory[d.bodyWeightHistory.length-1].date }}
+            </span>
+                </div>
+              </div>
+              <div class="chart-stat">
+          <span class="chart-stat-val">
+            {{ d.bodyWeightHistory[d.bodyWeightHistory.length-1].weight }}
+          </span>
+                <span class="chart-stat-label">кг зараз</span>
+              </div>
+            </div>
+
+            <div class="svg-wrap">
+              <svg viewBox="0 0 600 200" xmlns="http://www.w3.org/2000/svg" class="chart-svg">
+                <defs>
+                  <linearGradient id="bodyGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="#22c55e" stop-opacity="0.3"/>
+                    <stop offset="100%" stop-color="#22c55e" stop-opacity="0.02"/>
+                  </linearGradient>
+                </defs>
+
+                @for (label of getYLabels(d.bodyWeightHistory); track label) {
+                  <text [attr.x]="34"
+                        [attr.y]="getYPos(label, d.bodyWeightHistory, 200) + 4"
+                        class="axis-label" text-anchor="end">{{ label }}</text>
+                  <line [attr.x1]="40" [attr.y1]="getYPos(label, d.bodyWeightHistory, 200)"
+                        [attr.x2]="560" [attr.y2]="getYPos(label, d.bodyWeightHistory, 200)"
+                        class="grid-line"/>
+                }
+
+                @for (entry of d.bodyWeightHistory; track entry.date; let i = $index) {
+                  @if (i === 0 || i === d.bodyWeightHistory.length - 1) {
+                    <text [attr.x]="getXPos(i, d.bodyWeightHistory.length, 600)"
+                          [attr.y]="196" class="axis-label" text-anchor="middle">
+                      {{ entry.date.slice(5) }}
+                    </text>
+                  }
+                }
+
+                <path [attr.d]="buildAreaPath(d.bodyWeightHistory, 600, 200)"
+                      fill="url(#bodyGrad)"/>
+
+                <path [attr.d]="buildLinePath(d.bodyWeightHistory, 600, 200)"
+                      fill="none" stroke="#22c55e" stroke-width="2.5"
+                      stroke-linecap="round" stroke-linejoin="round"/>
+
+                @for (entry of d.bodyWeightHistory; track entry.date; let i = $index) {
+                  <circle [attr.cx]="getXPos(i, d.bodyWeightHistory.length, 600)"
+                          [attr.cy]="getYPos(entry.weight, d.bodyWeightHistory, 200)"
+                          r="4" fill="#22c55e"
+                          stroke="var(--bg-card)" stroke-width="2"/>
+                }
+              </svg>
+            </div>
+
+            <div class="entries-table">
+              @for (entry of d.bodyWeightHistory; track entry.date; let i = $index) {
+                <div class="entry-row">
+                  <span class="entry-num">{{ i + 1 }}</span>
+                  <span class="entry-date">{{ entry.date }}</span>
+                  <span class="entry-week"></span>
+                  <span class="entry-weight">{{ entry.weight }} кг</span>
+                  @if (i > 0) {
+                    <span class="entry-diff"
+                          [class.pos]="entry.weight < d.bodyWeightHistory[i-1].weight"
+                          [class.neg]="entry.weight > d.bodyWeightHistory[i-1].weight">
+                {{ entry.weight < d.bodyWeightHistory[i-1].weight ? '' : '+' }}{{ (entry.weight - d.bodyWeightHistory[i-1].weight).toFixed(1) }}
+              </span>
+                  }
+                </div>
+              }
+            </div>
+          </div>
+        </section>
+      }
+
+      <!-- ===== ГРАФІК ПО ВПРАВІ ===== -->
+      @if (d.exerciseProgress.length > 0) {
+        <section class="section">
+          <h2 class="section-title">📈 Прогрес по вправах</h2>
+
+          <!-- Список вправ -->
+          <div class="exercise-tabs">
+            @for (ex of d.exerciseProgress; track ex.exerciseId) {
+              <button class="ex-tab"
+                      [class.active]="selectedExercise()?.exerciseId === ex.exerciseId"
+                      (click)="selectExercise(ex)">
+                {{ ex.exerciseName }}
+                <span class="ex-tab-count">{{ ex.entries.length }}×</span>
+              </button>
+            }
+          </div>
+
+          <!-- Графік -->
+          @if (selectedExercise(); as ex) {
+            <div class="chart-card">
+              <div class="chart-header">
+                <div>
+                  <h3 class="chart-title">{{ ex.exerciseName }}</h3>
+                  <div class="chart-meta">
+                    <span class="trend-badge trend-{{ getTrend(ex.entries) }}">
+                      {{ getTrend(ex.entries) === 'up' ? '▲' : getTrend(ex.entries) === 'down' ? '▼' : '→' }}
+                      {{ getDiff(ex.entries) }} кг
+                    </span>
+                    <span class="chart-range">{{ ex.entries[0].date }} — {{ ex.entries[ex.entries.length-1].date }}</span>
+                  </div>
+                </div>
+                <div class="chart-stat">
+                  <span class="chart-stat-val">{{ ex.entries[ex.entries.length-1].weight }}</span>
+                  <span class="chart-stat-label">кг зараз</span>
+                </div>
+              </div>
+
+              <!-- SVG CHART -->
+              <div class="svg-wrap">
+                <svg viewBox="0 0 600 200" xmlns="http://www.w3.org/2000/svg" class="chart-svg">
+                  <defs>
+                    <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stop-color="var(--accent)" stop-opacity="0.3"/>
+                      <stop offset="100%" stop-color="var(--accent)" stop-opacity="0.02"/>
+                    </linearGradient>
+                  </defs>
+
+                  <!-- Y labels -->
+                  @for (label of getYLabels(ex.entries); track label) {
+                    <text
+                      [attr.x]="34"
+                      [attr.y]="getYPos(label, ex.entries, 200) + 4"
+                      class="axis-label" text-anchor="end">{{ label }}</text>
+                    <line
+                      [attr.x1]="40" [attr.y1]="getYPos(label, ex.entries, 200)"
+                      [attr.x2]="560" [attr.y2]="getYPos(label, ex.entries, 200)"
+                      class="grid-line"/>
+                  }
+
+                  <!-- X labels -->
+                  @for (entry of ex.entries; track entry.date; let i = $index) {
+                    @if (i === 0 || i === ex.entries.length - 1 || (ex.entries.length > 4 && i % Math.floor(ex.entries.length / 3) === 0)) {
+                      <text
+                        [attr.x]="getXPos(i, ex.entries.length, 600)"
+                        [attr.y]="196"
+                        class="axis-label" text-anchor="middle">
+                        {{ entry.date.slice(5) }}
+                      </text>
+                    }
+                  }
+
+                  <!-- Area fill -->
+                  <path
+                    [attr.d]="buildAreaPath(ex.entries, 600, 200)"
+                    fill="url(#areaGrad)"/>
+
+                  <!-- Line -->
+                  <path
+                    [attr.d]="buildLinePath(ex.entries, 600, 200)"
+                    fill="none"
+                    stroke="var(--accent)"
+                    stroke-width="2.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"/>
+
+                  <!-- Dots -->
+                  @for (entry of ex.entries; track entry.date; let i = $index) {
+                    <circle
+                      [attr.cx]="getXPos(i, ex.entries.length, 600)"
+                      [attr.cy]="getYPos(entry.weight, ex.entries, 200)"
+                      r="4"
+                      fill="var(--accent)"
+                      stroke="var(--bg-card)"
+                      stroke-width="2"/>
+                  }
+                </svg>
+              </div>
+
+              <!-- Таблиця записів -->
+              <div class="entries-table">
+                @for (entry of ex.entries; track entry.date; let i = $index) {
+                  <div class="entry-row" [class.entry-pr]="isMaxWeight(entry, ex.entries)">
+                    <span class="entry-num">{{ i + 1 }}</span>
+                    <span class="entry-date">{{ entry.date }}</span>
+                    <span class="entry-week">Тиждень {{ entry.weekNumber }}, День {{ entry.dayNumber }}</span>
+                    <span class="entry-weight">{{ entry.weight }} кг</span>
+                    @if (i > 0) {
+                      <span class="entry-diff"
+                            [class.pos]="entry.weight > ex.entries[i-1].weight"
+                            [class.neg]="entry.weight < ex.entries[i-1].weight">
+                        {{ entry.weight > ex.entries[i-1].weight ? '+' : '' }}{{ (entry.weight - ex.entries[i-1].weight).toFixed(1) }}
+                      </span>
+                    }
+                  </div>
+                }
+              </div>
+            </div>
+          }
+        </section>
+      }
+
+    }
+  }
+
+</div>
