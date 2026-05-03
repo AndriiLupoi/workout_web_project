@@ -15,4 +15,6 @@ public interface WorkoutPlanRepository {
     WorkoutPlan save(WorkoutPlan plan);
     List<WorkoutPlan> findByUserId(String userId);
     Optional<WorkoutPlan> findByIdAndUserId(String id, String userId);
+
+    long countAll();
 }

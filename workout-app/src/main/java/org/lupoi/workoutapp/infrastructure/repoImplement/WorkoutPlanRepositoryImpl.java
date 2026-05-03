@@ -36,4 +36,10 @@ public class WorkoutPlanRepositoryImpl implements WorkoutPlanRepository {
         return mongoRepository.findByIdAndUserId(id, userId)
                 .map(mapper::toDomain);
     }
+
+    @Override
+    public long countAll() {
+        return mongoRepository.count();
+    }
+
 }

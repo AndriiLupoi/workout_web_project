@@ -2,19 +2,50 @@
 
   <div class="admin-header">
     <div>
-      <h1>👥 Користувачі</h1>
-      <p class="subtitle">Управління акаунтами</p>
+      <h1>👥 Адмін панель</h1>
+      <p class="subtitle">Управління користувачами та статистика</p>
     </div>
   </div>
 
   @if (error()) {
     <div class="error-banner">{{ error() }}</div>
   }
-
   @if (actionMsg()) {
     <div class="success-banner">✓ {{ actionMsg() }}</div>
   }
 
+  <!-- ===== СТАТИСТИКА ===== -->
+  @if (stats(); as s) {
+    <div class="stats-grid">
+
+      <div class="stat-card">
+        <div class="stat-icon">👤</div>
+        <div class="stat-body">
+          <span class="stat-value">{{ s.totalUsers }}</span>
+          <span class="stat-label">Користувачів</span>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">📋</div>
+        <div class="stat-body">
+          <span class="stat-value">{{ s.totalPlans }}</span>
+          <span class="stat-label">Планів згенеровано</span>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">🛡️</div>
+        <div class="stat-body">
+          <span class="stat-value">{{ s.totalAdmins }}</span>
+          <span class="stat-label">Адміністраторів</span>
+        </div>
+      </div>
+
+    </div>
+  }
+
+  <!-- ===== ТАБЛИЦЯ ЮЗЕРІВ ===== -->
   @if (loading()) {
     <div class="loading">Завантаження...</div>
   }
@@ -50,24 +81,20 @@
               </td>
               <td class="user-date">{{ user.createdAt | date:'dd.MM.yyyy' }}</td>
 
-              <!-- Дії тільки для OWNER і тільки не для інших OWNER -->
               @if (isOwner()) {
                 <td class="actions-cell">
                   @if (user.role !== 'OWNER') {
                     <div class="action-buttons">
                       @if (user.role !== 'ADMIN') {
-                        <button class="btn-role admin"
-                                (click)="assignRole(user.id, 'ADMIN')">
+                        <button class="btn-role admin" (click)="assignRole(user.id, 'ADMIN')">
                           → ADMIN
                         </button>
                       } @else {
-                        <button class="btn-role user"
-                                (click)="assignRole(user.id, 'USER')">
+                        <button class="btn-role user" (click)="assignRole(user.id, 'USER')">
                           → USER
                         </button>
                       }
-                      <button class="btn-delete"
-                              (click)="deleteUser(user.id, user.email)">
+                      <button class="btn-delete" (click)="deleteUser(user.id, user.email)">
                         🗑
                       </button>
                     </div>
@@ -83,7 +110,7 @@
     </div>
 
     <div class="table-footer">
-      Всього користувачів: <strong>{{ users().length }}</strong>
+      Всього: <strong>{{ users().length }}</strong> користувачів
     </div>
   }
 

@@ -7,8 +7,10 @@ package org.lupoi.workoutapp.presentation.controller;/*
 */
 
 import lombok.RequiredArgsConstructor;
+import org.lupoi.workoutapp.application.usecase.admin.GetStatsUseCase;
 import org.lupoi.workoutapp.domain.enums.Role;
 import org.lupoi.workoutapp.domain.repository.UserRepository;
+import org.lupoi.workoutapp.presentation.dto.response.StatsResponse;
 import org.lupoi.workoutapp.presentation.dto.response.UserResponse;
 import org.lupoi.workoutapp.presentation.mapper.UserDtoMapper;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +26,7 @@ public class AdminController {
 
     private final UserRepository userRepository;
     private final UserDtoMapper userDtoMapper;
+    private final GetStatsUseCase getStatsUseCase;
 
     // GET /api/v1/admin/users — список всіх юзерів (ADMIN + OWNER)
     @GetMapping("/users")
@@ -35,6 +38,13 @@ public class AdminController {
                 .toList();
         return ResponseEntity.ok(users);
     }
+
+    @GetMapping("/stats")
+    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER')")
+    public ResponseEntity<StatsResponse> getStats() {
+        return ResponseEntity.ok(getStatsUseCase.execute());
+    }
+
 
     // PUT /api/v1/admin/roles/{userId}?role=ADMIN — призначити роль (тільки OWNER)
     @PutMapping("/roles/{userId}")
