@@ -372,3 +372,74 @@
   transition: width 0.6s ease;
   min-width: 4px;
 }
+
+.prev-weight-hint.recommended {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.prev-weight-hint.recommended .hint-reason {
+  font-weight: 400;
+  color: var(--text-secondary);
+  font-size: 10px;
+}
+
+.felt-easy-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.felt-easy-label {
+  font-size: 11px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.felt-easy-btns {
+  display: flex;
+  gap: 6px;
+}
+
+.felt-btn {
+  padding: 4px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+
+.felt-btn:hover {
+  border-color: var(--accent);
+}
+
+.felt-btn.easy.active {
+  background: var(--success-soft);
+  border-color: var(--success);
+  color: var(--success);
+}
+
+.felt-btn.hard.active {
+  background: var(--error-soft);
+  border-color: var(--error);
+  color: var(--error);
+}
+
+.day-completed-badge {
+  width: 100%;
+  margin-top: 16px;
+  padding: 10px;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--success);
+  background: var(--success-soft);
+  border: 1px solid var(--success-border);
+  border-radius: var(--radius-md);
+}

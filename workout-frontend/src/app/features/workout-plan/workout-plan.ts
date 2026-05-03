@@ -11,6 +11,7 @@ import {
 interface LiveExercise extends WorkoutExercise {
   liveWeight: number | null;
   previousWeight: number | null;
+  feltEasy: boolean | null;
 }
 
 @Component({
@@ -143,11 +144,15 @@ export class WorkoutPlanComponent implements OnInit {
 
   startLiveMode(day: WorkoutDay): void {
     this.liveDay.set(day);
-    const live: LiveExercise[] = day.exercises.map(ex => ({
-      ...ex,
-      liveWeight:     ex.plannedWeight ?? null,
-      previousWeight: this.getPreviousWeight(ex.exerciseId)
-    }));
+    const live: LiveExercise[] = day.exercises.map(ex => {
+      const rec = this.getRecommendedWeight(ex);
+      return {
+        ...ex,
+        liveWeight:     rec?.weight ?? ex.plannedWeight ?? null,
+        previousWeight: this.getPreviousWeight(ex.exerciseId),
+        feltEasy:       null
+      };
+    });
     this.liveExercises.set(live);
     this.isLiveMode.set(true);
     this.saveSuccess.set(false);
@@ -160,13 +165,49 @@ export class WorkoutPlanComponent implements OnInit {
     this.saveSuccess.set(false);
   }
 
-  getPreviousWeight(exerciseId: string): number | null {
+  updateFeltEasy(exerciseId: string, value: boolean): void {
+    this.liveExercises.update(list =>
+      list.map(ex => ex.exerciseId === exerciseId ? { ...ex, feltEasy: value } : ex)
+    );
+  }
+
+  getPreviousLog(exerciseId: string): { weight: number | null; feltEasy: boolean | null } {
     const logs = this.planLogs();
     for (let i = logs.length - 1; i >= 0; i--) {
       const found = logs[i].exercises.find(e => e.exerciseId === exerciseId);
-      if (found?.actualWeight != null) return found.actualWeight;
+      if (found?.actualWeight != null) {
+        return { weight: found.actualWeight, feltEasy: found.feltEasy };
+      }
     }
-    return null;
+    return { weight: null, feltEasy: null };
+  }
+
+  getPreviousWeight(exerciseId: string): number | null {
+    return this.getPreviousLog(exerciseId).weight;
+  }
+
+  getRecommendedWeight(ex: WorkoutExercise): { weight: number; label: string; hint: string } | null {
+    const log = this.getPreviousLog(ex.exerciseId);
+
+    if (log.weight == null) {
+      const base = ex.plannedWeight ?? 0;
+      const w = Math.round((base + 2.5) * 10) / 10;
+      return { weight: w, label: `${w} кг (+2.5)`, hint: 'перше тренування' };
+    }
+
+    if (log.feltEasy === true) {
+      const w = Math.round((log.weight + 2.5) * 10) / 10;
+      return { weight: w, label: `${w} кг (+2.5)`, hint: 'було легко' };
+    }
+
+    if (log.feltEasy === false) {
+      const w = Math.max(0, Math.round((log.weight - 2.5) * 10) / 10);
+      return { weight: w, label: `${w} кг (-2.5)`, hint: 'було важко' };
+    }
+
+    // feltEasy невідомо але лог є — оптимістично +2.5
+    const w = Math.round((log.weight + 2.5) * 10) / 10;
+    return { weight: w, label: `${w} кг (+2.5)`, hint: 'оптимістично' };
   }
 
   updateLiveWeight(exerciseId: string, weight: number | null): void {
@@ -192,7 +233,7 @@ export class WorkoutPlanComponent implements OnInit {
       actualSets:    ex.sets,
       actualReps:    ex.reps,
       actualWeight:  ex.liveWeight ?? null,
-      feltEasy:      false,
+      feltEasy: ex.feltEasy ?? false,
       notes:         ''
     }));
 
@@ -245,5 +286,11 @@ export class WorkoutPlanComponent implements OnInit {
       FULL_BODY: 'Full Body', HEAVY: 'Важкий', MEDIUM: 'Середній', SETS: 'Сети'
     };
     return map[i] ?? i;
+  }
+
+  isLoggedThisDay(weekNumber: number, dayNumber: number): boolean {
+    return this.planLogs().some(
+      l => l.weekNumber === weekNumber && l.dayNumber === dayNumber
+    );
   }
 }

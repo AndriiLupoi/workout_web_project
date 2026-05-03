@@ -51,10 +51,11 @@
               <span class="live-ex-params">{{ ex.sets }} підходи × {{ ex.reps }} повторень</span>
             </div>
             <div class="live-weight-block">
-              @if (ex.previousWeight != null) {
-                <span class="prev-weight-hint">Минуло: {{ ex.previousWeight }} кг</span>
-              } @else if (ex.plannedWeight != null) {
-                <span class="prev-weight-hint planned">Рекомендовано: {{ ex.plannedWeight }} кг</span>
+              @if (getRecommendedWeight(ex); as rec) {
+                <span class="prev-weight-hint recommended">
+                    Рекомендовано: {{ rec.label }}
+                    <span class="hint-reason">({{ rec.hint }})</span>
+                </span>
               } @else {
                 <span class="prev-weight-hint none">Перше тренування</span>
               }
@@ -68,6 +69,21 @@
                 <span class="weight-unit">кг</span>
                 <button class="weight-btn plus"
                         (click)="updateLiveWeight(ex.exerciseId, (ex.liveWeight ?? 0) + 2.5)">+</button>
+              </div>
+            </div>
+            <div class="felt-easy-block">
+              <span class="felt-easy-label">Як пройшло?</span>
+              <div class="felt-easy-btns">
+                <button class="felt-btn easy"
+                        [class.active]="ex.feltEasy === true"
+                        (click)="updateFeltEasy(ex.exerciseId, true)">
+                  😊 Легко
+                </button>
+                <button class="felt-btn hard"
+                        [class.active]="ex.feltEasy === false"
+                        (click)="updateFeltEasy(ex.exerciseId, false)">
+                  😤 Важко
+                </button>
               </div>
             </div>
             <div class="live-rest">
@@ -200,10 +216,13 @@
                   <span class="ex-name">{{ ex.exerciseName }}</span>
                   <span class="ex-params">{{ ex.sets }} × {{ ex.reps }}</span>
                   <span class="ex-weight">
-                    @if (getPreviousWeight(ex.exerciseId) != null) {
-                      <span class="weight-chip logged">{{ getPreviousWeight(ex.exerciseId) }} кг</span>
-                    } @else if (ex.plannedWeight != null) {
-                      <span class="weight-chip planned">{{ ex.plannedWeight }} кг</span>
+                    @if (getRecommendedWeight(ex); as rec) {
+                      <span class="weight-chip"
+                            [class.logged]="isLoggedThisDay(day.weekNumber, day.dayNumber)"
+                            [class.planned]="!isLoggedThisDay(day.weekNumber, day.dayNumber)"
+                            [title]="rec.hint">
+                        {{ rec.label }}
+                      </span>
                     } @else {
                       <span class="weight-chip empty">—</span>
                     }
@@ -213,9 +232,13 @@
               }
             </div>
 
-            <button class="btn-start-workout" (click)="startLiveMode(day)">
-              ▶ Розпочати тренування
-            </button>
+            @if (isLoggedThisDay(day.weekNumber, day.dayNumber)) {
+              <div class="day-completed-badge">✓ Виконано</div>
+            } @else {
+              <button class="btn-start-workout" (click)="startLiveMode(day)">
+                ▶ Розпочати тренування
+              </button>
+            }
 
           </div>
         }
