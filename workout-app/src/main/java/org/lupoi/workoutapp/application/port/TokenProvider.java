@@ -7,5 +7,5 @@ package org.lupoi.workoutapp.application.port;/*
 */
 
 public interface TokenProvider {
-    String generateToken(String userId, String email);
+    String generateToken(String userId, String email, String role);
 }

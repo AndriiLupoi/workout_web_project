@@ -1,10 +1,4 @@
-package org.lupoi.workoutapp.infrastructure.security;/*
-    @author Andrii
-    @project security25
-    @class JwtFilter
-    @version 1.0.0
-    @since 05.11.2025 - 13.03
-*/
+package org.lupoi.workoutapp.infrastructure.security;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -13,18 +7,15 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.List;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
-
 
 @Component
 @RequiredArgsConstructor
@@ -58,11 +49,17 @@ public class JwtFilter extends OncePerRequestFilter {
 
             String userId = jwtService.extractUserId(jwt);
 
+            // Читаємо роль з токена, якщо немає — USER
+            String role = jwtService.extractRole(jwt);
+            String effectiveRole = (role != null) ? role : "USER";
+
+            var authority = new SimpleGrantedAuthority("ROLE_" + effectiveRole);
+
             UsernamePasswordAuthenticationToken authToken =
                     new UsernamePasswordAuthenticationToken(
-                            userId,
+                            userId,        // principal.getName() повертає userId — як було
                             null,
-                            null
+                            List.of(authority)
                     );
 
             SecurityContextHolder.getContext().setAuthentication(authToken);

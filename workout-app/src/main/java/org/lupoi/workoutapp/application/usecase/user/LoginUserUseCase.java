@@ -31,6 +31,6 @@ public class LoginUserUseCase {
             throw new InvalidCredentialsException();
         }
 
-        return tokenProvider.generateToken(user.getId(), user.getEmail());
+        return tokenProvider.generateToken(user.getId(), user.getEmail(), String.valueOf(user.getRole()));
     }
 }

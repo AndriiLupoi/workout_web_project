@@ -2,6 +2,8 @@ import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../services/auth';
+import { toSignal } from '@angular/core/rxjs-interop';
+
 
 @Component({
   selector: 'app-navbar',
@@ -15,6 +17,12 @@ export class NavbarComponent {
   private router = inject(Router);
 
   isDarkTheme = signal(document.documentElement.getAttribute('data-theme') === 'dark');
+
+  role = toSignal(this.authService.role$, { initialValue: this.authService.getRole() });
+
+  isAdmin = () => this.authService.isAdmin();
+  isOwner = () => this.authService.isOwner();
+
 
   toggleTheme(): void {
     const current = document.documentElement.getAttribute('data-theme');

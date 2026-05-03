@@ -25,14 +25,21 @@ public class JwtService implements TokenProvider {
     @Value("${application.security.jwt.expiration}")
     private long jwtExpiration;
 
+//    @Override
+//    public String generateToken(String userId, String email, ) {
+//        // Стара сигнатура без ролі — залишаємо для сумісності, роль = USER
+//        return generateToken(userId, email, "USER");
+//    }
+
     @Override
-    public String generateToken(String userId, String email) {
+    public String generateToken(String userId, String email, String role) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("userId", userId);
+        claims.put("role", role);
 
         return Jwts.builder()
-                .claims(claims)                          // новий API
-                .subject(email)                          // новий API
+                .claims(claims)
+                .subject(email)
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + jwtExpiration))
                 .signWith(getSignInKey())
@@ -51,6 +58,11 @@ public class JwtService implements TokenProvider {
         return extractUsername(token);
     }
 
+    // Витягуємо роль з токена
+    public String extractRole(String token) {
+        return extractClaim(token, claims -> claims.get("role", String.class));
+    }
+
     public boolean validateToken(String token) {
         return !isTokenExpired(token);
     }
@@ -60,18 +72,18 @@ public class JwtService implements TokenProvider {
     }
 
     private Claims extractAllClaims(String token) {
-        return Jwts.parser()                             // новий API — parser() замість parserBuilder()
-                .verifyWith(getSignInKey())              // новий API — verifyWith() замість setSigningKey()
+        return Jwts.parser()
+                .verifyWith(getSignInKey())
                 .build()
-                .parseSignedClaims(token)                // новий API — parseSignedClaims() замість parseClaimsJws()
-                .getPayload();                           // новий API — getPayload() замість getBody()
+                .parseSignedClaims(token)
+                .getPayload();
     }
 
     private boolean isTokenExpired(String token) {
         return extractClaim(token, Claims::getExpiration).before(new Date());
     }
 
-    private SecretKey getSignInKey() {                   // SecretKey замість Key
+    private SecretKey getSignInKey() {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         return Keys.hmacShaKeyFor(keyBytes);
     }

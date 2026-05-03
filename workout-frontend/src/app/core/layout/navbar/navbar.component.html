@@ -7,9 +7,23 @@
     <a routerLink="/plans" routerLinkActive="active">Plans</a>
     <a routerLink="/exercises" routerLinkActive="active">Exercises</a>
     <a routerLink="/profile" routerLinkActive="active">Profile</a>
+
+    @if (isAdmin()) {
+      <a routerLink="/admin/users" routerLinkActive="active" class="nav-admin">
+        👥 Users
+      </a>
+    }
+
   </div>
 
   <div class="navbar-actions">
+
+    @if (role() !== 'USER') {
+      <span class="role-badge role-{{ role() | lowercase }}">
+        {{ role() }}
+      </span>
+    }
+
     <button class="theme-toggle" (click)="toggleTheme()">
       <div class="theme-toggle-track" [class.active]="isDarkTheme()">
         <div class="theme-toggle-thumb"></div>

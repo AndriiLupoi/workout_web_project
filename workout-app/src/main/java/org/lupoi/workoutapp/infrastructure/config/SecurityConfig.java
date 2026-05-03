@@ -27,7 +27,16 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(req -> req
+                        // Публічні ендпоінти
                         .requestMatchers("/api/v1/auth/**").permitAll()
+
+                        // Тільки OWNER може призначати/знімати ролі
+                        .requestMatchers("/api/v1/admin/roles/**").hasRole("OWNER")
+
+                        // ADMIN і OWNER мають доступ до адмін-панелі
+                        .requestMatchers("/api/v1/admin/**").hasAnyRole("ADMIN", "OWNER")
+
+                        // Всі інші — тільки авторизовані
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session ->
@@ -36,4 +45,5 @@ public class SecurityConfig {
 
         return http.build();
     }
+
 }

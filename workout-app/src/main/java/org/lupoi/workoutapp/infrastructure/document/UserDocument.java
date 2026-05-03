@@ -3,6 +3,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.lupoi.workoutapp.domain.enums.Role;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -23,4 +24,7 @@ public class UserDocument {
     private String lastName;
     private String passwordHash;
     private LocalDateTime createdAt;
+
+    @Builder.Default
+    private Role role = Role.USER;
 }

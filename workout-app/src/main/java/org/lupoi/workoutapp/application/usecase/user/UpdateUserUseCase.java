@@ -28,6 +28,7 @@ public class UpdateUserUseCase{
                 .firstName(firstName)
                 .lastName(lastName)
                 .createdAt(user.getCreatedAt())
+                .role(user.getRole())
                 .build();
 
         return userRepository.save(updated);

@@ -7,7 +7,9 @@ package org.lupoi.workoutapp.domain.repository;/*
 */
 
 import org.lupoi.workoutapp.domain.entity.User;
+import org.lupoi.workoutapp.domain.enums.Role;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface UserRepository {
@@ -15,4 +17,9 @@ public interface UserRepository {
     Optional<User> findById(String id);
     boolean existsByEmail(String email);
     User save(User user);
+
+    List<User> findAll();
+    User updateRole(String userId, Role role);
+    void deleteById(String userId);
+
 }

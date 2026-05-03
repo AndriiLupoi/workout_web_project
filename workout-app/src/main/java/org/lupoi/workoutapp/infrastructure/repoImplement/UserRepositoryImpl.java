@@ -1,11 +1,13 @@
 package org.lupoi.workoutapp.infrastructure.repoImplement;
 import lombok.RequiredArgsConstructor;
 import org.lupoi.workoutapp.domain.entity.User;
+import org.lupoi.workoutapp.domain.enums.Role;
 import org.lupoi.workoutapp.domain.repository.UserRepository;
 import org.lupoi.workoutapp.infrastructure.mapper.UserDocumentMapper;
 import org.lupoi.workoutapp.infrastructure.repository.MongoUserRepository;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Optional;
 
 @Component
@@ -36,4 +38,23 @@ public class UserRepositoryImpl implements UserRepository {
     public User save(User user) {
         return mapper.toDomain(mongoRepository.save(mapper.toDocument(user)));
     }
+
+    @Override
+    public List<User> findAll() {
+        return mongoRepository.findAll().stream().map(mapper::toDomain).toList();
+    }
+
+    @Override
+    public User updateRole(String userId, Role role) {
+        var doc = mongoRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found: " + userId));
+        doc.setRole(role);
+        return mapper.toDomain(mongoRepository.save(doc));
+    }
+
+    @Override
+    public void deleteById(String userId) {
+        mongoRepository.deleteById(userId);
+    }
+
 }
