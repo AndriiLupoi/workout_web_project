@@ -7,9 +7,12 @@ package org.lupoi.workoutapp.presentation.controller;/*
 */
 
 import lombok.RequiredArgsConstructor;
+import org.lupoi.workoutapp.application.usecase.workout.GetPlanProgressUseCase;
 import org.lupoi.workoutapp.application.usecase.workout.GetWorkoutLogsUseCase;
 import org.lupoi.workoutapp.application.usecase.workout.LogWorkoutUseCase;
+import org.lupoi.workoutapp.domain.repository.WorkoutPlanRepository;
 import org.lupoi.workoutapp.presentation.dto.request.LogWorkoutRequest;
+import org.lupoi.workoutapp.presentation.dto.response.PlanProgressResponse;
 import org.lupoi.workoutapp.presentation.dto.response.WorkoutLogResponse;
 import org.lupoi.workoutapp.presentation.mapper.WorkoutLogDtoMapper;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +28,7 @@ public class WorkoutLogController {
 
     private final LogWorkoutUseCase logWorkoutUseCase;
     private final GetWorkoutLogsUseCase getLogsUseCase;
+    private final GetPlanProgressUseCase getPlanProgressUseCase;
     private final WorkoutLogDtoMapper mapper;
 
     // POST /api/v1/logs
@@ -57,6 +61,15 @@ public class WorkoutLogController {
                 .map(mapper::toResponse)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/stats")
+    public ResponseEntity<PlanProgressResponse> getPlanStats(
+            @RequestParam String planId,
+            Principal principal) {
+        return ResponseEntity.ok(
+                getPlanProgressUseCase.execute(principal.getName(), planId)
+        );
     }
 }
 

@@ -49,6 +49,12 @@ export interface LoggedExerciseResponse {
   notes:         string;
 }
 
+export interface PlanProgressResponse {
+  totalDays:     number;
+  completedDays: number;
+  currentStreak: number;
+}
+
 @Injectable({ providedIn: 'root' })
 export class WorkoutLogService {
   private readonly api = '/api/v1/logs';
@@ -71,6 +77,10 @@ export class WorkoutLogService {
     return this.http.get<WorkoutLogResponse>(`${this.api}/day`, {
       params: { planId, week, day }
     });
+  }
+
+  getPlanStats(planId: string): Observable<PlanProgressResponse> {
+    return this.http.get<PlanProgressResponse>(`${this.api}/stats?planId=${planId}`);
   }
 }
 

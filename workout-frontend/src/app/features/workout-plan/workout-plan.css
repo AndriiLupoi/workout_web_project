@@ -297,3 +297,78 @@
 .intensity-medium    { background: rgba(245,158,11,0.12); color: #f59e0b;      }
 .intensity-sets      { background: var(--accent-soft);  color: var(--accent);  }
 .intensity-full_body { background: var(--success-soft); color: var(--success); }
+
+.plan-progress-block {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 18px 22px;
+  margin-bottom: 1.5rem;
+  box-shadow: var(--shadow-md);
+}
+
+.plan-progress-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.plan-progress-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.plan-progress-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-secondary);
+}
+
+.plan-progress-count {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.plan-progress-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.plan-progress-percent {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.streak-badge {
+  background: rgba(239, 68, 68, 0.12);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.progress-bar-wrap {
+  height: 10px;
+  background: var(--border);
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), #22c55e);
+  border-radius: 5px;
+  transition: width 0.6s ease;
+  min-width: 4px;
+}

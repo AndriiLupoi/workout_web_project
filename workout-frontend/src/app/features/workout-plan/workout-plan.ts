@@ -2,12 +2,15 @@ import { Component, inject, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { WorkoutPlanService, WorkoutPlan, WorkoutDay, WorkoutExercise } from './workout-plan.service';
-import {WorkoutLogResponse, WorkoutLogService, LogWorkoutRequest, LoggedExerciseResponse, LoggedExerciseRequest} from '../../core/services/workout-log/workout-log.service';
+import {
+  WorkoutLogResponse,
+  WorkoutLogService,
+  PlanProgressResponse
+} from '../../core/services/workout-log/workout-log.service';
 
-// Розширена вправа з живою вагою для поточного тренування
 interface LiveExercise extends WorkoutExercise {
-  liveWeight: number | null;  // вага яку юзер вводить під час тренування
-  previousWeight: number | null;  // вага з попереднього лога (для підказки)
+  liveWeight: number | null;
+  previousWeight: number | null;
 }
 
 @Component({
@@ -22,22 +25,21 @@ export class WorkoutPlanComponent implements OnInit {
   private service    = inject(WorkoutPlanService);
   private logService = inject(WorkoutLogService);
 
-  plans      = signal<WorkoutPlan[]>([]);
-  activePlan = signal<WorkoutPlan | null>(null);
-  activeWeek = signal<number>(1);
-  loading    = signal(false);
-  generating = signal(false);
-  saving     = signal(false);
-  error      = signal<string | null>(null);
+  plans       = signal<WorkoutPlan[]>([]);
+  activePlan  = signal<WorkoutPlan | null>(null);
+  activeWeek  = signal<number>(1);
+  loading     = signal(false);
+  generating  = signal(false);
+  saving      = signal(false);
+  error       = signal<string | null>(null);
   saveSuccess = signal(false);
 
-  // Режим "Live тренування" — коли юзер активно тренується і вводить ваги
   isLiveMode    = signal(false);
   liveDay       = signal<WorkoutDay | null>(null);
   liveExercises = signal<LiveExercise[]>([]);
 
-  // Попередні логи по активному плану (для підказок щодо ваги)
-  planLogs = signal<WorkoutLogResponse[]>([]);
+  planLogs  = signal<WorkoutLogResponse[]>([]);
+  planStats = signal<PlanProgressResponse | null>(null);
 
   weeks = computed(() => {
     const plan = this.activePlan();
@@ -51,7 +53,9 @@ export class WorkoutPlanComponent implements OnInit {
     return plan.days.filter(d => d.weekNumber === this.activeWeek());
   });
 
-  ngOnInit(): void { this.loadPlans(); }
+  ngOnInit(): void {
+    this.loadPlans();
+  }
 
   loadPlans(): void {
     this.loading.set(true);
@@ -62,7 +66,10 @@ export class WorkoutPlanComponent implements OnInit {
         this.activePlan.set(active);
         this.activeWeek.set(1);
         this.loading.set(false);
-        if (active) this.loadPlanLogs(active.id);
+        if (active) {
+          this.loadPlanLogs(active.id);
+          this.loadPlanStats(active.id);
+        }
       },
       error: () => {
         this.error.set('Помилка завантаження планів');
@@ -78,6 +85,13 @@ export class WorkoutPlanComponent implements OnInit {
     });
   }
 
+  loadPlanStats(planId: string): void {
+    this.logService.getPlanStats(planId).subscribe({
+      next: (stats) => this.planStats.set(stats),
+      error: () => {}
+    });
+  }
+
   generate(): void {
     this.generating.set(true);
     this.error.set(null);
@@ -88,6 +102,7 @@ export class WorkoutPlanComponent implements OnInit {
         this.plans.update(list => [plan, ...list]);
         this.generating.set(false);
         this.loadPlanLogs(plan.id);
+        this.loadPlanStats(plan.id);
       },
       error: () => {
         this.error.set('Помилка генерації плану. Переконайся що профіль заповнений.');
@@ -103,7 +118,11 @@ export class WorkoutPlanComponent implements OnInit {
         this.plans.update(list => list.filter(p => p.id !== plan.id));
         const next = this.plans()[0] ?? null;
         this.activePlan.set(next);
-        if (next) this.loadPlanLogs(next.id);
+        this.planStats.set(null);
+        if (next) {
+          this.loadPlanLogs(next.id);
+          this.loadPlanStats(next.id);
+        }
       },
       error: () => this.error.set('Помилка видалення плану')
     });
@@ -114,6 +133,7 @@ export class WorkoutPlanComponent implements OnInit {
     this.activeWeek.set(1);
     this.stopLiveMode();
     this.loadPlanLogs(plan.id);
+    this.loadPlanStats(plan.id);
   }
 
   selectWeek(week: number): void {
@@ -121,13 +141,11 @@ export class WorkoutPlanComponent implements OnInit {
     this.stopLiveMode();
   }
 
-  // Запуск live-режиму для конкретного дня
   startLiveMode(day: WorkoutDay): void {
     this.liveDay.set(day);
-    // Беремо попередню вагу з логів для кожної вправи
     const live: LiveExercise[] = day.exercises.map(ex => ({
       ...ex,
-      liveWeight: ex.plannedWeight ?? null,
+      liveWeight:     ex.plannedWeight ?? null,
       previousWeight: this.getPreviousWeight(ex.exerciseId)
     }));
     this.liveExercises.set(live);
@@ -142,7 +160,6 @@ export class WorkoutPlanComponent implements OnInit {
     this.saveSuccess.set(false);
   }
 
-  // Знайти останню використану вагу для вправи з попередніх логів
   getPreviousWeight(exerciseId: string): number | null {
     const logs = this.planLogs();
     for (let i = logs.length - 1; i >= 0; i--) {
@@ -152,14 +169,12 @@ export class WorkoutPlanComponent implements OnInit {
     return null;
   }
 
-  // Зміна ваги в live-режимі
   updateLiveWeight(exerciseId: string, weight: number | null): void {
     this.liveExercises.update(list =>
       list.map(ex => ex.exerciseId === exerciseId ? { ...ex, liveWeight: weight } : ex)
     );
   }
 
-  // Збереження тренування
   saveWorkout(): void {
     const plan = this.activePlan();
     const day  = this.liveDay();
@@ -171,20 +186,20 @@ export class WorkoutPlanComponent implements OnInit {
     const exercises = this.liveExercises().map(ex => ({
       exerciseId:    ex.exerciseId,
       exerciseName:  ex.exerciseName,
-      plannedSets:   ex.sets,                // int — беремо з плану
+      plannedSets:   ex.sets,
       plannedReps:   ex.reps,
       plannedWeight: ex.plannedWeight ?? null,
-      actualSets:    ex.sets,                // int — той самий план (можна розширити пізніше)
+      actualSets:    ex.sets,
       actualReps:    ex.reps,
-      actualWeight:  ex.liveWeight ?? null,  // Double — вага яку ввів юзер
+      actualWeight:  ex.liveWeight ?? null,
       feltEasy:      false,
       notes:         ''
     }));
 
     this.logService.saveLog({
       planId:     plan.id,
-      weekNumber: day.weekNumber,  // int — НЕ null
-      dayNumber:  day.dayNumber,   // int — НЕ null
+      weekNumber: day.weekNumber,
+      dayNumber:  day.dayNumber,
       exercises,
       notes:      ''
     }).subscribe({
@@ -192,6 +207,8 @@ export class WorkoutPlanComponent implements OnInit {
         this.planLogs.update(logs => [...logs, log]);
         this.saving.set(false);
         this.saveSuccess.set(true);
+        // Оновлюємо статистику після збереження тренування
+        this.loadPlanStats(plan.id);
         setTimeout(() => this.stopLiveMode(), 2000);
       },
       error: () => {
@@ -201,7 +218,12 @@ export class WorkoutPlanComponent implements OnInit {
     });
   }
 
-  // Утиліти лейблів
+  getProgressPercent(): number {
+    const s = this.planStats();
+    if (!s || s.totalDays === 0) return 0;
+    return Math.round((s.completedDays / s.totalDays) * 100);
+  }
+
   goalLabel(goal: string): string {
     const map: Record<string, string> = {
       MASS: 'Набір маси', LOSS: 'Схуднення',
