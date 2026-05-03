@@ -204,4 +204,16 @@ export class AdminUsersComponent implements OnInit {
   getDaysForWeek(plan: WorkoutPlan, week: number): WorkoutDay[] {
     return plan.days.filter(d => d.weekNumber === week);
   }
+
+  deleteUserPlan(userId: string, planId: string): void {
+    if (!confirm('Видалити цей план?')) return;
+    this.http.delete(`/api/v1/admin/users/${userId}/plans/${planId}`).subscribe({
+      next: () => {
+        this.selectedPlans.update(list => list.filter(p => p.id !== planId));
+        this.stats.update(s => s ? { ...s, totalPlans: s.totalPlans - 1 } : s);
+        this.showAction('План видалено');
+      },
+      error: () => this.error.set('Помилка видалення плану')
+    });
+  }
 }

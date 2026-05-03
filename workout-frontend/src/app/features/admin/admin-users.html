@@ -257,6 +257,12 @@
                         </div>
                       </div>
                       <span class="plan-toggle">{{ expandedPlanId() === plan.id ? '▲' : '▼' }}</span>
+
+                      <button class="btn-delete-plan-admin"
+                              (click)="$event.stopPropagation(); deleteUserPlan(selectedUser()!.id, plan.id)"
+                              title="Видалити план">
+                        🗑
+                      </button>
                     </div>
 
                     @if (expandedPlanId() === plan.id) {
