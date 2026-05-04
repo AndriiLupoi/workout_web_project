@@ -14,12 +14,34 @@ interface LiveExercise extends WorkoutExercise {
   feltEasy: boolean | null;
 }
 
+export interface WorkoutCompletedSummary {
+  weekNumber: number;
+  dayNumber: number;
+  focus: string;
+  durationMs: number;
+  totalVolume: number;
+  prCount: number;
+  exercises: ExerciseSummary[];
+}
+
+export interface ExerciseSummary {
+  exerciseId: string;
+  exerciseName: string;
+  sets: number;
+  reps: string;
+  actualWeight: number | null;
+  volume: number;
+  isPR: boolean;
+  prDelta: number | null;
+}
+
+
 @Component({
   selector: 'app-workout-plan',
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './workout-plan.html',
-  styleUrls: ['./workout-plan.css', './workout-plan-live-mode.css']
+  styleUrls: ['./workout-plan.css', './workout-plan-live-mode.css', "./workout-plan-completed.css"]
 })
 export class WorkoutPlanComponent implements OnInit {
 
@@ -54,9 +76,45 @@ export class WorkoutPlanComponent implements OnInit {
     return plan.days.filter(d => d.weekNumber === this.activeWeek());
   });
 
+  // Workout completed summary
+  completedSummary = signal<WorkoutCompletedSummary | null>(null);
+
+  // Timer
+  private liveStartTime: number | null = null;
+  private timerInterval: ReturnType<typeof setInterval> | null = null;
+  elapsedMs = signal<number>(0);
+
+
   ngOnInit(): void {
     this.loadPlans();
   }
+
+  private clearTimer(): void {
+    if (this.timerInterval !== null) {
+      clearInterval(this.timerInterval);
+      this.timerInterval = null;
+    }
+  }
+
+  private startTimer(): void {
+    this.clearTimer();
+    this.liveStartTime = Date.now();
+    this.elapsedMs.set(0);
+    this.timerInterval = setInterval(() => {
+      this.elapsedMs.set(Date.now() - (this.liveStartTime ?? Date.now()));
+    }, 1000);
+  }
+
+  formatElapsed(ms: number): string {
+    const totalSeconds = Math.floor(ms / 1000);
+    const h = Math.floor(totalSeconds / 3600);
+    const m = Math.floor((totalSeconds % 3600) / 60);
+    const s = totalSeconds % 60;
+    if (h > 0) return `${h}г ${m}хв`;
+    if (m > 0) return `${m} хв ${s < 10 ? '0' : ''}${s}с`;
+    return `${s}с`;
+  }
+
 
   loadPlans(): void {
     this.loading.set(true);
@@ -156,6 +214,8 @@ export class WorkoutPlanComponent implements OnInit {
     this.liveExercises.set(live);
     this.isLiveMode.set(true);
     this.saveSuccess.set(false);
+    this.completedSummary.set(null);
+    this.startTimer();
   }
 
   stopLiveMode(): void {
@@ -163,7 +223,13 @@ export class WorkoutPlanComponent implements OnInit {
     this.liveDay.set(null);
     this.liveExercises.set([]);
     this.saveSuccess.set(false);
+    this.liveStartTime = null;
   }
+
+  closeCompletedScreen(): void {
+    this.completedSummary.set(null);
+  }
+
 
   updateFeltEasy(exerciseId: string, value: boolean): void {
     this.liveExercises.update(list =>
@@ -181,6 +247,29 @@ export class WorkoutPlanComponent implements OnInit {
     }
     return { weight: null, feltEasy: null };
   }
+
+  private getBestWeight(exerciseId: string): number | null {
+    const logs = this.planLogs();
+    let best: number | null = null;
+    for (const log of logs) {
+      for (const ex of log.exercises) {
+        if (ex.exerciseId === exerciseId && ex.actualWeight != null) {
+          if (best === null || ex.actualWeight > best) best = ex.actualWeight;
+        }
+      }
+    }
+    return best;
+  }
+
+  private parseReps(repsStr: string): number {
+    if (!repsStr) return 1;
+    if (repsStr.includes('-')) {
+      const parts = repsStr.split('-').map(Number);
+      return Math.round((parts[0] + parts[1]) / 2);
+    }
+    return parseInt(repsStr, 10) || 1;
+  }
+
 
   getPreviousWeight(exerciseId: string): number | null {
     return this.getPreviousLog(exerciseId).weight;
@@ -210,6 +299,47 @@ export class WorkoutPlanComponent implements OnInit {
     return { weight: w, label: `${w} кг (+2.5)`, hint: 'оптимістично' };
   }
 
+  private buildCompletedSummary(durationMs: number): WorkoutCompletedSummary {
+    const day = this.liveDay()!;
+    const exercises = this.liveExercises();
+    let totalVolume = 0;
+    let prCount = 0;
+
+    const exerciseSummaries: ExerciseSummary[] = exercises.map(ex => {
+      const weight = ex.liveWeight ?? 0;
+      const repsNum = this.parseReps(ex.reps);
+      const volume = weight * ex.sets * repsNum;
+      totalVolume += volume;
+
+      const prevBest = this.getBestWeight(ex.exerciseId);
+      const isPR = ex.liveWeight !== null && (prevBest === null || ex.liveWeight > prevBest);
+      const prDelta = isPR && prevBest !== null ? ex.liveWeight! - prevBest : null;
+      if (isPR) prCount++;
+
+      return {
+        exerciseId: ex.exerciseId,
+        exerciseName: ex.exerciseName,
+        sets: ex.sets,
+        reps: ex.reps,
+        actualWeight: ex.liveWeight,
+        volume: Math.round(volume),
+        isPR,
+        prDelta
+      };
+    });
+
+    return {
+      weekNumber: day.weekNumber,
+      dayNumber: day.dayNumber,
+      focus: day.focus,
+      durationMs,
+      totalVolume: Math.round(totalVolume),
+      prCount,
+      exercises: exerciseSummaries
+    };
+  }
+
+
   updateLiveWeight(exerciseId: string, weight: number | null): void {
     this.liveExercises.update(list =>
       list.map(ex => ex.exerciseId === exerciseId ? { ...ex, liveWeight: weight } : ex)
@@ -223,6 +353,10 @@ export class WorkoutPlanComponent implements OnInit {
 
     this.saving.set(true);
     this.error.set(null);
+
+
+    const durationMs = this.liveStartTime ? Date.now() - this.liveStartTime : 0;
+
 
     const exercises = this.liveExercises().map(ex => ({
       exerciseId:    ex.exerciseId,
@@ -248,6 +382,16 @@ export class WorkoutPlanComponent implements OnInit {
         this.planLogs.update(logs => [...logs, log]);
         this.saving.set(false);
         this.saveSuccess.set(true);
+        this.clearTimer();
+
+        const summary = this.buildCompletedSummary(durationMs);
+
+        this.liveDay.set(null);
+        this.liveExercises.set([]);
+        this.liveStartTime = null;
+        // Show completed summary
+        this.completedSummary.set(summary);
+
         // Оновлюємо статистику після збереження тренування
         this.loadPlanStats(plan.id);
         setTimeout(() => this.stopLiveMode(), 2000);
@@ -293,4 +437,15 @@ export class WorkoutPlanComponent implements OnInit {
       l => l.weekNumber === weekNumber && l.dayNumber === dayNumber
     );
   }
+
+  formatDuration(ms: number): string {
+    const totalSeconds = Math.floor(ms / 1000);
+    const h = Math.floor(totalSeconds / 3600);
+    const m = Math.floor((totalSeconds % 3600) / 60);
+    const s = totalSeconds % 60;
+    if (h > 0) return `${h}г ${m}хв`;
+    if (m > 0) return `${m} хв`;
+    return `${s}с`;
+  }
+
 }

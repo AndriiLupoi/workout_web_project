@@ -5,7 +5,7 @@
       <h1>Мій план тренувань</h1>
       <p class="subtitle">Персоналізований план на основі твого профілю</p>
     </div>
-    @if (!isLiveMode()) {
+    @if (!isLiveMode() && !completedSummary()) {
       <button class="btn-primary" (click)="generate()" [disabled]="generating()">
         {{ generating() ? 'Генерація...' : 'Згенерувати новий план' }}
       </button>
@@ -19,6 +19,75 @@
   @if (loading()) {
     <div class="loading">Завантаження...</div>
   }
+
+  <!-- ==================== WORKOUT COMPLETED SCREEN ==================== -->
+  @if (completedSummary(); as summary) {
+    <div class="completed-overlay">
+
+      <div class="completed-hero">
+        <div class="trophy-icon">🏆</div>
+        <h2>Тренування завершено!</h2>
+        <p class="completed-subtitle">
+          Тиждень {{ summary.weekNumber }} · День {{ summary.dayNumber }} · {{ summary.focus }}
+        </p>
+      </div>
+
+      <!-- Stats row -->
+      <div class="completed-stats">
+        <div class="cstat">
+          <span class="cstat-val accent">{{ formatDuration(summary.durationMs) }}</span>
+          <span class="cstat-label">Час</span>
+        </div>
+        <div class="cstat">
+          <span class="cstat-val">{{ summary.totalVolume | number }}</span>
+          <span class="cstat-label">Об'єм (кг)</span>
+        </div>
+        <div class="cstat">
+          <span class="cstat-val" [class.pr-color]="summary.prCount > 0">
+            {{ summary.prCount }}
+          </span>
+          <span class="cstat-label">Особистих рекордів</span>
+        </div>
+      </div>
+
+      <hr class="completed-divider" />
+
+      <!-- Exercise list -->
+      <p class="completed-section-title">Вправи</p>
+      <div class="completed-ex-list">
+        @for (ex of summary.exercises; track ex.exerciseId) {
+          <div class="completed-ex-row" [class.is-pr]="ex.isPR">
+
+            <div class="completed-ex-info">
+              <span class="completed-ex-name">{{ ex.exerciseName }}</span>
+              <span class="completed-ex-meta">
+                {{ ex.sets }} × {{ ex.reps }}
+                · {{ ex.volume }} кг об'єм
+              </span>
+            </div>
+
+            <div class="completed-ex-right">
+              <span class="completed-ex-weight">
+                {{ ex.actualWeight !== null ? ex.actualWeight + ' кг' : '—' }}
+              </span>
+              @if (ex.isPR) {
+                <span class="pr-badge">
+                  PR{{ ex.prDelta !== null ? ' +' + ex.prDelta + ' кг' : '' }}
+                </span>
+              }
+            </div>
+
+          </div>
+        }
+      </div>
+
+      <button class="btn-back-to-plan" (click)="closeCompletedScreen()">
+        Повернутись до плану
+      </button>
+
+    </div>
+  }
+
 
   <!-- ==================== LIVE РЕЖИМ ==================== -->
   @if (isLiveMode() && liveDay(); as day) {
