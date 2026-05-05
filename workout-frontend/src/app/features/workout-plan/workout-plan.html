@@ -36,16 +36,16 @@
       <div class="completed-stats">
         <div class="cstat">
           <span class="cstat-val accent">{{ formatDuration(summary.durationMs) }}</span>
-          <span class="cstat-label">Час</span>
+          <span class="cstat-label">Час тренування</span>
         </div>
         <div class="cstat">
-          <span class="cstat-val">{{ summary.totalVolume | number }}</span>
-          <span class="cstat-label">Об'єм (кг)</span>
+          <span class="cstat-val">{{ summary.exercises.length }}</span>
+          <span class="cstat-label">Вправ виконано</span>
         </div>
         <div class="cstat">
-          <span class="cstat-val" [class.pr-color]="summary.prCount > 0">
-            {{ summary.prCount }}
-          </span>
+    <span class="cstat-val" [class.pr-color]="summary.prCount > 0">
+      {{ summary.prCount > 0 ? '🏆 ' + summary.prCount : '—' }}
+    </span>
           <span class="cstat-label">Особистих рекордів</span>
         </div>
       </div>
@@ -62,7 +62,6 @@
               <span class="completed-ex-name">{{ ex.exerciseName }}</span>
               <span class="completed-ex-meta">
                 {{ ex.sets }} × {{ ex.reps }}
-                · {{ ex.volume }} кг об'єм
               </span>
             </div>
 
@@ -114,17 +113,23 @@
 
       <div class="live-exercises">
         @for (ex of liveExercises(); track ex.exerciseId) {
-          <div class="live-exercise-row">
+          <div class="live-exercise-row" [class.skipped-row]="ex.skipped">
             <div class="live-ex-info">
               <span class="live-ex-name">{{ ex.exerciseName }}</span>
               <span class="live-ex-params">{{ ex.sets }} підходи × {{ ex.reps }} повторень</span>
+              <button class="btn-skip"
+                      (click)="toggleSkip(ex.exerciseId)"
+                      [class.active]="ex.skipped">
+                {{ ex.skipped ? '↩ Відновити' : '✕ Пропустити' }}
+              </button>
             </div>
+
             <div class="live-weight-block">
               @if (getRecommendedWeight(ex); as rec) {
                 <span class="prev-weight-hint recommended">
-                    Рекомендовано: {{ rec.label }}
-                    <span class="hint-reason">({{ rec.hint }})</span>
-                </span>
+            Рекомендовано: {{ rec.label }}
+                  <span class="hint-reason">({{ rec.hint }})</span>
+          </span>
               } @else {
                 <span class="prev-weight-hint none">Перше тренування</span>
               }
@@ -140,6 +145,15 @@
                         (click)="updateLiveWeight(ex.exerciseId, (ex.liveWeight ?? 0) + 2.5)">+</button>
               </div>
             </div>
+
+            <div class="live-reps-block">
+              <span class="prev-weight-hint">Повторень</span>
+              <input class="weight-input" type="text"
+                     [ngModel]="ex.reps"
+                     (ngModelChange)="updateLiveReps(ex.exerciseId, $event)"
+                     style="width: 56px" />
+            </div>
+
             <div class="felt-easy-block">
               <span class="felt-easy-label">Як пройшло?</span>
               <div class="felt-easy-btns">
@@ -155,6 +169,7 @@
                 </button>
               </div>
             </div>
+
             <div class="live-rest">
               <span class="rest-icon">⏱</span>
               {{ ex.restSeconds }}с
@@ -181,7 +196,7 @@
   }
 
   <!-- ==================== ЗВИЧАЙНИЙ РЕЖИМ ==================== -->
-  @if (!isLiveMode()) {
+  @if (!isLiveMode() && !completedSummary()) {
 
     @if (plans().length > 1) {
       <div class="plans-list">

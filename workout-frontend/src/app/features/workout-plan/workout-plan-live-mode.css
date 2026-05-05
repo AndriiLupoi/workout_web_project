@@ -89,15 +89,15 @@
 }
 
 .live-exercise-row {
-  display: grid;
-  grid-template-columns: 1fr auto auto;
+  display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 16px;
   background: var(--bg-surface, rgba(255,255,255,0.03));
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
-  padding: 16px 20px;
+  padding: 14px 20px;
   transition: border-color 0.2s;
+  flex-wrap: nowrap;
 }
 
 .live-exercise-row:hover {
@@ -108,6 +108,8 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
+  min-width: 160px;
+  flex: 1;
 }
 
 .live-ex-name {
@@ -121,18 +123,30 @@
   color: var(--text-secondary);
 }
 
-/* Блок введення ваги */
 .live-weight-block {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 6px;
+  flex-shrink: 0;
 }
 
 .prev-weight-hint {
-  font-size: 11px;
+  font-size: 13px;
   color: var(--text-secondary);
   white-space: nowrap;
+}
+
+.prev-weight-hint.recommended {
+  color: var(--accent);
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.prev-weight-hint.recommended .hint-reason {
+  font-weight: 400;
+  color: var(--text-secondary);
+  font-size: 12px;
 }
 
 .prev-weight-hint.planned {
@@ -213,6 +227,34 @@
   font-size: 13px;
   color: var(--text-secondary);
   white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.felt-easy-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.felt-easy-label {
+  font-size: 13px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.felt-btn {
+  padding: 6px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  color: var(--text-primary);
+  font-size: 13px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
 }
 
 .rest-icon {
@@ -281,6 +323,45 @@
   border-radius: 50%;
   animation: spin 0.7s linear infinite;
   display: inline-block;
+}
+
+.skipped-row {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.skipped-row .btn-skip {
+  pointer-events: auto;
+  opacity: 1;
+}
+
+.btn-skip {
+  align-self: flex-start;
+  padding: 5px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+  width: fit-content;
+}
+
+.btn-skip.active {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.live-reps-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
 }
 
 @keyframes spin {

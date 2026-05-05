@@ -12,6 +12,7 @@ interface LiveExercise extends WorkoutExercise {
   liveWeight: number | null;
   previousWeight: number | null;
   feltEasy: boolean | null;
+  skipped: boolean;
 }
 
 export interface WorkoutCompletedSummary {
@@ -208,7 +209,8 @@ export class WorkoutPlanComponent implements OnInit {
         ...ex,
         liveWeight:     rec?.weight ?? ex.plannedWeight ?? null,
         previousWeight: this.getPreviousWeight(ex.exerciseId),
-        feltEasy:       null
+        feltEasy:       null,
+        skipped: false
       };
     });
     this.liveExercises.set(live);
@@ -302,40 +304,39 @@ export class WorkoutPlanComponent implements OnInit {
   private buildCompletedSummary(durationMs: number): WorkoutCompletedSummary {
     const day = this.liveDay()!;
     const exercises = this.liveExercises();
-    let totalVolume = 0;
     let prCount = 0;
 
-    const exerciseSummaries: ExerciseSummary[] = exercises.map(ex => {
-      const weight = ex.liveWeight ?? 0;
-      const repsNum = this.parseReps(ex.reps);
-      const volume = weight * ex.sets * repsNum;
-      totalVolume += volume;
-
+    const exerciseSummaries: ExerciseSummary[] = exercises
+      .filter(ex => !ex.skipped)
+      .map(ex => {
       const prevBest = this.getBestWeight(ex.exerciseId);
-      const isPR = ex.liveWeight !== null && (prevBest === null || ex.liveWeight > prevBest);
-      const prDelta = isPR && prevBest !== null ? ex.liveWeight! - prevBest : null;
+      const isPR = ex.liveWeight !== null && ex.liveWeight > 0 &&
+        (prevBest === null || ex.liveWeight > prevBest);
+      const prDelta = isPR && prevBest !== null
+        ? Math.round((ex.liveWeight! - prevBest) * 10) / 10
+        : null;
       if (isPR) prCount++;
 
       return {
-        exerciseId: ex.exerciseId,
+        exerciseId:   ex.exerciseId,
         exerciseName: ex.exerciseName,
-        sets: ex.sets,
-        reps: ex.reps,
+        sets:         ex.sets,
+        reps:         ex.reps,
         actualWeight: ex.liveWeight,
-        volume: Math.round(volume),
+        volume:       0,
         isPR,
         prDelta
       };
     });
 
     return {
-      weekNumber: day.weekNumber,
-      dayNumber: day.dayNumber,
-      focus: day.focus,
+      weekNumber:  day.weekNumber,
+      dayNumber:   day.dayNumber,
+      focus:       day.focus,
       durationMs,
-      totalVolume: Math.round(totalVolume),
+      totalVolume: 0,
       prCount,
-      exercises: exerciseSummaries
+      exercises:   exerciseSummaries
     };
   }
 
@@ -354,11 +355,12 @@ export class WorkoutPlanComponent implements OnInit {
     this.saving.set(true);
     this.error.set(null);
 
+    const durationMs = this.liveStartTime ? Date.now() - this.liveStartTime : 0
+    const summary = this.buildCompletedSummary(durationMs);
 
-    const durationMs = this.liveStartTime ? Date.now() - this.liveStartTime : 0;
-
-
-    const exercises = this.liveExercises().map(ex => ({
+    const exercises = this.liveExercises()
+      .filter(ex => !ex.skipped)
+      .map(ex => ({
       exerciseId:    ex.exerciseId,
       exerciseName:  ex.exerciseName,
       plannedSets:   ex.sets,
@@ -383,18 +385,12 @@ export class WorkoutPlanComponent implements OnInit {
         this.saving.set(false);
         this.saveSuccess.set(true);
         this.clearTimer();
-
-        const summary = this.buildCompletedSummary(durationMs);
-
+        this.isLiveMode.set(false);
         this.liveDay.set(null);
         this.liveExercises.set([]);
         this.liveStartTime = null;
-        // Show completed summary
         this.completedSummary.set(summary);
-
-        // Оновлюємо статистику після збереження тренування
         this.loadPlanStats(plan.id);
-        setTimeout(() => this.stopLiveMode(), 2000);
       },
       error: () => {
         this.error.set('Помилка збереження тренування');
@@ -446,6 +442,20 @@ export class WorkoutPlanComponent implements OnInit {
     if (h > 0) return `${h}г ${m}хв`;
     if (m > 0) return `${m} хв`;
     return `${s}с`;
+  }
+
+  toggleSkip(exerciseId: string): void {
+    this.liveExercises.update(list =>
+      list.map(ex => ex.exerciseId === exerciseId
+        ? { ...ex, skipped: !ex.skipped }
+        : ex)
+    );
+  }
+
+  updateLiveReps(exerciseId: string, reps: string): void {
+    this.liveExercises.update(list =>
+      list.map(ex => ex.exerciseId === exerciseId ? { ...ex, reps } : ex)
+    );
   }
 
 }
