@@ -51,6 +51,17 @@
   border-radius: 999px;
   transition: background-color var(--transition), color var(--transition);
   white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.navbar-links img {
+  width: 16px;
+  height: 16px;
+  object-fit: contain;
+  opacity: 0.8;
+  transition: opacity 0.2s ease, transform 0.2s ease;
 }
 
 .navbar-links a:hover {
@@ -58,10 +69,20 @@
   background-color: var(--bg-card);
 }
 
+.navbar-links a:hover img {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
 .navbar-links a.active {
   background-color: var(--accent);
   color: #fff;
   box-shadow: 0 2px 8px var(--accent-glow);
+}
+
+.navbar-links a.active img {
+  opacity: 1;
+  filter: brightness(0) invert(1);
 }
 
 /* ── Actions ── */

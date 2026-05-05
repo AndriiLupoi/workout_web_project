@@ -4,14 +4,14 @@
   </div>
 
   <div class="navbar-links">
-    <a routerLink="/plans" routerLinkActive="active">Plans</a>
-    <a routerLink="/progress" routerLinkActive="active">Progress</a>
-    <a routerLink="/exercises" routerLinkActive="active">Exercises</a>
-    <a routerLink="/profile" routerLinkActive="active">Profile</a>
+    <a routerLink="/plans" routerLinkActive="active"><img src="assets/images/plans.png">Плани</a>
+    <a routerLink="/progress" routerLinkActive="active"><img src="assets/images/progress.png">Прогрес</a>
+    <a routerLink="/exercises" routerLinkActive="active"><img src="assets/images/exercise.png">Вправи</a>
+    <a routerLink="/profile" routerLinkActive="active"><img src="assets/images/profile.png">Профіль</a>
 
     @if (isAdmin()) {
       <a routerLink="/admin/users" routerLinkActive="active" class="nav-admin">
-        👥 Users
+        👥 Користувачі
       </a>
     }
 
