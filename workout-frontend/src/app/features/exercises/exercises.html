@@ -1,62 +1,186 @@
-<!-- exercises.html — додано лише один select -->
-<div class="exercises-container">
-  <h1>База вправ</h1>
-  <p class="subtitle">Знайдіть вправи для свого плану тренувань</p>
+<!-- exercises.html — новий дизайн з sticky sidebar -->
 
-  <div class="filters">
-    <input
-      type="text"
-      [(ngModel)]="searchTerm"
-      (ngModelChange)="onFilterChange()"
-      placeholder="Пошук вправи..."
-      class="search-input">
+<!-- Кнопка для мобільних -->
+<button class="mobile-filter-toggle" (click)="toggleFilters()">
+  🔍 Фільтри {{ showFilters ? '▲' : '▼' }}
+</button>
 
-    <select [(ngModel)]="selectedMuscleGroup" (ngModelChange)="onFilterChange()">
-      <option value="">Всі групи м'язів</option>
-      <option *ngFor="let group of muscleGroups" [value]="group.value">
-        {{ group.label }}
-      </option>
-    </select>
+<div class="exercises-page">
 
-    <select [(ngModel)]="selectedDifficulty" (ngModelChange)="onFilterChange()">
-      <option value="">Вся складність</option>
-      <option value="beginner">Початківець</option>
-      <option value="intermediate">Середній</option>
-      <option value="advanced">Просунутий</option>
-    </select>
+  <!-- ===================== SIDEBAR ===================== -->
+  <aside class="filters-sidebar" [class.open]="showFilters">
 
-    <select [(ngModel)]="selectedSortBy" (ngModelChange)="onFilterChange()">
-      <option value="name">За назвою</option>
-      <option value="difficulty">За складністю</option>
-      <option value="muscleGroup">За групою м'язів</option>
-    </select>
+    <p class="sidebar-title">Фільтри</p>
 
-    <button (click)="clearFilters()" class="btn-secondary">Очистити фільтри</button>
-  </div>
+    <!-- Пошук -->
+    <div class="filter-group">
+      <label class="filter-group-label">Пошук</label>
+      <div class="sidebar-search-wrap">
+        <span class="sidebar-search-icon">🔍</span>
+        <input
+          class="sidebar-search"
+          type="text"
+          [(ngModel)]="searchTerm"
+          (ngModelChange)="onFilterChange()"
+          placeholder="Назва вправи...">
+      </div>
+    </div>
 
-  <div class="exercises-grid">
-    @for (exercise of filteredExercises(); track exercise.id) {
-      <div class="exercise-card">
-        <div class="exercise-header">
-          <h3>{{ exercise.name }}</h3>
-          <span class="difficulty" [class]="exercise.difficulty">
-            {{ exercise.difficulty }}
+    <!-- Група м'язів -->
+    <div class="filter-group">
+      <label class="filter-group-label">Група м'язів</label>
+      <div class="filter-pills">
+        <button class="filter-pill"
+                [class.active]="selectedMuscleGroup === ''"
+                (click)="selectedMuscleGroup = ''; onFilterChange()">
+          Всі групи
+        </button>
+        <button *ngFor="let group of muscleGroups"
+                class="filter-pill"
+                [class.active]="selectedMuscleGroup === group.value"
+                (click)="selectedMuscleGroup = group.value; onFilterChange()">
+          {{ group.label }}
+          <span class="pill-count">{{ getMuscleCount(group.value) }}</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Складність -->
+    <div class="filter-group">
+      <label class="filter-group-label">Складність</label>
+      <div class="difficulty-pills">
+        <button class="diff-pill"
+                [class.active]="selectedDifficulty === ''"
+                (click)="selectedDifficulty = ''; onFilterChange()">
+          <span class="diff-dot" style="background: var(--text-secondary); opacity: 0.4"></span>
+          Будь-яка
+        </button>
+        <button class="diff-pill beginner"
+                [class.active]="selectedDifficulty === 'BEGINNER'"
+                (click)="selectedDifficulty = 'BEGINNER'; onFilterChange()">
+          <span class="diff-dot beginner"></span>
+          Початківець
+        </button>
+        <button class="diff-pill intermediate"
+                [class.active]="selectedDifficulty === 'INTERMEDIATE'"
+                (click)="selectedDifficulty = 'INTERMEDIATE'; onFilterChange()">
+          <span class="diff-dot intermediate"></span>
+          Середній
+        </button>
+        <button class="diff-pill advanced"
+                [class.active]="selectedDifficulty === 'ADVANCED'"
+                (click)="selectedDifficulty = 'ADVANCED'; onFilterChange()">
+          <span class="diff-dot advanced"></span>
+          Просунутий
+        </button>
+      </div>
+    </div>
+
+    <!-- Сортування -->
+    <div class="filter-group">
+      <label class="filter-group-label">Сортування</label>
+      <select class="sort-select"
+              [(ngModel)]="selectedSortBy"
+              (ngModelChange)="onFilterChange()">
+        <option value="name">За назвою</option>
+        <option value="difficulty">За складністю</option>
+        <option value="muscleGroup">За групою м'язів</option>
+      </select>
+    </div>
+
+    <button class="btn-clear-filters" (click)="clearFilters()">
+      ✕ Очистити фільтри
+    </button>
+
+  </aside>
+
+  <!-- ===================== MAIN ===================== -->
+  <main class="exercises-main">
+
+    <div class="exercises-top-bar">
+      <h1>База вправ</h1>
+      <span class="exercises-count">{{ filteredExercises().length }} вправ</span>
+    </div>
+
+    <!-- Активні фільтри як чіпси -->
+    @if (selectedMuscleGroup || selectedDifficulty || searchTerm.trim()) {
+      <div class="active-filters">
+        @if (searchTerm.trim()) {
+          <span class="active-filter-chip">
+            "{{ searchTerm }}"
+            <button (click)="searchTerm = ''; onFilterChange()">✕</button>
           </span>
-        </div>
-
-        <p class="muscle-group">{{ exercise.muscleGroup }}</p>
-        <p class="equipment">Обладнання: {{ exercise.equipmentType }}</p>
-
-        @if (exercise.description) {
-          <p class="description">{{ exercise.description }}</p>
+        }
+        @if (selectedMuscleGroup) {
+          <span class="active-filter-chip">
+            {{ getMuscleLabel(selectedMuscleGroup) }}
+            <button (click)="selectedMuscleGroup = ''; onFilterChange()">✕</button>
+          </span>
+        }
+        @if (selectedDifficulty) {
+          <span class="active-filter-chip">
+            {{ getDifficultyLabel(selectedDifficulty) }}
+            <button (click)="selectedDifficulty = ''; onFilterChange()">✕</button>
+          </span>
         }
       </div>
     }
-  </div>
 
-  @if (filteredExercises().length === 0) {
-    <div class="no-results">
-      <p>Вправ за вашим запитом не знайдено 😔</p>
+    <!-- Сітка вправ -->
+    <div class="exercises-grid">
+      @for (exercise of filteredExercises(); track exercise.id) {
+        <div class="exercise-card">
+
+          <div class="card-media">
+            <div
+              class="card-muscle-strip"
+              [ngClass]="'strip-' + exercise.muscleGroup">
+            </div>
+
+            <div class="card-media-placeholder">
+        <span class="card-media-icon">
+          {{ getMuscleIcon(exercise.muscleGroup) }}
+        </span>
+              <span class="card-media-text">Фото / Відео</span>
+            </div>
+          </div>
+
+          <div class="card-body">
+            <div class="card-header">
+              <h3 class="card-name">{{ exercise.name }}</h3>
+              <span class="card-difficulty" [ngClass]="exercise.difficulty">
+          {{ getDifficultyLabel(exercise.difficulty) }}
+        </span>
+            </div>
+
+            <div class="card-tags">
+        <span class="card-tag">
+          {{ getMuscleLabel(exercise.muscleGroup) }}
+        </span>
+              <span class="card-tag equipment">
+          🏋️ {{ exercise.equipmentType }}
+        </span>
+            </div>
+
+            @if (exercise.description) {
+              <p class="card-description">
+                {{ exercise.description }}
+              </p>
+            }
+          </div>
+
+        </div>
+
+      }
+
+      @if (filteredExercises().length === 0) {
+        <div class="no-results">
+          <span class="no-results-icon">😔</span>
+          <h3>Вправ не знайдено</h3>
+          <p>Спробуй змінити фільтри або пошуковий запит</p>
+        </div>
+      }
     </div>
-  }
+
+  </main>
 </div>
