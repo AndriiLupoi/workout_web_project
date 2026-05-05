@@ -20,4 +20,5 @@ public class ExerciseDocument {
     private String difficulty;
     private String equipmentType;
     private String description;
+    private String videoUrl;
 }

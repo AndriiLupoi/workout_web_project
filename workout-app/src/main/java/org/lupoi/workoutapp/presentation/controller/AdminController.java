@@ -8,14 +8,13 @@ package org.lupoi.workoutapp.presentation.controller;/*
 
 import lombok.RequiredArgsConstructor;
 import org.lupoi.workoutapp.application.usecase.admin.GetStatsUseCase;
+import org.lupoi.workoutapp.application.usecase.workout.UpdateExerciseVideoUseCase;
 import org.lupoi.workoutapp.domain.enums.Role;
 import org.lupoi.workoutapp.domain.repository.UserProfileRepository;
 import org.lupoi.workoutapp.domain.repository.UserRepository;
 import org.lupoi.workoutapp.domain.repository.WorkoutPlanRepository;
-import org.lupoi.workoutapp.presentation.dto.response.ProfileResponse;
-import org.lupoi.workoutapp.presentation.dto.response.StatsResponse;
-import org.lupoi.workoutapp.presentation.dto.response.UserResponse;
-import org.lupoi.workoutapp.presentation.dto.response.WorkoutPlanResponse;
+import org.lupoi.workoutapp.presentation.dto.response.*;
+import org.lupoi.workoutapp.presentation.mapper.ExerciseDtoMapper;
 import org.lupoi.workoutapp.presentation.mapper.ProfileDtoMapper;
 import org.lupoi.workoutapp.presentation.mapper.UserDtoMapper;
 import org.lupoi.workoutapp.presentation.mapper.WorkoutPlanDtoMapper;
@@ -24,6 +23,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/admin")
@@ -37,6 +37,8 @@ public class AdminController {
     private final WorkoutPlanRepository workoutPlanRepository;
     private final GetStatsUseCase getStatsUseCase;
     private final UserProfileRepository userProfileRepository;
+    private final UpdateExerciseVideoUseCase updateExerciseVideoUseCase;
+    private final ExerciseDtoMapper exerciseDtoMapper;
 
 
     // GET /api/v1/admin/users — список всіх юзерів (ADMIN + OWNER)
@@ -119,6 +121,19 @@ public class AdminController {
                 .orElseThrow(() -> new RuntimeException("Plan not found"));
         workoutPlanRepository.deleteById(planId);
         return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/exercises/{exerciseId}/video")
+    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER')")
+    public ResponseEntity<ExerciseResponse> updateExerciseVideo(
+            @PathVariable String exerciseId,
+            @RequestBody Map<String, String> body) {
+        String videoUrl = body.get("videoUrl");
+        return ResponseEntity.ok(
+                exerciseDtoMapper.toResponse(
+                        updateExerciseVideoUseCase.execute(exerciseId, videoUrl)
+                )
+        );
     }
 
 }

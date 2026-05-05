@@ -10,6 +10,7 @@ export interface Exercise {
   difficulty: 'beginner' | 'intermediate' | 'advanced';
   equipmentType: string;
   description?: string;
+  videoUrl?: string;
 }
 
 @Injectable({
@@ -23,5 +24,12 @@ export class ExercisesService {
 
   getAllExercises(): Observable<Exercise[]> {
     return this.http.get<Exercise[]>(this.apiUrl);
+  }
+
+  updateVideoUrl(exerciseId: string, videoUrl: string): Observable<Exercise> {
+    return this.http.patch<Exercise>(
+      `/api/v1/admin/exercises/${exerciseId}/video`,
+      { videoUrl }
+    );
   }
 }

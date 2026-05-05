@@ -132,17 +132,21 @@
         <div class="exercise-card">
 
           <div class="card-media">
-            <div
-              class="card-muscle-strip"
-              [ngClass]="'strip-' + exercise.muscleGroup">
-            </div>
+            <div class="card-muscle-strip" [ngClass]="'strip-' + exercise.muscleGroup"></div>
 
-            <div class="card-media-placeholder">
-        <span class="card-media-icon">
-          {{ getMuscleIcon(exercise.muscleGroup) }}
-        </span>
-              <span class="card-media-text">Фото / Відео</span>
-            </div>
+            @if (exercise.videoUrl && extractYoutubeId(exercise.videoUrl)) {
+              <img
+                class="card-thumbnail"
+                [src]="'https://img.youtube.com/vi/' + extractYoutubeId(exercise.videoUrl) + '/hqdefault.jpg'"
+                [alt]="exercise.name"
+                (click)="openVideoModal(exercise)"
+              />
+            } @else {
+              <div class="card-media-placeholder">
+                <span class="card-media-icon">{{ getMuscleIcon(exercise.muscleGroup) }}</span>
+                <span class="card-media-text">Фото / Відео</span>
+              </div>
+            }
           </div>
 
           <div class="card-body">
@@ -168,6 +172,11 @@
               </p>
             }
           </div>
+          @if (isAdmin()) {
+            <button class="btn-add-video" (click)="openVideoModal(exercise)">
+              {{ exercise.videoUrl ? '✏️ Змінити відео' : '▶ Додати відео' }}
+            </button>
+          }
 
         </div>
 
@@ -181,6 +190,47 @@
         </div>
       }
     </div>
+
+    @if (selectedExercise(); as exercise) {
+      <div class="video-modal-backdrop" (click)="closeVideoModal()">
+        <div class="video-modal" (click)="$event.stopPropagation()">
+
+          <div class="video-modal-header">
+            <h2>{{ exercise.name }}</h2>
+            <button (click)="closeVideoModal()">✕</button>
+          </div>
+
+          @if (exercise.videoUrl && extractYoutubeId(exercise.videoUrl)) {
+            <div class="video-embed-wrap">
+              <iframe
+                [src]="'https://www.youtube.com/embed/' + extractYoutubeId(exercise.videoUrl) | safe"
+                allowfullscreen
+                frameborder="0">
+              </iframe>
+            </div>
+          }
+
+          @if (isAdmin()) {
+            <div class="video-input-block">
+              <label>YouTube посилання</label>
+              <input
+                type="text"
+                [ngModel]="videoInput()"
+                (ngModelChange)="videoInput.set($event)"
+                placeholder="https://youtube.com/watch?v=..."
+              />
+              @if (videoSaveSuccess()) {
+                <span class="save-ok">✓ Збережено!</span>
+              }
+              <button class="btn-primary" (click)="saveVideo()" [disabled]="savingVideo()">
+                {{ savingVideo() ? 'Збереження...' : 'Зберегти' }}
+              </button>
+            </div>
+          }
+
+        </div>
+      </div>
+    }
 
   </main>
 </div>

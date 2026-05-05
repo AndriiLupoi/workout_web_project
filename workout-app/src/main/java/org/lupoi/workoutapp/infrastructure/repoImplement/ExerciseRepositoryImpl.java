@@ -5,6 +5,7 @@ import org.lupoi.workoutapp.domain.entity.Exercise;
 import org.lupoi.workoutapp.domain.enums.Difficulty;
 import org.lupoi.workoutapp.domain.enums.EquipmentType;
 import org.lupoi.workoutapp.domain.enums.MuscleGroup;
+import org.lupoi.workoutapp.domain.exception.EntityNotFoundException;
 import org.lupoi.workoutapp.domain.repository.ExerciseRepository;
 import org.lupoi.workoutapp.infrastructure.document.ExerciseDocument;
 import org.lupoi.workoutapp.infrastructure.mapper.ExerciseDocumentMapper;
@@ -16,6 +17,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -87,5 +89,19 @@ public class ExerciseRepositoryImpl implements ExerciseRepository {
                 .stream()
                 .map(exerciseDocumentMapper::toDomain)
                 .toList();
+    }
+
+    @Override
+    public Optional<Exercise> findById(String id) {
+        return mongoRepository.findById(id)
+                .map(mapper::toDomain);
+    }
+
+    @Override
+    public Exercise updateVideoUrl(String exerciseId, String videoUrl) {
+        ExerciseDocument doc = mongoRepository.findById(exerciseId)
+                .orElseThrow(() -> new EntityNotFoundException("Exercise", exerciseId));
+        doc.setVideoUrl(videoUrl);
+        return mapper.toDomain(mongoRepository.save(doc));
     }
 }

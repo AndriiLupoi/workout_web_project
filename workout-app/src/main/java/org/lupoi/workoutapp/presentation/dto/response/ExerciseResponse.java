@@ -6,5 +6,6 @@ public record ExerciseResponse(
         String muscleGroup,
         String difficulty,
         String equipmentType,
-        String description
+        String description,
+        String videoUrl
 ) {}

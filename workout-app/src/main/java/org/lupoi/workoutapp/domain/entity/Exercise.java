@@ -25,4 +25,5 @@ public class Exercise {
     private Difficulty difficulty;
     private EquipmentType equipmentType;
     private String description;
+    private String videoUrl;
 }

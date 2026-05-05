@@ -12,6 +12,7 @@ import org.lupoi.workoutapp.domain.enums.EquipmentType;
 import org.lupoi.workoutapp.domain.enums.MuscleGroup;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ExerciseRepository {
     List<Exercise> findAll();
@@ -25,4 +26,6 @@ public interface ExerciseRepository {
             EquipmentType equipment,
             String sortBy  // "name", "difficulty", "muscleGroup"
     );
+    Optional<Exercise> findById(String id);
+    Exercise updateVideoUrl(String exerciseId, String videoUrl);
 }

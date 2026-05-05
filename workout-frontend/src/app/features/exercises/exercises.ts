@@ -2,6 +2,8 @@ import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ExercisesService } from './exercises.service';
+import {AuthService} from '../../core/services/auth';
+import { SafePipe} from '../../core/services/safe.pipe';
 
 export interface Exercise {
   id: string;
@@ -10,6 +12,7 @@ export interface Exercise {
   difficulty: 'beginner' | 'intermediate' | 'advanced';
   equipmentType: string;
   description?: string;
+  videoUrl?: string;
 }
 
 const DIFFICULTY_ORDER: Record<string, number> = {
@@ -21,7 +24,7 @@ const DIFFICULTY_ORDER: Record<string, number> = {
 @Component({
   selector: 'app-exercises',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, SafePipe],
   templateUrl: './exercises.html',
   styleUrl: './exercises.css'
 })
@@ -29,9 +32,19 @@ export class ExercisesComponent implements OnInit {
 
   private exercisesService = inject(ExercisesService);
 
+  private authService = inject(AuthService);
+
   // ================= SIGNALS =================
   exercises = signal<Exercise[]>([]);
   filteredExercises = signal<Exercise[]>([]);
+  selectedExercise = signal<Exercise | null>(null);
+  videoInput = signal<string>('');
+  savingVideo = signal(false);
+  videoSaveSuccess = signal(false);
+
+
+  isAdmin = () => this.authService.isAdmin();
+
 
   // ================= FILTER STATE =================
   searchTerm = '';
@@ -176,4 +189,42 @@ export class ExercisesComponent implements OnInit {
   getMuscleCount(group: string): number {
     return this.exercises().filter(ex => ex.muscleGroup === group).length;
   }
+
+  openVideoModal(exercise: Exercise): void {
+    this.selectedExercise.set(exercise);
+    this.videoInput.set(exercise.videoUrl ?? '');
+    this.videoSaveSuccess.set(false);
+  }
+
+  closeVideoModal(): void {
+    this.selectedExercise.set(null);
+    this.videoInput.set('');
+  }
+
+  extractYoutubeId(url: string): string | null {
+    const match = url.match(
+      /(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/
+    );
+    return match ? match[1] : null;
+  }
+
+  saveVideo(): void {
+    const exercise = this.selectedExercise();
+    if (!exercise) return;
+    this.savingVideo.set(true);
+
+    this.exercisesService.updateVideoUrl(exercise.id, this.videoInput()).subscribe({
+      next: (updated) => {
+        this.exercises.update(list =>
+          list.map(ex => ex.id === updated.id ? updated : ex)
+        );
+        this.applyFilters();
+        this.savingVideo.set(false);
+        this.videoSaveSuccess.set(true);
+        setTimeout(() => this.closeVideoModal(), 1500);
+      },
+      error: () => this.savingVideo.set(false)
+    });
+  }
+
 }
