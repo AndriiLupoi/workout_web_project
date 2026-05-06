@@ -32,4 +32,16 @@ export class ExercisesService {
       { videoUrl }
     );
   }
+
+  createExercise(data: Partial<Exercise>): Observable<Exercise> {
+    return this.http.post<Exercise>('/api/v1/admin/exercises', data);
+  }
+
+  updateExercise(id: string, data: Partial<Exercise>): Observable<Exercise> {
+    return this.http.put<Exercise>(`/api/v1/admin/exercises/${id}`, data);
+  }
+
+  deleteExercise(id: string): Observable<void> {
+    return this.http.delete<void>(`/api/v1/admin/exercises/${id}`);
+  }
 }

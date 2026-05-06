@@ -28,4 +28,6 @@ public interface ExerciseRepository {
     );
     Optional<Exercise> findById(String id);
     Exercise updateVideoUrl(String exerciseId, String videoUrl);
+    void deleteById(String id);
+    Exercise update(Exercise exercise);
 }

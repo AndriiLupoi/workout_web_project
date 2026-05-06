@@ -1,5 +1,3 @@
-<!-- exercises.html — новий дизайн з sticky sidebar -->
-
 <!-- Кнопка для мобільних -->
 <button class="mobile-filter-toggle" (click)="toggleFilters()">
   🔍 Фільтри {{ showFilters ? '▲' : '▼' }}
@@ -35,13 +33,14 @@
                 (click)="selectedMuscleGroup = ''; onFilterChange()">
           Всі групи
         </button>
-        <button *ngFor="let group of muscleGroups"
-                class="filter-pill"
-                [class.active]="selectedMuscleGroup === group.value"
-                (click)="selectedMuscleGroup = group.value; onFilterChange()">
-          {{ group.label }}
-          <span class="pill-count">{{ getMuscleCount(group.value) }}</span>
-        </button>
+        @for (group of muscleGroups; track group.value) {
+          <button class="filter-pill"
+                  [class.active]="selectedMuscleGroup === group.value"
+                  (click)="selectedMuscleGroup = group.value; onFilterChange()">
+            {{ group.label }}
+            <span class="pill-count">{{ getMuscleCount(group.value) }}</span>
+          </button>
+        }
       </div>
     </div>
 
@@ -99,7 +98,14 @@
 
     <div class="exercises-top-bar">
       <h1>База вправ</h1>
-      <span class="exercises-count">{{ filteredExercises().length }} вправ</span>
+      <div class="top-bar-right">
+        <span class="exercises-count">{{ filteredExercises().length }} вправ</span>
+        @if (isAdmin()) {
+          <button class="btn-primary btn-add-exercise" (click)="openCreateModal()">
+            + Додати вправу
+          </button>
+        }
+      </div>
     </div>
 
     <!-- Активні фільтри як чіпси -->
@@ -139,10 +145,11 @@
                 class="card-thumbnail"
                 [src]="'https://img.youtube.com/vi/' + extractYoutubeId(exercise.videoUrl) + '/hqdefault.jpg'"
                 [alt]="exercise.name"
-                (click)="openVideoModal(exercise)"
+                (click)="isAdmin() ? openEditModal(exercise) : null"
               />
             } @else {
-              <div class="card-media-placeholder">
+              <div class="card-media-placeholder" (click)="isAdmin() ? openEditModal(exercise) : null"
+                   [style.cursor]="isAdmin() ? 'pointer' : 'default'">
                 <span class="card-media-icon">{{ getMuscleIcon(exercise.muscleGroup) }}</span>
                 <span class="card-media-text">Фото / Відео</span>
               </div>
@@ -153,33 +160,27 @@
             <div class="card-header">
               <h3 class="card-name">{{ exercise.name }}</h3>
               <span class="card-difficulty" [ngClass]="exercise.difficulty">
-          {{ getDifficultyLabel(exercise.difficulty) }}
-        </span>
+                {{ getDifficultyLabel(exercise.difficulty) }}
+              </span>
             </div>
 
             <div class="card-tags">
-        <span class="card-tag">
-          {{ getMuscleLabel(exercise.muscleGroup) }}
-        </span>
-              <span class="card-tag equipment">
-          🏋️ {{ exercise.equipmentType }}
-        </span>
+              <span class="card-tag">{{ getMuscleLabel(exercise.muscleGroup) }}</span>
+              <span class="card-tag equipment">🏋️ {{ exercise.equipmentType }}</span>
             </div>
 
             @if (exercise.description) {
-              <p class="card-description">
-                {{ exercise.description }}
-              </p>
+              <p class="card-description">{{ exercise.description }}</p>
             }
           </div>
+
           @if (isAdmin()) {
-            <button class="btn-add-video" (click)="openVideoModal(exercise)">
-              {{ exercise.videoUrl ? '✏️ Змінити відео' : '▶ Додати відео' }}
+            <button class="btn-add-video" (click)="openEditModal(exercise)">
+              ✏️ Редагувати
             </button>
           }
 
         </div>
-
       }
 
       @if (filteredExercises().length === 0) {
@@ -191,46 +192,143 @@
       }
     </div>
 
-    @if (selectedExercise(); as exercise) {
-      <div class="video-modal-backdrop" (click)="closeVideoModal()">
-        <div class="video-modal" (click)="$event.stopPropagation()">
+  </main>
+</div>
 
-          <div class="video-modal-header">
-            <h2>{{ exercise.name }}</h2>
-            <button (click)="closeVideoModal()">✕</button>
+<!-- ===================== МОДАЛКА РЕДАГУВАННЯ / СТВОРЕННЯ ===================== -->
+@if (selectedExercise() !== null) {
+  <div class="video-modal-backdrop" (click)="closeModal()">
+    <div class="video-modal exercise-edit-modal" (click)="$event.stopPropagation()">
+
+      <div class="video-modal-header">
+        <h2>{{ isNewExercise() ? 'Нова вправа' : 'Редагувати вправу' }}</h2>
+        <button (click)="closeModal()">✕</button>
+      </div>
+
+      <div class="exercise-edit-body">
+
+        <!-- Прев'ю відео якщо є і це редагування -->
+        @if (!isNewExercise() && editForm().videoUrl && extractYoutubeId(editForm().videoUrl!)) {
+          <div class="video-embed-wrap">
+            <iframe
+              [src]="'https://www.youtube.com/embed/' + extractYoutubeId(editForm().videoUrl!) | safe"
+              allowfullscreen
+              frameborder="0">
+            </iframe>
+          </div>
+        }
+
+        <div class="edit-form">
+
+          <div class="edit-field">
+            <label>Назва</label>
+            <input type="text"
+                   [value]="editForm().name || ''"
+                   (input)="updateField('name', $any($event.target).value)"
+                   placeholder="Назва вправи">
           </div>
 
-          @if (exercise.videoUrl && extractYoutubeId(exercise.videoUrl)) {
-            <div class="video-embed-wrap">
-              <iframe
-                [src]="'https://www.youtube.com/embed/' + extractYoutubeId(exercise.videoUrl) | safe"
-                allowfullscreen
-                frameborder="0">
-              </iframe>
+          <div class="edit-row">
+            <div class="edit-field">
+              <label>Група м'язів</label>
+              <select [value]="editForm().muscleGroup || 'CHEST'"
+                      (change)="updateField('muscleGroup', $any($event.target).value)">
+                @for (g of muscleGroups; track g.value) {
+                  <option [value]="g.value">{{ g.label }}</option>
+                }
+              </select>
             </div>
+
+            <div class="edit-field">
+              <label>Складність</label>
+              <select [value]="editForm().difficulty || 'BEGINNER'"
+                      (change)="updateField('difficulty', $any($event.target).value)">
+                <option value="BEGINNER">Початківець</option>
+                <option value="INTERMEDIATE">Середній</option>
+                <option value="ADVANCED">Просунутий</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="edit-field">
+            <label>Обладнання</label>
+            <select [value]="editForm().equipmentType || 'BARBELL'"
+                    (change)="updateField('equipmentType', $any($event.target).value)">
+              <option value="BARBELL">Штанга</option>
+              <option value="DUMBBELL">Гантелі</option>
+              <option value="MACHINE">Тренажер</option>
+              <option value="CABLE">Блоки / кабелі</option>
+              <option value="BODYWEIGHT">Вага тіла</option>
+              <option value="BENCH">Лава</option>
+              <option value="PULL_UP">Турнік</option>
+            </select>
+          </div>
+
+          <div class="edit-field">
+            <label>Опис</label>
+            <textarea rows="2"
+                      [value]="editForm().description || ''"
+                      (input)="updateField('description', $any($event.target).value)"
+                      placeholder="Короткий опис вправи"></textarea>
+          </div>
+
+          <div class="edit-field">
+            <label>YouTube посилання</label>
+            <input type="text"
+                   [value]="editForm().videoUrl || ''"
+                   (input)="updateField('videoUrl', $any($event.target).value)"
+                   placeholder="https://youtube.com/watch?v=...">
+          </div>
+
+          @if (exerciseSaveSuccess()) {
+            <span class="save-ok">✓ Збережено!</span>
           }
 
-          @if (isAdmin()) {
-            <div class="video-input-block">
-              <label>YouTube посилання</label>
-              <input
-                type="text"
-                [ngModel]="videoInput()"
-                (ngModelChange)="videoInput.set($event)"
-                placeholder="https://youtube.com/watch?v=..."
-              />
-              @if (videoSaveSuccess()) {
-                <span class="save-ok">✓ Збережено!</span>
-              }
-              <button class="btn-primary" (click)="saveVideo()" [disabled]="savingVideo()">
-                {{ savingVideo() ? 'Збереження...' : 'Зберегти' }}
+          <div class="edit-actions">
+            @if (!isNewExercise()) {
+              <button class="btn-delete-exercise"
+                      (click)="confirmDelete(selectedExercise()!.id)">
+                🗑 Видалити
               </button>
-            </div>
-          }
+            }
+            <button class="btn-primary"
+                    (click)="saveExercise()"
+                    [disabled]="savingExercise() || !editForm().name?.trim()">
+              {{ savingExercise() ? 'Збереження...' : (isNewExercise() ? 'Створити' : 'Зберегти') }}
+            </button>
+          </div>
 
         </div>
       </div>
-    }
 
-  </main>
-</div>
+    </div>
+  </div>
+}
+
+<!-- ===================== ПІДТВЕРДЖЕННЯ ВИДАЛЕННЯ ===================== -->
+@if (deleteConfirmId()) {
+  <div class="video-modal-backdrop" (click)="cancelDelete()">
+    <div class="video-modal delete-confirm-modal" (click)="$event.stopPropagation()">
+
+      <div class="video-modal-header">
+        <h2>Видалити вправу?</h2>
+        <button (click)="cancelDelete()">✕</button>
+      </div>
+
+      <div class="video-input-block">
+        <p class="delete-warning-text">
+          Вправу буде видалено з бази назавжди. Цю дію не можна скасувати.
+        </p>
+        <div class="delete-confirm-actions">
+          <button class="btn-secondary" (click)="cancelDelete()">
+            Скасувати
+          </button>
+          <button class="btn-danger" (click)="executeDelete()">
+            🗑 Так, видалити
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+}

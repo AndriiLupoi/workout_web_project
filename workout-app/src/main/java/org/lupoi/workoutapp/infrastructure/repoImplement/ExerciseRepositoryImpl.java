@@ -58,6 +58,16 @@ public class ExerciseRepositoryImpl implements ExerciseRepository {
     }
 
     @Override
+    public void deleteById(String id) {
+        mongoRepository.deleteById(id);
+    }
+
+    @Override
+    public Exercise update(Exercise exercise) {
+        return mapper.toDomain(mongoRepository.save(mapper.toDocument(exercise)));
+    }
+
+    @Override
     public long count() {
         return mongoRepository.count();
     }

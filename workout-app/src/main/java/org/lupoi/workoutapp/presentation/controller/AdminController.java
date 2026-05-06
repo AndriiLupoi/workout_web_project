@@ -8,11 +8,13 @@ package org.lupoi.workoutapp.presentation.controller;/*
 
 import lombok.RequiredArgsConstructor;
 import org.lupoi.workoutapp.application.usecase.admin.GetStatsUseCase;
+import org.lupoi.workoutapp.application.usecase.admin.ManageExerciseUseCase;
 import org.lupoi.workoutapp.application.usecase.workout.UpdateExerciseVideoUseCase;
 import org.lupoi.workoutapp.domain.enums.Role;
 import org.lupoi.workoutapp.domain.repository.UserProfileRepository;
 import org.lupoi.workoutapp.domain.repository.UserRepository;
 import org.lupoi.workoutapp.domain.repository.WorkoutPlanRepository;
+import org.lupoi.workoutapp.presentation.dto.request.ExerciseRequest;
 import org.lupoi.workoutapp.presentation.dto.response.*;
 import org.lupoi.workoutapp.presentation.mapper.ExerciseDtoMapper;
 import org.lupoi.workoutapp.presentation.mapper.ProfileDtoMapper;
@@ -39,6 +41,7 @@ public class AdminController {
     private final UserProfileRepository userProfileRepository;
     private final UpdateExerciseVideoUseCase updateExerciseVideoUseCase;
     private final ExerciseDtoMapper exerciseDtoMapper;
+    private final ManageExerciseUseCase manageExerciseUseCase;
 
 
     // GET /api/v1/admin/users — список всіх юзерів (ADMIN + OWNER)
@@ -134,6 +137,31 @@ public class AdminController {
                         updateExerciseVideoUseCase.execute(exerciseId, videoUrl)
                 )
         );
+    }
+
+    @PostMapping("/exercises")
+    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER')")
+    public ResponseEntity<ExerciseResponse> createExercise(@RequestBody ExerciseRequest req) {
+        return ResponseEntity.status(201).body(
+                exerciseDtoMapper.toResponse(manageExerciseUseCase.create(req))
+        );
+    }
+
+    @PutMapping("/exercises/{exerciseId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER')")
+    public ResponseEntity<ExerciseResponse> updateExercise(
+            @PathVariable String exerciseId,
+            @RequestBody ExerciseRequest req) {
+        return ResponseEntity.ok(
+                exerciseDtoMapper.toResponse(manageExerciseUseCase.update(exerciseId, req))
+        );
+    }
+
+    @DeleteMapping("/exercises/{exerciseId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER')")
+    public ResponseEntity<Void> deleteExercise(@PathVariable String exerciseId) {
+        manageExerciseUseCase.delete(exerciseId);
+        return ResponseEntity.noContent().build();
     }
 
 }
