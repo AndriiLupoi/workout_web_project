@@ -145,10 +145,11 @@
                 class="card-thumbnail"
                 [src]="'https://img.youtube.com/vi/' + extractYoutubeId(exercise.videoUrl) + '/hqdefault.jpg'"
                 [alt]="exercise.name"
-                (click)="isAdmin() ? openEditModal(exercise) : null"
+                (click)="openVideoModal(exercise)"
               />
             } @else {
-              <div class="card-media-placeholder" (click)="isAdmin() ? openEditModal(exercise) : null"
+              <div class="card-media-placeholder"
+                   (click)="isAdmin() ? openEditModal(exercise) : null"
                    [style.cursor]="isAdmin() ? 'pointer' : 'default'">
                 <span class="card-media-icon">{{ getMuscleIcon(exercise.muscleGroup) }}</span>
                 <span class="card-media-text">Фото / Відео</span>
@@ -305,16 +306,32 @@
   </div>
 }
 
+@if (videoModalExercise()) {
+  <div class="video-modal-backdrop" (click)="closeVideoModal()">
+    <div class="video-view-modal" (click)="$event.stopPropagation()">
+      <div class="video-modal-header">
+        <h2>{{ videoModalExercise()!.name }}</h2>
+        <button (click)="closeVideoModal()">✕</button>
+      </div>
+      <div class="video-embed-wrap-full">
+        <iframe
+          [src]="'https://www.youtube.com/embed/' + extractYoutubeId(videoModalExercise()!.videoUrl!) | safe"
+          allowfullscreen
+          frameborder="0">
+        </iframe>
+      </div>
+    </div>
+  </div>
+}
+
 <!-- ===================== ПІДТВЕРДЖЕННЯ ВИДАЛЕННЯ ===================== -->
 @if (deleteConfirmId()) {
-  <div class="video-modal-backdrop" (click)="cancelDelete()">
+  <div class="video-modal-backdrop" style="z-index: 1100" (click)="cancelDelete()">
     <div class="video-modal delete-confirm-modal" (click)="$event.stopPropagation()">
-
       <div class="video-modal-header">
-        <h2>Видалити вправу?</h2>
+        <h2>⚠️ Видалити вправу?</h2>
         <button (click)="cancelDelete()">✕</button>
       </div>
-
       <div class="video-input-block">
         <p class="delete-warning-text">
           Вправу буде видалено з бази назавжди. Цю дію не можна скасувати.
@@ -328,7 +345,6 @@
           </button>
         </div>
       </div>
-
     </div>
   </div>
 }

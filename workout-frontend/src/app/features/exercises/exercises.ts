@@ -44,6 +44,9 @@ export class ExercisesComponent implements OnInit {
   savingExercise = signal(false);
   exerciseSaveSuccess = signal(false);
 
+  // Модалка для перегляду відео
+  videoModalExercise = signal<Exercise | null>(null);
+
   // Підтвердження видалення
   deleteConfirmId = signal<string | null>(null);
 
@@ -144,8 +147,19 @@ export class ExercisesComponent implements OnInit {
   }
 
   // ================= MODAL =================
+  openVideoModal(exercise: Exercise): void {
+    this.videoModalExercise.set(exercise);
+  }
+
+  closeVideoModal(): void {
+    this.videoModalExercise.set(null);
+  }
+
   openEditModal(exercise: Exercise): void {
+    console.log('openEditModal called', exercise);
     this.selectedExercise.set(exercise);
+
+    console.log('selectedExercise after set:', this.selectedExercise());
     this.isNewExercise.set(false);
     this.editForm.set({ ...exercise });
     this.exerciseSaveSuccess.set(false);
@@ -177,8 +191,11 @@ export class ExercisesComponent implements OnInit {
 
     const data = {
       ...raw,
-      difficulty: raw.difficulty?.toLowerCase() as 'beginner' | 'intermediate' | 'advanced'
+      muscleGroup: raw.muscleGroup?.toUpperCase(),
+      difficulty: raw.difficulty?.toUpperCase(),
+      equipmentType: raw.equipmentType?.toUpperCase(),
     };
+
     if (!data.name?.trim()) return;
 
     this.savingExercise.set(true);

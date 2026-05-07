@@ -7,7 +7,7 @@ export interface Exercise {
   id: string;
   name: string;
   muscleGroup: string;
-  difficulty: 'beginner' | 'intermediate' | 'advanced';
+  difficulty: string;
   equipmentType: string;
   description?: string;
   videoUrl?: string;
