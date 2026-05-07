@@ -2,7 +2,7 @@ import { Component, inject, OnInit, signal } from '@angular/core';
 import { forkJoin } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ProfileService } from './profile.service';
+import {ProfileService, WeightProgressResponse} from './profile.service';
 import { UserService } from './user.service';
 
 @Component({
@@ -22,6 +22,7 @@ export class ProfileComponent implements OnInit {
   isLoading    = signal(false);
   successMessage = signal('');
   errorMessage   = signal('');
+  weightProgress = signal<WeightProgressResponse | null>(null);
 
   profileForm: FormGroup;
 
@@ -79,10 +80,11 @@ export class ProfileComponent implements OnInit {
   loadProfile(): void {
     this.isLoading.set(true);
     forkJoin({
-      user:    this.userService.getUser(),
-      profile: this.profileService.getProfile()
+      user: this.userService.getUser(),
+      profile: this.profileService.getProfile(),
+      weightProgress: this.profileService.getWeightProgress()
     }).subscribe({
-      next: ({ user, profile }: any) => {
+      next: ({ user, profile, weightProgress }: any) => {
         this.profileForm.patchValue({
           firstName:           user.firstName || '',
           lastName:            user.lastName  || '',
@@ -94,9 +96,15 @@ export class ProfileComponent implements OnInit {
           experienceLevel:     profile.level         || 'BEGINNER',
           planType:            profile.planType       || 'HYPERTROPHY',
           trainingDaysPerWeek: profile.workoutsPerWeek || 3,
+
         });
+        this.weightProgress.set(weightProgress);
         this.profileForm.get('availableEquipment')?.setValue(profile.availableEquipment || []);
         this.isLoading.set(false);
+
+        this.profileService.getWeightProgress().subscribe({
+          next: (progress) => this.weightProgress.set(progress)
+        });
       },
       error: () => {
         this.errorMessage.set('Не вдалося завантажити профіль');
@@ -172,38 +180,5 @@ export class ProfileComponent implements OnInit {
   getSelectedEquipment(): { value: string; label: string }[] {
     const selected: string[] = this.profileForm.get('availableEquipment')?.value || [];
     return this.equipmentOptions.filter(eq => selected.includes(eq.value));
-  }
-
-  // Прогрес до цільової ваги у відсотках (0–100)
-  getWeightProgress(): number {
-    const current = +this.profileForm.get('currentWeight')?.value;
-    const target  = +this.profileForm.get('targetWeight')?.value;
-    if (!current || !target) return 0;
-
-    // Якщо ціль — схуднення
-    if (target < current) {
-      // Початкова вага невідома, рахуємо просто як % від поточного до цілі
-      // Припускаємо: старт був на 20% більше від цілі від різниці
-      const diff = current - target;
-      const progress = Math.max(0, Math.min(100, 100 - (diff / (diff + 1)) * 100));
-      return Math.round(progress);
-    }
-    // Якщо ціль — набір
-    if (target > current) {
-      const diff = target - current;
-      return Math.round(Math.max(0, Math.min(100, 100 - (diff / (diff + 1)) * 100)));
-    }
-    return 100; // досягнуто
-  }
-
-  // Різниця між поточною і цільовою вагою
-  getWeightDiff(): string {
-    const current = +this.profileForm.get('currentWeight')?.value;
-    const target  = +this.profileForm.get('targetWeight')?.value;
-    if (!current || !target) return '';
-    const diff = Math.abs(current - target);
-    if (diff === 0) return '✓ Ціль досягнута!';
-    if (target < current) return `Ще ${diff.toFixed(1)} кг до цілі`;
-    return `Ще ${diff.toFixed(1)} кг до набору`;
   }
 }

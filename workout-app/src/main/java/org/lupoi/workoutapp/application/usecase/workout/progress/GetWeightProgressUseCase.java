@@ -39,7 +39,9 @@ public class GetWeightProgressUseCase {
                 : logs.get(logs.size() - 1).getWeight();
 
         double targetWeight = profile.getTargetWeight();
-        double startWeight  = profile.getCurrentWeight();
+        double startWeight = logs.isEmpty()
+                ? profile.getCurrentWeight()
+                : logs.get(0).getWeight();
 
         int percent;
         String message;

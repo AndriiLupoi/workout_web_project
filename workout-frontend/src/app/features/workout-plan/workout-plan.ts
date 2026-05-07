@@ -5,7 +5,7 @@ import { WorkoutPlanService, WorkoutPlan, WorkoutDay, WorkoutExercise } from './
 import {
   WorkoutLogResponse,
   WorkoutLogService,
-  PlanProgressResponse
+  PlanProgressResponse, PersonalRecordResponse
 } from '../../core/services/workout-log/workout-log.service';
 
 interface LiveExercise extends WorkoutExercise {
@@ -13,6 +13,9 @@ interface LiveExercise extends WorkoutExercise {
   previousWeight: number | null;
   feltEasy: boolean | null;
   skipped: boolean;
+
+  recommendationLabel?: string;
+  recommendationHint?: string;
 }
 
 export interface WorkoutCompletedSummary {
@@ -202,21 +205,64 @@ export class WorkoutPlanComponent implements OnInit {
   }
 
   startLiveMode(day: WorkoutDay): void {
+    const plan = this.activePlan();
+    if (!plan) return;
+
     this.liveDay.set(day);
-    const live: LiveExercise[] = day.exercises.map(ex => {
-      const rec = this.getRecommendedWeight(ex);
-      return {
-        ...ex,
-        liveWeight:     rec?.weight ?? ex.plannedWeight ?? null,
-        previousWeight: this.getPreviousWeight(ex.exerciseId),
-        feltEasy:       null,
-        skipped: false
-      };
-    });
+
+    const live: LiveExercise[] = day.exercises.map(ex => ({
+      ...ex,
+      liveWeight: ex.plannedWeight ?? null,
+      previousWeight: this.getPreviousWeight(ex.exerciseId),
+      feltEasy: null,
+      skipped: false,
+      recommendationLabel: '',
+      recommendationHint: ''
+    }));
+
     this.liveExercises.set(live);
+
+    // завантаження рекомендацій
+    live.forEach(ex => {
+      this.logService.getRecommendation(
+        plan.id,
+        ex.exerciseId,
+        ex.plannedWeight
+      ).subscribe({
+        next: (rec) => {
+          this.liveExercises.update(list =>
+            list.map(item =>
+              item.exerciseId === ex.exerciseId
+                ? {
+                  ...item,
+                  liveWeight: rec.recommendedWeight,
+                  recommendationLabel: rec.label,
+                  recommendationHint: rec.hint
+                }
+                : item
+            )
+          );
+        },
+        error: () => {
+          // fallback якщо API впало
+          this.liveExercises.update(list =>
+            list.map(item =>
+              item.exerciseId === ex.exerciseId
+                ? {
+                  ...item,
+                  liveWeight: ex.plannedWeight ?? null
+                }
+                : item
+            )
+          );
+        }
+      });
+    });
+
     this.isLiveMode.set(true);
     this.saveSuccess.set(false);
     this.completedSummary.set(null);
+
     this.startTimer();
   }
 
@@ -250,19 +296,6 @@ export class WorkoutPlanComponent implements OnInit {
     return { weight: null, feltEasy: null };
   }
 
-  private getBestWeight(exerciseId: string): number | null {
-    const logs = this.planLogs();
-    let best: number | null = null;
-    for (const log of logs) {
-      for (const ex of log.exercises) {
-        if (ex.exerciseId === exerciseId && ex.actualWeight != null) {
-          if (best === null || ex.actualWeight > best) best = ex.actualWeight;
-        }
-      }
-    }
-    return best;
-  }
-
   private parseReps(repsStr: string): number {
     if (!repsStr) return 1;
     if (repsStr.includes('-')) {
@@ -277,66 +310,44 @@ export class WorkoutPlanComponent implements OnInit {
     return this.getPreviousLog(exerciseId).weight;
   }
 
-  getRecommendedWeight(ex: WorkoutExercise): { weight: number; label: string; hint: string } | null {
-    const log = this.getPreviousLog(ex.exerciseId);
+  private buildCompletedSummary(
+    durationMs: number,
+    prs: PersonalRecordResponse[]
+  ): WorkoutCompletedSummary {
 
-    if (log.weight == null) {
-      const base = ex.plannedWeight ?? 0;
-      const w = Math.round((base + 2.5) * 10) / 10;
-      return { weight: w, label: `${w} кг (+2.5)`, hint: 'перше тренування' };
-    }
-
-    if (log.feltEasy === true) {
-      const w = Math.round((log.weight + 2.5) * 10) / 10;
-      return { weight: w, label: `${w} кг (+2.5)`, hint: 'було легко' };
-    }
-
-    if (log.feltEasy === false) {
-      const w = Math.max(0, Math.round((log.weight - 2.5) * 10) / 10);
-      return { weight: w, label: `${w} кг (-2.5)`, hint: 'було важко' };
-    }
-
-    // feltEasy невідомо але лог є — оптимістично +2.5
-    const w = Math.round((log.weight + 2.5) * 10) / 10;
-    return { weight: w, label: `${w} кг (+2.5)`, hint: 'оптимістично' };
-  }
-
-  private buildCompletedSummary(durationMs: number): WorkoutCompletedSummary {
     const day = this.liveDay()!;
     const exercises = this.liveExercises();
-    let prCount = 0;
 
     const exerciseSummaries: ExerciseSummary[] = exercises
       .filter(ex => !ex.skipped)
       .map(ex => {
-      const prevBest = this.getBestWeight(ex.exerciseId);
-      const isPR = ex.liveWeight !== null && ex.liveWeight > 0 &&
-        (prevBest === null || ex.liveWeight > prevBest);
-      const prDelta = isPR && prevBest !== null
-        ? Math.round((ex.liveWeight! - prevBest) * 10) / 10
-        : null;
-      if (isPR) prCount++;
 
-      return {
-        exerciseId:   ex.exerciseId,
-        exerciseName: ex.exerciseName,
-        sets:         ex.sets,
-        reps:         ex.reps,
-        actualWeight: ex.liveWeight,
-        volume:       0,
-        isPR,
-        prDelta
-      };
-    });
+        const pr = prs.find(p => p.exerciseId === ex.exerciseId);
+
+        return {
+          exerciseId: ex.exerciseId,
+          exerciseName: ex.exerciseName,
+          sets: ex.sets,
+          reps: ex.reps,
+          actualWeight: ex.liveWeight,
+          volume: 0,
+
+          isPR: !!pr,
+
+          prDelta: pr?.delta ?? null
+        };
+      });
 
     return {
-      weekNumber:  day.weekNumber,
-      dayNumber:   day.dayNumber,
-      focus:       day.focus,
+      weekNumber: day.weekNumber,
+      dayNumber: day.dayNumber,
+      focus: day.focus,
       durationMs,
       totalVolume: 0,
-      prCount,
-      exercises:   exerciseSummaries
+
+      prCount: prs.length,
+
+      exercises: exerciseSummaries
     };
   }
 
@@ -356,7 +367,6 @@ export class WorkoutPlanComponent implements OnInit {
     this.error.set(null);
 
     const durationMs = this.liveStartTime ? Date.now() - this.liveStartTime : 0
-    const summary = this.buildCompletedSummary(durationMs);
 
     const exercises = this.liveExercises()
       .filter(ex => !ex.skipped)
@@ -380,16 +390,30 @@ export class WorkoutPlanComponent implements OnInit {
       exercises,
       notes:      ''
     }).subscribe({
-      next: (log) => {
-        this.planLogs.update(logs => [...logs, log]);
+      next: (response) => {
+
+        this.planLogs.update(logs => [
+          ...logs,
+          response.log
+        ]);
+
+        const summary = this.buildCompletedSummary(
+          durationMs,
+          response.personalRecords
+        );
+
         this.saving.set(false);
         this.saveSuccess.set(true);
+
         this.clearTimer();
+
         this.isLiveMode.set(false);
         this.liveDay.set(null);
         this.liveExercises.set([]);
         this.liveStartTime = null;
+
         this.completedSummary.set(summary);
+
         this.loadPlanStats(plan.id);
       },
       error: () => {

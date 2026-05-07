@@ -55,14 +55,36 @@ export interface PlanProgressResponse {
   currentStreak: number;
 }
 
+export interface WeightRecommendationResponse {
+  recommendedWeight: number;
+  label: string;
+  hint: string;
+}
+
+export interface PersonalRecordResponse {
+  exerciseId: string;
+  exerciseName: string;
+  previousWeight: number | null;
+  newWeight: number;
+  delta: number | null;
+}
+
+export interface WorkoutLogResultResponse {
+  log: WorkoutLogResponse;
+  personalRecords: PersonalRecordResponse[];
+}
+
 @Injectable({ providedIn: 'root' })
 export class WorkoutLogService {
   private readonly api = '/api/v1/logs';
 
   constructor(private http: HttpClient) {}
 
-  saveLog(request: LogWorkoutRequest): Observable<WorkoutLogResponse> {
-    return this.http.post<WorkoutLogResponse>(this.api, request);
+  saveLog(payload: LogWorkoutRequest): Observable<WorkoutLogResultResponse> {
+    return this.http.post<WorkoutLogResultResponse>(
+      '/api/v1/logs',
+      payload
+    );
   }
 
   // GET /api/v1/logs?planId=xxx
@@ -81,6 +103,24 @@ export class WorkoutLogService {
 
   getPlanStats(planId: string): Observable<PlanProgressResponse> {
     return this.http.get<PlanProgressResponse>(`${this.api}/stats?planId=${planId}`);
+  }
+
+  getRecommendation(
+    planId: string,
+    exerciseId: string,
+    plannedWeight: number | null
+  ): Observable<WeightRecommendationResponse> {
+
+    return this.http.get<WeightRecommendationResponse>(
+      `/api/v1/logs/recommendation`,
+      {
+        params: {
+          planId,
+          exerciseId,
+          plannedWeight: plannedWeight?.toString() ?? '0'
+        }
+      }
+    );
   }
 }
 

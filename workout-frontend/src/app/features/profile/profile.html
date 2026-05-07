@@ -83,10 +83,10 @@
               </div>
               <div class="progress-bar-wrap">
                 <div class="progress-bar-fill"
-                     [style.width.%]="getWeightProgress()">
+                     [style.width.%]="weightProgress()?.progressPercent ?? 0">
                 </div>
               </div>
-              <span class="progress-label">{{ getWeightDiff() }}</span>
+              <span class="progress-label">{{ weightProgress()?.message }}</span>
             </div>
           </div>
         }
@@ -94,7 +94,7 @@
       </div>
 
       <!-- Обладнання -->
-      @if (profileForm.get('availableEquipment')?.value?.length > 0) {
+      @if ((profileForm.get('availableEquipment')?.value || []).length > 0) {
         <div class="profile-card equipment-card">
           <h3 class="section-title">🏋️ Доступне обладнання</h3>
           <div class="equipment-chips">

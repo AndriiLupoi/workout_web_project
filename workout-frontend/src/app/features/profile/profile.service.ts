@@ -14,6 +14,11 @@ export interface UserProfile {
   availableEquipment: string[];
 }
 
+export interface WeightProgressResponse {
+  progressPercent: number;
+  message: string;
+}
+
 @Injectable({ providedIn: 'root' })
 export class ProfileService {
   private readonly apiUrl = '/api/v1/profile';
@@ -26,5 +31,11 @@ export class ProfileService {
 
   updateProfile(profile: Partial<UserProfile>): Observable<UserProfile> {
     return this.http.put<UserProfile>(this.apiUrl, profile);
+  }
+
+  getWeightProgress(): Observable<WeightProgressResponse> {
+    return this.http.get<WeightProgressResponse>(
+      `${this.apiUrl}/weight-progress`
+    );
   }
 }
