@@ -10,7 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.lupoi.workoutapp.application.command.ExerciseCommand;
 import org.lupoi.workoutapp.application.usecase.admin.GetStatsUseCase;
 import org.lupoi.workoutapp.application.usecase.admin.ManageExerciseUseCase;
-import org.lupoi.workoutapp.application.usecase.workout.UpdateExerciseVideoUseCase;
+import org.lupoi.workoutapp.application.usecase.workout.exercises.UpdateExerciseVideoUseCase;
 import org.lupoi.workoutapp.domain.enums.Role;
 import org.lupoi.workoutapp.domain.repository.UserProfileRepository;
 import org.lupoi.workoutapp.domain.repository.UserRepository;

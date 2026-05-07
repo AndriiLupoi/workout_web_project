@@ -7,13 +7,16 @@ package org.lupoi.workoutapp.presentation.controller;/*
 */
 
 import lombok.RequiredArgsConstructor;
-import org.lupoi.workoutapp.application.usecase.workout.GetPlanProgressUseCase;
-import org.lupoi.workoutapp.application.usecase.workout.GetWorkoutLogsUseCase;
-import org.lupoi.workoutapp.application.usecase.workout.LogWorkoutUseCase;
-import org.lupoi.workoutapp.domain.repository.WorkoutPlanRepository;
+import org.lupoi.workoutapp.application.usecase.workout.plan.GetWeightRecommendationUseCase;
+import org.lupoi.workoutapp.application.usecase.workout.progress.GetPlanProgressUseCase;
+import org.lupoi.workoutapp.application.usecase.workout.logs.GetWorkoutLogsUseCase;
+import org.lupoi.workoutapp.application.usecase.workout.logs.LogWorkoutUseCase;
+import org.lupoi.workoutapp.domain.model.WorkoutLogResult;
 import org.lupoi.workoutapp.presentation.dto.request.LogWorkoutRequest;
 import org.lupoi.workoutapp.presentation.dto.response.PlanProgressResponse;
+import org.lupoi.workoutapp.presentation.dto.response.WeightRecommendationResponse;
 import org.lupoi.workoutapp.presentation.dto.response.WorkoutLogResponse;
+import org.lupoi.workoutapp.presentation.dto.response.WorkoutLogResultResponse;
 import org.lupoi.workoutapp.presentation.mapper.WorkoutLogDtoMapper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -29,15 +32,16 @@ public class WorkoutLogController {
     private final LogWorkoutUseCase logWorkoutUseCase;
     private final GetWorkoutLogsUseCase getLogsUseCase;
     private final GetPlanProgressUseCase getPlanProgressUseCase;
+    private final GetWeightRecommendationUseCase getWeightRecommendationUseCase;
     private final WorkoutLogDtoMapper mapper;
 
-    // POST /api/v1/logs
+    // POST /api/v1/logs — зберегти тренування, отримати PR у відповідь
     @PostMapping
-    public ResponseEntity<WorkoutLogResponse> logWorkout(
+    public ResponseEntity<WorkoutLogResultResponse> logWorkout(
             @RequestBody LogWorkoutRequest request,
             Principal principal) {
-        var log = logWorkoutUseCase.execute(principal.getName(), mapper.toCommand(request));
-        return ResponseEntity.status(201).body(mapper.toResponse(log));
+        WorkoutLogResult result = logWorkoutUseCase.execute(principal.getName(), mapper.toCommand(request));
+        return ResponseEntity.status(201).body(toResultResponse(result));
     }
 
     // GET /api/v1/logs?planId=xxx
@@ -63,15 +67,35 @@ public class WorkoutLogController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    // GET /api/v1/logs/stats?planId=xxx
     @GetMapping("/stats")
     public ResponseEntity<PlanProgressResponse> getPlanStats(
             @RequestParam String planId,
             Principal principal) {
-        var result = getPlanProgressUseCase.execute(principal.getName(), planId); // повертає PlanProgressResult
-        return ResponseEntity.ok(
-                new PlanProgressResponse(result.totalDays(), result.completedDays(), result.currentStreak())
-        );
+        var result = getPlanProgressUseCase.execute(principal.getName(), planId);
+        return ResponseEntity.ok(new PlanProgressResponse(
+                result.totalDays(), result.completedDays(), result.currentStreak()));
     }
 
-}
+    // GET /api/v1/logs/recommendation?planId=xxx&exerciseId=yyy&plannedWeight=50
+    @GetMapping("/recommendation")
+    public ResponseEntity<WeightRecommendationResponse> getWeightRecommendation(
+            @RequestParam String planId,
+            @RequestParam String exerciseId,
+            @RequestParam(required = false) Double plannedWeight,
+            Principal principal) {
+        return getWeightRecommendationUseCase
+                .execute(principal.getName(), planId, exerciseId, plannedWeight)
+                .map(r -> ResponseEntity.ok(new WeightRecommendationResponse(r.weight(), r.label(), r.hint())))
+                .orElse(ResponseEntity.noContent().build());
+    }
 
+    private WorkoutLogResultResponse toResultResponse(WorkoutLogResult result) {
+        List<WorkoutLogResultResponse.ExercisePrResponse> prs = result.personalRecords().stream()
+                .map(pr -> new WorkoutLogResultResponse.ExercisePrResponse(
+                        pr.exerciseId(), pr.exerciseName(),
+                        pr.newWeight(), pr.previousBest(), pr.delta()))
+                .toList();
+        return new WorkoutLogResultResponse(result.logId(), result.prCount(), prs);
+    }
+}

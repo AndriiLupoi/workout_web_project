@@ -1,4 +1,4 @@
-package org.lupoi.workoutapp.application.usecase.workout;
+package org.lupoi.workoutapp.application.usecase.workout.progress;
 
 import lombok.RequiredArgsConstructor;
 import org.lupoi.workoutapp.domain.entity.WorkoutLog;

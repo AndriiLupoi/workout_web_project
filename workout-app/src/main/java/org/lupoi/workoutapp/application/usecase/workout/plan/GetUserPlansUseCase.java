@@ -1,4 +1,4 @@
-package org.lupoi.workoutapp.application.usecase.workout;
+package org.lupoi.workoutapp.application.usecase.workout.plan;
 
 import lombok.RequiredArgsConstructor;
 import org.lupoi.workoutapp.domain.entity.WorkoutPlan;

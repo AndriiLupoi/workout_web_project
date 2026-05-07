@@ -1,4 +1,4 @@
-package org.lupoi.workoutapp.application.usecase.workout;/*
+package org.lupoi.workoutapp.application.usecase.workout.progress;/*
     @author Andrii
     @project workout
     @class GetPlanProgressUseCase
@@ -12,7 +12,6 @@ import org.lupoi.workoutapp.domain.exception.EntityNotFoundException;
 import org.lupoi.workoutapp.domain.model.PlanProgressResult;
 import org.lupoi.workoutapp.domain.repository.WorkoutLogRepository;
 import org.lupoi.workoutapp.domain.repository.WorkoutPlanRepository;
-import org.lupoi.workoutapp.presentation.dto.response.PlanProgressResponse;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;

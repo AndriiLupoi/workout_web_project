@@ -5,6 +5,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.lupoi.workoutapp.application.strategy.PlanGenerationStrategy;
+import org.lupoi.workoutapp.application.usecase.workout.plan.GenerateWorkoutPlanUseCase;
 import org.lupoi.workoutapp.domain.entity.Exercise;
 import org.lupoi.workoutapp.domain.entity.UserProfile;
 import org.lupoi.workoutapp.domain.entity.WorkoutPlan;

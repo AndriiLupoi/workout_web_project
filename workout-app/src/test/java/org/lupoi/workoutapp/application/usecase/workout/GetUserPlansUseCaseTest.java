@@ -3,6 +3,7 @@ package org.lupoi.workoutapp.application.usecase.workout;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.lupoi.workoutapp.application.usecase.workout.plan.GetUserPlansUseCase;
 import org.lupoi.workoutapp.domain.entity.WorkoutPlan;
 import org.lupoi.workoutapp.domain.repository.WorkoutPlanRepository;
 import org.mockito.InjectMocks;

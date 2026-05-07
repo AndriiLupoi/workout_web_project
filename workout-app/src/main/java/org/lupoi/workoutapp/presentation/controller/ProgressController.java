@@ -7,7 +7,7 @@ package org.lupoi.workoutapp.presentation.controller;/*
 */
 
 import lombok.RequiredArgsConstructor;
-import org.lupoi.workoutapp.application.usecase.workout.GetProgressUseCase;
+import org.lupoi.workoutapp.application.usecase.workout.progress.GetProgressUseCase;
 import org.lupoi.workoutapp.domain.model.ProgressResult;
 import org.lupoi.workoutapp.presentation.dto.response.ProgressResponse;
 import org.springframework.http.ResponseEntity;

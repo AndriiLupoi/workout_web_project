@@ -10,8 +10,11 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.lupoi.workoutapp.application.usecase.user.GetUserProfileUseCase;
 import org.lupoi.workoutapp.application.usecase.user.SaveUserProfileUseCase;
+import org.lupoi.workoutapp.application.usecase.workout.progress.GetWeightProgressUseCase;
+import org.lupoi.workoutapp.domain.model.WeightProgressResult;
 import org.lupoi.workoutapp.presentation.dto.request.SaveProfileRequest;
 import org.lupoi.workoutapp.presentation.dto.response.ProfileResponse;
+import org.lupoi.workoutapp.presentation.dto.response.WeightProgressResponse;
 import org.lupoi.workoutapp.presentation.mapper.ProfileDtoMapper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,6 +28,7 @@ public class UserProfileController {
 
     private final SaveUserProfileUseCase saveUseCase;
     private final GetUserProfileUseCase getUseCase;
+    private final GetWeightProgressUseCase weightProgressUseCase;
     private final ProfileDtoMapper mapper;
 
     @PutMapping
@@ -41,5 +45,17 @@ public class UserProfileController {
         return ResponseEntity.ok(
                 mapper.toResponse(getUseCase.execute(principal.getName()))
         );
+    }
+
+    // GET /api/v1/profile/weight-progress
+    @GetMapping("/weight-progress")
+    public ResponseEntity<WeightProgressResponse> getWeightProgress(Principal principal) {
+        WeightProgressResult result = weightProgressUseCase.execute(principal.getName());
+        return ResponseEntity.ok(new WeightProgressResponse(
+                result.currentWeight(),
+                result.targetWeight(),
+                result.progressPercent(),
+                result.message()
+        ));
     }
 }
