@@ -7,6 +7,7 @@ package org.lupoi.workoutapp.presentation.controller;/*
 */
 
 import lombok.RequiredArgsConstructor;
+import org.lupoi.workoutapp.application.command.ExerciseCommand;
 import org.lupoi.workoutapp.application.usecase.admin.GetStatsUseCase;
 import org.lupoi.workoutapp.application.usecase.admin.ManageExerciseUseCase;
 import org.lupoi.workoutapp.application.usecase.workout.UpdateExerciseVideoUseCase;
@@ -58,8 +59,10 @@ public class AdminController {
     @GetMapping("/stats")
     @PreAuthorize("hasAnyRole('ADMIN', 'OWNER')")
     public ResponseEntity<StatsResponse> getStats() {
-        return ResponseEntity.ok(getStatsUseCase.execute());
+        var result = getStatsUseCase.execute(); // повертає StatsResult
+        return ResponseEntity.ok(new StatsResponse(result.totalUsers(), result.totalPlans(), result.totalAdmins()));
     }
+
 
     @GetMapping("/users/{userId}/profile")
     @PreAuthorize("hasRole('OWNER')")
@@ -142,20 +145,21 @@ public class AdminController {
     @PostMapping("/exercises")
     @PreAuthorize("hasAnyRole('ADMIN', 'OWNER')")
     public ResponseEntity<ExerciseResponse> createExercise(@RequestBody ExerciseRequest req) {
-        return ResponseEntity.status(201).body(
-                exerciseDtoMapper.toResponse(manageExerciseUseCase.create(req))
-        );
+        var cmd = new ExerciseCommand(req.name(), req.muscleGroup(), req.difficulty(),
+                req.equipmentType(), req.description(), req.videoUrl());
+        return ResponseEntity.status(201).body(exerciseDtoMapper.toResponse(manageExerciseUseCase.create(cmd)));
     }
+
 
     @PutMapping("/exercises/{exerciseId}")
     @PreAuthorize("hasAnyRole('ADMIN', 'OWNER')")
-    public ResponseEntity<ExerciseResponse> updateExercise(
-            @PathVariable String exerciseId,
-            @RequestBody ExerciseRequest req) {
-        return ResponseEntity.ok(
-                exerciseDtoMapper.toResponse(manageExerciseUseCase.update(exerciseId, req))
-        );
+    public ResponseEntity<ExerciseResponse> updateExercise(@PathVariable String exerciseId,
+                                                           @RequestBody ExerciseRequest req) {
+        var cmd = new ExerciseCommand(req.name(), req.muscleGroup(), req.difficulty(),
+                req.equipmentType(), req.description(), req.videoUrl());
+        return ResponseEntity.ok(exerciseDtoMapper.toResponse(manageExerciseUseCase.update(exerciseId, cmd)));
     }
+
 
     @DeleteMapping("/exercises/{exerciseId}")
     @PreAuthorize("hasAnyRole('ADMIN', 'OWNER')")

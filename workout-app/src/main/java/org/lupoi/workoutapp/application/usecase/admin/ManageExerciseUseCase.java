@@ -7,6 +7,7 @@ package org.lupoi.workoutapp.application.usecase.admin;/*
 */
 
 import lombok.RequiredArgsConstructor;
+import org.lupoi.workoutapp.application.command.ExerciseCommand;
 import org.lupoi.workoutapp.domain.entity.Exercise;
 import org.lupoi.workoutapp.domain.enums.Difficulty;
 import org.lupoi.workoutapp.domain.enums.EquipmentType;
@@ -22,29 +23,29 @@ public class ManageExerciseUseCase {
 
     private final ExerciseRepository exerciseRepository;
 
-    public Exercise create(ExerciseRequest req) {
+    public Exercise create(ExerciseCommand cmd) {
         Exercise exercise = Exercise.builder()
-                .name(req.name())
-                .muscleGroup(req.muscleGroup() != null ? MuscleGroup.valueOf(req.muscleGroup()) : null)
-                .difficulty(req.difficulty() != null ? Difficulty.valueOf(req.difficulty()) : null)
-                .equipmentType(req.equipmentType() != null ? EquipmentType.valueOf(req.equipmentType()) : null)
-                .description(req.description())
-                .videoUrl(req.videoUrl())
+                .name(cmd.name())
+                .muscleGroup(cmd.muscleGroup() != null ? MuscleGroup.valueOf(cmd.muscleGroup()) : null)
+                .difficulty(cmd.difficulty() != null ? Difficulty.valueOf(cmd.difficulty()) : null)
+                .equipmentType(cmd.equipmentType() != null ? EquipmentType.valueOf(cmd.equipmentType()) : null)
+                .description(cmd.description())
+                .videoUrl(cmd.videoUrl())
                 .build();
         return exerciseRepository.save(exercise);
     }
 
-    public Exercise update(String id, ExerciseRequest req) {
+    public Exercise update(String id, ExerciseCommand cmd) {
         Exercise existing = exerciseRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Exercise", id));
         Exercise updated = Exercise.builder()
                 .id(existing.getId())
-                .name(req.name())
-                .muscleGroup(req.muscleGroup() != null ? MuscleGroup.valueOf(req.muscleGroup()) : null)
-                .difficulty(req.difficulty() != null ? Difficulty.valueOf(req.difficulty()) : null)
-                .equipmentType(req.equipmentType() != null ? EquipmentType.valueOf(req.equipmentType()) : null)
-                .description(req.description())
-                .videoUrl(req.videoUrl())
+                .name(cmd.name())
+                .muscleGroup(cmd.muscleGroup() != null ? MuscleGroup.valueOf(cmd.muscleGroup()) : null)
+                .difficulty(cmd.difficulty() != null ? Difficulty.valueOf(cmd.difficulty()) : null)
+                .equipmentType(cmd.equipmentType() != null ? EquipmentType.valueOf(cmd.equipmentType()) : null)
+                .description(cmd.description())
+                .videoUrl(cmd.videoUrl())
                 .build();
         return exerciseRepository.save(updated);
     }
@@ -55,3 +56,4 @@ public class ManageExerciseUseCase {
         exerciseRepository.deleteById(id);
     }
 }
+

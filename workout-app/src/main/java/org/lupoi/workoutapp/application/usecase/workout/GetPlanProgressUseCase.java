@@ -9,6 +9,7 @@ package org.lupoi.workoutapp.application.usecase.workout;/*
 import lombok.RequiredArgsConstructor;
 import org.lupoi.workoutapp.domain.entity.WorkoutLog;
 import org.lupoi.workoutapp.domain.exception.EntityNotFoundException;
+import org.lupoi.workoutapp.domain.model.PlanProgressResult;
 import org.lupoi.workoutapp.domain.repository.WorkoutLogRepository;
 import org.lupoi.workoutapp.domain.repository.WorkoutPlanRepository;
 import org.lupoi.workoutapp.presentation.dto.response.PlanProgressResponse;
@@ -25,7 +26,7 @@ public class GetPlanProgressUseCase {
     private final WorkoutLogRepository workoutLogRepository;
     private final WorkoutPlanRepository workoutPlanRepository;
 
-    public PlanProgressResponse execute(String userId, String planId) {
+    public PlanProgressResult execute(String userId, String planId) {
         var plan = workoutPlanRepository.findByIdAndUserId(planId, userId)
                 .orElseThrow(() -> new EntityNotFoundException("WorkoutPlan", planId));
 
@@ -35,7 +36,7 @@ public class GetPlanProgressUseCase {
         int completedDays = logs.size();
         int streak        = calculateStreak(logs);
 
-        return new PlanProgressResponse(totalDays, completedDays, streak);
+        return new PlanProgressResult(totalDays, completedDays, streak);
     }
 
     private int calculateStreak(List<WorkoutLog> logs) {
@@ -56,3 +57,4 @@ public class GetPlanProgressUseCase {
         return streak;
     }
 }
+

@@ -67,9 +67,11 @@ public class WorkoutLogController {
     public ResponseEntity<PlanProgressResponse> getPlanStats(
             @RequestParam String planId,
             Principal principal) {
+        var result = getPlanProgressUseCase.execute(principal.getName(), planId); // повертає PlanProgressResult
         return ResponseEntity.ok(
-                getPlanProgressUseCase.execute(principal.getName(), planId)
+                new PlanProgressResponse(result.totalDays(), result.completedDays(), result.currentStreak())
         );
     }
+
 }
 
