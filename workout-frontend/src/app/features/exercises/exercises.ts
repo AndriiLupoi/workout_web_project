@@ -35,7 +35,6 @@ export class ExercisesComponent implements OnInit {
 
   // ================= SIGNALS =================
   exercises = signal<Exercise[]>([]);
-  filteredExercises = signal<Exercise[]>([]);
 
   // Модалка редагування / створення
   selectedExercise = signal<Exercise | null>(null);
@@ -83,58 +82,29 @@ export class ExercisesComponent implements OnInit {
 
   // ================= API =================
   loadExercises(): void {
-    this.exercisesService.getAllExercises().subscribe({
+    this.exercisesService.getAllExercises({
+      muscleGroup: this.selectedMuscleGroup,
+      difficulty: this.selectedDifficulty,
+      search: this.searchTerm.trim() || undefined,
+      sortBy: this.selectedSortBy
+    }).subscribe({
       next: (data) => {
         this.exercises.set(data);
-        this.applyFilters();
       },
       error: (err) => {
-        console.error('Помилка при завантаженні вправ:', err);
-        this.filteredExercises.set([]);
+        console.error(err);
+        this.exercises.set([]);
       }
     });
   }
 
   // ================= FILTER LOGIC =================
-  applyFilters(): void {
-    let result = [...this.exercises()];
-
-    if (this.searchTerm.trim()) {
-      const term = this.searchTerm.toLowerCase().trim();
-      result = result.filter(ex =>
-        ex.name.toLowerCase().includes(term) ||
-        (ex.description && ex.description.toLowerCase().includes(term))
-      );
-    }
-
-    if (this.selectedMuscleGroup) {
-      result = result.filter(ex => ex.muscleGroup === this.selectedMuscleGroup);
-    }
-
-    if (this.selectedDifficulty) {
-      result = result.filter(ex => ex.difficulty === this.selectedDifficulty);
-    }
-
-    result.sort((a, b) => {
-      switch (this.selectedSortBy) {
-        case 'name':
-          return a.name.localeCompare(b.name, 'uk');
-        case 'difficulty':
-          return (DIFFICULTY_ORDER[a.difficulty] ?? 0) - (DIFFICULTY_ORDER[b.difficulty] ?? 0);
-        case 'muscleGroup':
-          return a.muscleGroup.localeCompare(b.muscleGroup, 'uk');
-        default:
-          return 0;
-      }
-    });
-
-    this.filteredExercises.set(result);
-  }
 
   onFilterChange(): void {
     clearTimeout(this.searchTimeout);
+
     this.searchTimeout = setTimeout(() => {
-      this.applyFilters();
+      this.loadExercises();
     }, 200);
   }
 
@@ -143,7 +113,8 @@ export class ExercisesComponent implements OnInit {
     this.selectedMuscleGroup = '';
     this.selectedDifficulty = '';
     this.selectedSortBy = 'name';
-    this.applyFilters();
+
+    this.loadExercises();
   }
 
   // ================= MODAL =================
@@ -213,7 +184,7 @@ export class ExercisesComponent implements OnInit {
             list.map(ex => ex.id === saved.id ? saved : ex)
           );
         }
-        this.applyFilters();
+        this.loadExercises();
         this.savingExercise.set(false);
         this.exerciseSaveSuccess.set(true);
         setTimeout(() => this.closeModal(), 1200);
@@ -237,7 +208,7 @@ export class ExercisesComponent implements OnInit {
     this.exercisesService.deleteExercise(id).subscribe({
       next: () => {
         this.exercises.update(list => list.filter(ex => ex.id !== id));
-        this.applyFilters();
+        this.loadExercises();
         this.deleteConfirmId.set(null);
         this.closeModal();
       }

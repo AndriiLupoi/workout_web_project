@@ -22,8 +22,21 @@ export class ExercisesService {
 
   constructor(private http: HttpClient) {}
 
-  getAllExercises(): Observable<Exercise[]> {
-    return this.http.get<Exercise[]>(this.apiUrl);
+  getAllExercises(params?: {
+    muscleGroup?: string;
+    difficulty?: string;
+    search?: string;
+    sortBy?: string;
+  }): Observable<Exercise[]> {
+
+    return this.http.get<Exercise[]>(this.apiUrl, {
+      params: {
+        ...(params?.muscleGroup ? { muscleGroup: params.muscleGroup } : {}),
+        ...(params?.difficulty ? { difficulty: params.difficulty } : {}),
+        ...(params?.search ? { search: params.search } : {}),
+        ...(params?.sortBy ? { sortBy: params.sortBy } : {}),
+      }
+    });
   }
 
   updateVideoUrl(exerciseId: string, videoUrl: string): Observable<Exercise> {

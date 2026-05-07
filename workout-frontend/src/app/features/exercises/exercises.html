@@ -99,7 +99,7 @@
     <div class="exercises-top-bar">
       <h1>База вправ</h1>
       <div class="top-bar-right">
-        <span class="exercises-count">{{ filteredExercises().length }} вправ</span>
+        <span class="exercises-count">{{ exercises().length }} вправ</span>
         @if (isAdmin()) {
           <button class="btn-primary btn-add-exercise" (click)="openCreateModal()">
             + Додати вправу
@@ -134,7 +134,7 @@
 
     <!-- Сітка вправ -->
     <div class="exercises-grid">
-      @for (exercise of filteredExercises(); track exercise.id) {
+      @for (exercise of exercises(); track exercise.id) {
         <div class="exercise-card">
 
           <div class="card-media">
@@ -184,7 +184,7 @@
         </div>
       }
 
-      @if (filteredExercises().length === 0) {
+      @if (exercises().length === 0) {
         <div class="no-results">
           <span class="no-results-icon">😔</span>
           <h3>Вправ не знайдено</h3>
