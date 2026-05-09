@@ -113,4 +113,12 @@ export class AuthService {
   isOwner(): boolean {
     return this.roleSubject.value === 'OWNER';
   }
+
+  forgotPassword(email: string): Observable<void> {
+    return this.http.post<void>(`${this.apiUrl}/forgot-password`, { email });
+  }
+
+  resetPassword(token: string, newPassword: string): Observable<void> {
+    return this.http.post<void>(`${this.apiUrl}/reset-password`, { token, newPassword });
+  }
 }

@@ -35,6 +35,39 @@ h2 {
   margin-bottom: 16px;
 }
 
+.password-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-input-wrap input {
+  width: 100%;
+  padding-right: 46px;
+}
+
+.toggle-password-btn {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: transparent;
+  border: none;
+  cursor: pointer;
+
+  color: #777;
+  padding: 0;
+}
+
+.toggle-password-btn:hover {
+  color: #4f46e5;
+}
+
 label {
   font-size: 14px;
   font-weight: 500;
@@ -96,19 +129,31 @@ input.error {
   cursor: not-allowed;
 }
 
-.switch-link {
-  text-align: center;
-  margin-top: 20px;
-  font-size: 14px;
-  color: #666;
+.switch-links {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 22px;
 }
 
-.switch-link a {
+.switch-link,
+.reset-password {
+  text-align: center;
+  font-size: 14px;
+  color: #666;
+  margin: 0;
+}
+
+.switch-link a,
+.reset-password a {
   color: #4f46e5;
   text-decoration: none;
   font-weight: 500;
+  transition: color 0.2s;
 }
 
-.switch-link a:hover {
+.switch-link a:hover,
+.reset-password a:hover {
   text-decoration: underline;
+  color: #4338ca;
 }

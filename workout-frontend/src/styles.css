@@ -233,6 +233,39 @@ input.error, select.error {
   box-shadow: 0 0 0 3px var(--error-soft);
 }
 
+.password-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-input-wrap input {
+  width: 100%;
+  padding-right: 46px;
+}
+
+.toggle-password-btn {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: transparent;
+  border: none;
+  cursor: pointer;
+
+  color: #777;
+  padding: 0;
+}
+
+.toggle-password-btn:hover {
+  color: #4f46e5;
+}
+
 /* ====================== MISC ====================== */
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }

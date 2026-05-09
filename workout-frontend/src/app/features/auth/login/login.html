@@ -22,13 +22,25 @@
 
       <div class="field">
         <label for="password">Password</label>
-        <input
-          id="password"
-          type="password"
-          formControlName="password"
-          placeholder="Min 8 characters"
-          [class.error]="form.get('password')?.invalid && form.get('password')?.touched"
-        />
+        <div class="password-input-wrap">
+          <input
+            [type]="showPassword() ? 'text' : 'password'"
+            id="password"
+            type="password"
+            formControlName="password"
+            placeholder="Min 8 characters"
+            [class.error]="form.get('password')?.invalid && form.get('password')?.touched"
+          />
+          <button
+            type="button"
+            class="toggle-password-btn"
+            (click)="showPassword.set(!showPassword())">
+            <lucide-icon
+              [img]="showPassword() ? EyeOff : Eye"
+              size="18">
+            </lucide-icon>
+          </button>
+        </div>
         <span class="error-text"
               *ngIf="form.get('password')?.invalid && form.get('password')?.touched">
           Password must be at least 8 characters
@@ -45,9 +57,16 @@
 
     </form>
 
-    <p class="switch-link">
-      Don't have an account?
-      <a routerLink="/auth/register">Register</a>
-    </p>
+    <div class="switch-links">
+      <p class="switch-link">
+        Don't have an account?
+        <a routerLink="/auth/register">Register</a>
+      </p>
+      <p class="reset-password">
+        Забули пароль?
+        <a routerLink="/auth/forgot-password">Відновити пароль</a>
+      </p>
+    </div>
+
   </div>
 </div>

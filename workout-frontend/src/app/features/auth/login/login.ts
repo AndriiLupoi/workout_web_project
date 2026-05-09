@@ -1,13 +1,19 @@
-import { Component } from '@angular/core';
+import {Component, signal} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/services/auth';
+import { Eye, EyeOff, LucideAngularModule } from 'lucide-angular';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    RouterLink,
+    LucideAngularModule
+  ],
   templateUrl: './login.html',
   styleUrl: './login.css'
 })
@@ -15,6 +21,11 @@ export class LoginComponent {
   form: FormGroup;
   errorMessage = '';
   loading = false;
+
+  readonly Eye = Eye;
+  readonly EyeOff = EyeOff;
+
+  showPassword = signal(false);
 
   constructor(
     private fb: FormBuilder,
