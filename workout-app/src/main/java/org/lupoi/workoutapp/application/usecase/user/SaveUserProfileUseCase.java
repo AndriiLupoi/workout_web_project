@@ -2,8 +2,10 @@ package org.lupoi.workoutapp.application.usecase.user;
 
 import lombok.RequiredArgsConstructor;
 import org.lupoi.workoutapp.application.command.SaveUserProfileCommand;
+import org.lupoi.workoutapp.application.service.AuditService;
 import org.lupoi.workoutapp.domain.entity.logs.BodyWeightLog;
 import org.lupoi.workoutapp.domain.entity.user.UserProfile;
+import org.lupoi.workoutapp.domain.enums.AuditAction;
 import org.lupoi.workoutapp.domain.repository.BodyWeightLogRepository;
 import org.lupoi.workoutapp.domain.repository.UserProfileRepository;
 import org.springframework.stereotype.Service;
@@ -16,6 +18,7 @@ public class SaveUserProfileUseCase {
 
     private final UserProfileRepository userProfileRepository;
     private final BodyWeightLogRepository bodyWeightLogRepository;
+    private final AuditService auditService;
 
     public UserProfile execute(String userId, SaveUserProfileCommand command) {
         UserProfile existing = userProfileRepository.findByUserId(userId).orElse(null);
@@ -44,6 +47,16 @@ public class SaveUserProfileUseCase {
                     .build();
             bodyWeightLogRepository.save(log);
         }
+
+        auditService.log(
+                userId,
+                null,
+                "USER",
+                AuditAction.PROFILE_UPDATED,
+                saved.getId(),
+                "UserProfile",
+                "Оновлено профіль користувача"
+        );
 
         return saved;
     }

@@ -2,7 +2,9 @@ package org.lupoi.workoutapp.application.usecase.user.resetPassword;
 
 import lombok.RequiredArgsConstructor;
 import org.lupoi.workoutapp.application.port.EmailPort;
+import org.lupoi.workoutapp.application.service.AuditService;
 import org.lupoi.workoutapp.domain.entity.PasswordResetToken;
+import org.lupoi.workoutapp.domain.enums.AuditAction;
 import org.lupoi.workoutapp.domain.repository.PasswordResetTokenRepository;
 import org.lupoi.workoutapp.domain.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,7 +26,8 @@ public class ForgotPasswordUseCase {
 
     private final UserRepository userRepository;
     private final PasswordResetTokenRepository tokenRepository;
-    private final EmailPort emailPort;  // ← порт, не конкретна реалізація
+    private final EmailPort emailPort;
+    private final AuditService auditService;
 
     @Value("${app.frontend-url}")
     private String frontendUrl;
@@ -46,6 +49,16 @@ public class ForgotPasswordUseCase {
 
             String resetLink = frontendUrl + "/auth/reset-password?token=" + token;
             emailPort.sendPasswordResetEmail(email, resetLink);
+
+            auditService.log(
+                    user.getId(),
+                    email,
+                    user.getRole() != null ? user.getRole().name() : "USER",
+                    AuditAction.PASSWORD_RESET_REQUESTED,
+                    user.getId(),
+                    "User",
+                    "Запит скидання пароля"
+            );
         });
     }
 }

@@ -8,8 +8,10 @@ package org.lupoi.workoutapp.application.usecase.user.resetPassword;/*
 
 import lombok.RequiredArgsConstructor;
 import org.lupoi.workoutapp.application.port.PasswordHasher;
+import org.lupoi.workoutapp.application.service.AuditService;
 import org.lupoi.workoutapp.domain.entity.PasswordResetToken;
 import org.lupoi.workoutapp.domain.entity.user.User;
+import org.lupoi.workoutapp.domain.enums.AuditAction;
 import org.lupoi.workoutapp.domain.exception.DomainException;
 import org.lupoi.workoutapp.domain.exception.EntityNotFoundException;
 import org.lupoi.workoutapp.domain.repository.PasswordResetTokenRepository;
@@ -25,6 +27,7 @@ public class ResetPasswordUseCase {
     private final PasswordResetTokenRepository tokenRepository;
     private final UserRepository userRepository;
     private final PasswordHasher passwordHasher;
+    private final AuditService auditService;
 
     public void execute(String token, String newPassword) {
         PasswordResetToken resetToken = tokenRepository.findByToken(token)
@@ -53,7 +56,6 @@ public class ResetPasswordUseCase {
 
         userRepository.save(updated);
 
-        // Помічаємо токен як використаний
         PasswordResetToken usedToken = PasswordResetToken.builder()
                 .id(resetToken.getId())
                 .userId(resetToken.getUserId())
@@ -63,5 +65,15 @@ public class ResetPasswordUseCase {
                 .build();
 
         tokenRepository.save(usedToken);
+
+        auditService.log(
+                user.getId(),
+                user.getEmail(),
+                user.getRole() != null ? user.getRole().name() : "USER",
+                AuditAction.PASSWORD_RESET_COMPLETED,
+                user.getId(),
+                "User",
+                "Пароль успішно змінено"
+        );
     }
 }

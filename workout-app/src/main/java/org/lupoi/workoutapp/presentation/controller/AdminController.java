@@ -1,10 +1,4 @@
-package org.lupoi.workoutapp.presentation.controller;/*
-    @author Andrii
-    @project workout
-    @class AdminController
-    @version 1.0.0
-    @since 03.05.2026 - 11.08
-*/
+package org.lupoi.workoutapp.presentation.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.lupoi.workoutapp.application.command.ExerciseCommand;
@@ -14,6 +8,7 @@ import org.lupoi.workoutapp.application.usecase.admin.ManageExerciseUseCase;
 import org.lupoi.workoutapp.application.usecase.workout.exercises.UpdateExerciseVideoUseCase;
 import org.lupoi.workoutapp.domain.entity.logs.AuditLog;
 import org.lupoi.workoutapp.domain.entity.user.User;
+import org.lupoi.workoutapp.domain.enums.AuditAction;
 import org.lupoi.workoutapp.domain.enums.Role;
 import org.lupoi.workoutapp.domain.model.PageResult;
 import org.lupoi.workoutapp.domain.repository.AuditLogRepository;
@@ -36,6 +31,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.Map;
 
@@ -57,41 +53,27 @@ public class AdminController {
     private final AuditLogRepository auditLogRepository;
     private final AuditService auditService;
 
-
-    // GET /api/v1/admin/users — список всіх юзерів (ADMIN + OWNER)
     @GetMapping("/users")
     @PreAuthorize("hasAnyRole('ADMIN', 'OWNER')")
     public ResponseEntity<PageResponse<UserResponse>> getAllUsers(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size
-    ) {
-        // Захист від занадто великих розмірів сторінок
+            @RequestParam(defaultValue = "20") int size) {
         int safeSize = Math.min(size, 100);
-
-        PageResult<User> pageResult =
-                userRepository.findAll(page, safeSize);
-
+        PageResult<User> pageResult = userRepository.findAll(page, safeSize);
         List<UserResponse> content = pageResult.content().stream()
-                .map(userDtoMapper::toResponse)
-                .toList();
-
+                .map(userDtoMapper::toResponse).toList();
         return ResponseEntity.ok(PageResponse.of(
-                content,
-                pageResult.currentPage(),
-                pageResult.totalPages(),
-                pageResult.totalElements(),
-                pageResult.pageSize()
+                content, pageResult.currentPage(), pageResult.totalPages(),
+                pageResult.totalElements(), pageResult.pageSize()
         ));
     }
-
 
     @GetMapping("/stats")
     @PreAuthorize("hasAnyRole('ADMIN', 'OWNER')")
     public ResponseEntity<StatsResponse> getStats() {
-        var result = getStatsUseCase.execute(); // повертає StatsResult
+        var result = getStatsUseCase.execute();
         return ResponseEntity.ok(new StatsResponse(result.totalUsers(), result.totalPlans(), result.totalAdmins()));
     }
-
 
     @GetMapping("/users/{userId}/profile")
     @PreAuthorize("hasRole('OWNER')")
@@ -102,96 +84,125 @@ public class AdminController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // GET /api/v1/admin/users/{userId}/plans — плани юзера (тільки OWNER)
     @GetMapping("/users/{userId}/plans")
     @PreAuthorize("hasRole('OWNER')")
     public ResponseEntity<List<WorkoutPlanResponse>> getUserPlans(@PathVariable String userId) {
-        var plans = workoutPlanRepository.findByUserId(userId)
-                .stream()
-                .map(workoutPlanDtoMapper::toResponse)
-                .toList();
+        var plans = workoutPlanRepository.findByUserId(userId).stream()
+                .map(workoutPlanDtoMapper::toResponse).toList();
         return ResponseEntity.ok(plans);
     }
 
-
-
-    // PUT /api/v1/admin/roles/{userId}?role=ADMIN — призначити роль (тільки OWNER)
+    // Аудит тут — немає окремого UseCase для зміни ролі
     @PutMapping("/roles/{userId}")
     @PreAuthorize("hasRole('OWNER')")
     public ResponseEntity<UserResponse> assignRole(
             @PathVariable String userId,
-            @RequestParam Role role) {
+            @RequestParam Role role,
+            Principal principal) {
 
-        if (role == Role.OWNER) {
-            return ResponseEntity.badRequest().build();
-        }
+        if (role == Role.OWNER) return ResponseEntity.badRequest().build();
 
         var user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-
-        if (user.getRole() == Role.OWNER) {
-            return ResponseEntity.status(403).build();
-        }
+        if (user.getRole() == Role.OWNER) return ResponseEntity.status(403).build();
 
         var updated = userRepository.updateRole(userId, role);
+
+        var actor = resolveActor(principal);
+        auditService.log(
+                actor.getId(), actor.getEmail(), actor.getRole().name(),
+                AuditAction.ROLE_CHANGED, userId, "User",
+                "Роль змінено на " + role.name() + " для " + user.getEmail()
+        );
+
         return ResponseEntity.ok(userDtoMapper.toResponse(updated));
     }
 
-    // DELETE /api/v1/admin/users/{userId} — видалити юзера (тільки OWNER)
+    // Аудит тут — немає окремого UseCase для видалення юзера
     @DeleteMapping("/users/{userId}")
     @PreAuthorize("hasRole('OWNER')")
-    public ResponseEntity<Void> deleteUser(@PathVariable String userId) {
+    public ResponseEntity<Void> deleteUser(@PathVariable String userId, Principal principal) {
+        var target = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
         userRepository.deleteById(userId);
+
+        var actor = resolveActor(principal);
+        auditService.log(
+                actor.getId(), actor.getEmail(), actor.getRole().name(),
+                AuditAction.USER_DELETED, userId, "User",
+                "Видалено: " + target.getEmail()
+        );
+
         return ResponseEntity.noContent().build();
     }
 
+    // Аудит тут — немає окремого UseCase
     @DeleteMapping("/users/{userId}/plans/{planId}")
     @PreAuthorize("hasRole('OWNER')")
     public ResponseEntity<Void> deleteUserPlan(
             @PathVariable String userId,
-            @PathVariable String planId) {
+            @PathVariable String planId,
+            Principal principal) {
+
         workoutPlanRepository.findByIdAndUserId(planId, userId)
                 .orElseThrow(() -> new RuntimeException("Plan not found"));
         workoutPlanRepository.deleteById(planId);
+
+        var actor = resolveActor(principal);
+        auditService.log(
+                actor.getId(), actor.getEmail(), actor.getRole().name(),
+                AuditAction.PLAN_DELETED, planId, "WorkoutPlan",
+                "Адмін видалив план користувача: " + userId
+        );
+
         return ResponseEntity.noContent().build();
     }
 
+    // Аудит в ManageExerciseUseCase
     @PatchMapping("/exercises/{exerciseId}/video")
     @PreAuthorize("hasAnyRole('ADMIN', 'OWNER')")
     public ResponseEntity<ExerciseResponse> updateExerciseVideo(
             @PathVariable String exerciseId,
             @RequestBody Map<String, String> body) {
-        String videoUrl = body.get("videoUrl");
-        return ResponseEntity.ok(
-                exerciseDtoMapper.toResponse(
-                        updateExerciseVideoUseCase.execute(exerciseId, videoUrl)
-                )
-        );
+        return ResponseEntity.ok(exerciseDtoMapper.toResponse(
+                updateExerciseVideoUseCase.execute(exerciseId, body.get("videoUrl"))
+        ));
     }
 
     @PostMapping("/exercises")
     @PreAuthorize("hasAnyRole('ADMIN', 'OWNER')")
-    public ResponseEntity<ExerciseResponse> createExercise(@RequestBody ExerciseRequest req) {
+    public ResponseEntity<ExerciseResponse> createExercise(
+            @RequestBody ExerciseRequest req,
+            Principal principal) {
+        var actor = resolveActor(principal);
         var cmd = new ExerciseCommand(req.name(), req.muscleGroup(), req.difficulty(),
                 req.equipmentType(), req.description(), req.videoUrl());
-        return ResponseEntity.status(201).body(exerciseDtoMapper.toResponse(manageExerciseUseCase.create(cmd)));
+        return ResponseEntity.status(201).body(exerciseDtoMapper.toResponse(
+                manageExerciseUseCase.create(cmd, actor.getId(), actor.getEmail(), actor.getRole().name())
+        ));
     }
-
 
     @PutMapping("/exercises/{exerciseId}")
     @PreAuthorize("hasAnyRole('ADMIN', 'OWNER')")
-    public ResponseEntity<ExerciseResponse> updateExercise(@PathVariable String exerciseId,
-                                                           @RequestBody ExerciseRequest req) {
+    public ResponseEntity<ExerciseResponse> updateExercise(
+            @PathVariable String exerciseId,
+            @RequestBody ExerciseRequest req,
+            Principal principal) {
+        var actor = resolveActor(principal);
         var cmd = new ExerciseCommand(req.name(), req.muscleGroup(), req.difficulty(),
                 req.equipmentType(), req.description(), req.videoUrl());
-        return ResponseEntity.ok(exerciseDtoMapper.toResponse(manageExerciseUseCase.update(exerciseId, cmd)));
+        return ResponseEntity.ok(exerciseDtoMapper.toResponse(
+                manageExerciseUseCase.update(exerciseId, cmd, actor.getId(), actor.getEmail(), actor.getRole().name())
+        ));
     }
-
 
     @DeleteMapping("/exercises/{exerciseId}")
     @PreAuthorize("hasAnyRole('ADMIN', 'OWNER')")
-    public ResponseEntity<Void> deleteExercise(@PathVariable String exerciseId) {
-        manageExerciseUseCase.delete(exerciseId);
+    public ResponseEntity<Void> deleteExercise(
+            @PathVariable String exerciseId,
+            Principal principal) {
+        var actor = resolveActor(principal);
+        manageExerciseUseCase.delete(exerciseId, actor.getId(), actor.getEmail(), actor.getRole().name());
         return ResponseEntity.noContent().build();
     }
 
@@ -206,7 +217,6 @@ public class AdminController {
 
         int safeSize = Math.min(size, 100);
         PageResult<AuditLog> result;
-
         if (action != null && !action.isBlank()) {
             result = auditLogRepository.findByAction(action, page, safeSize);
         } else if (from != null && to != null) {
@@ -221,8 +231,7 @@ public class AdminController {
                         l.getAction() != null ? l.getAction().name() : null,
                         l.getTargetId(), l.getTargetType(), l.getDetails(),
                         l.getCreatedAt() != null ? l.getCreatedAt().toString() : null
-                ))
-                .toList();
+                )).toList();
 
         return ResponseEntity.ok(PageResponse.of(
                 content, result.currentPage(), result.totalPages(),
@@ -230,5 +239,8 @@ public class AdminController {
         ));
     }
 
+    private User resolveActor(Principal principal) {
+        return userRepository.findById(principal.getName())
+                .orElseThrow(() -> new RuntimeException("Actor not found"));
+    }
 }
-

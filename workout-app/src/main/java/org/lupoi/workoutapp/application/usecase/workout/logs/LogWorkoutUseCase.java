@@ -8,8 +8,10 @@ package org.lupoi.workoutapp.application.usecase.workout.logs;/*
 
 import lombok.RequiredArgsConstructor;
 import org.lupoi.workoutapp.application.command.LogWorkoutCommand;
+import org.lupoi.workoutapp.application.service.AuditService;
 import org.lupoi.workoutapp.domain.entity.logs.LoggedExercise;
 import org.lupoi.workoutapp.domain.entity.logs.WorkoutLog;
+import org.lupoi.workoutapp.domain.enums.AuditAction;
 import org.lupoi.workoutapp.domain.model.WorkoutLogResult;
 import org.lupoi.workoutapp.domain.repository.WorkoutLogRepository;
 import org.springframework.stereotype.Service;
@@ -23,9 +25,9 @@ import java.util.List;
 public class LogWorkoutUseCase {
 
     private final WorkoutLogRepository workoutLogRepository;
+    private final AuditService auditService;
 
     public WorkoutLogResult execute(String userId, LogWorkoutCommand command) {
-        // Завантажуємо попередні логи для визначення PR
         List<WorkoutLog> previousLogs = workoutLogRepository.findByUserIdAndPlanId(userId, command.planId());
 
         List<LoggedExercise> exercises = command.exercises().stream()
@@ -75,6 +77,17 @@ public class LogWorkoutUseCase {
             }
         }
 
+        auditService.log(
+                userId,
+                null,
+                "USER",
+                AuditAction.WORKOUT_LOGGED,
+                saved.getId(),
+                "WorkoutLog",
+                String.format("Тиждень %d, День %d, план: %s, PR: %d",
+                        command.weekNumber(), command.dayNumber(), command.planId(), prs.size())
+        );
+
         return new WorkoutLogResult(saved.getId(), prs.size(), prs);
     }
 
@@ -92,3 +105,4 @@ public class LogWorkoutUseCase {
         return best;
     }
 }
+
