@@ -8,6 +8,7 @@ package org.lupoi.workoutapp.domain.repository;/*
 
 import org.lupoi.workoutapp.domain.entity.User;
 import org.lupoi.workoutapp.domain.enums.Role;
+import org.lupoi.workoutapp.domain.model.PageResult;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,6 +20,9 @@ public interface UserRepository {
     User save(User user);
 
     List<User> findAll();
+
+    PageResult<User> findAll(int page, int size);
+
     User updateRole(String userId, Role role);
     void deleteById(String userId);
 

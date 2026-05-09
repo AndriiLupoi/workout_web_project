@@ -11,7 +11,9 @@ import org.lupoi.workoutapp.application.command.ExerciseCommand;
 import org.lupoi.workoutapp.application.usecase.admin.GetStatsUseCase;
 import org.lupoi.workoutapp.application.usecase.admin.ManageExerciseUseCase;
 import org.lupoi.workoutapp.application.usecase.workout.exercises.UpdateExerciseVideoUseCase;
+import org.lupoi.workoutapp.domain.entity.User;
 import org.lupoi.workoutapp.domain.enums.Role;
+import org.lupoi.workoutapp.domain.model.PageResult;
 import org.lupoi.workoutapp.domain.repository.UserProfileRepository;
 import org.lupoi.workoutapp.domain.repository.UserRepository;
 import org.lupoi.workoutapp.domain.repository.WorkoutPlanRepository;
@@ -48,13 +50,29 @@ public class AdminController {
     // GET /api/v1/admin/users — список всіх юзерів (ADMIN + OWNER)
     @GetMapping("/users")
     @PreAuthorize("hasAnyRole('ADMIN', 'OWNER')")
-    public ResponseEntity<List<UserResponse>> getAllUsers() {
-        var users = userRepository.findAll()
-                .stream()
+    public ResponseEntity<PageResponse<UserResponse>> getAllUsers(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size
+    ) {
+        // Захист від занадто великих розмірів сторінок
+        int safeSize = Math.min(size, 100);
+
+        PageResult<User> pageResult =
+                userRepository.findAll(page, safeSize);
+
+        List<UserResponse> content = pageResult.content().stream()
                 .map(userDtoMapper::toResponse)
                 .toList();
-        return ResponseEntity.ok(users);
+
+        return ResponseEntity.ok(PageResponse.of(
+                content,
+                pageResult.currentPage(),
+                pageResult.totalPages(),
+                pageResult.totalElements(),
+                pageResult.pageSize()
+        ));
     }
+
 
     @GetMapping("/stats")
     @PreAuthorize("hasAnyRole('ADMIN', 'OWNER')")

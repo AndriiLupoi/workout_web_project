@@ -13,6 +13,16 @@ interface AdminUser {
   createdAt: string;
 }
 
+interface PageResponse<T> {
+  content:       T[];
+  currentPage:   number;
+  totalPages:    number;
+  totalElements: number;
+  pageSize:      number;
+  first:         boolean;
+  last:          boolean;
+}
+
 interface Stats {
   totalUsers:  number;
   totalPlans:  number;
@@ -20,14 +30,14 @@ interface Stats {
 }
 
 interface UserProfile {
-  goal:              string;
-  level:             string;
-  planType:          string;
-  workoutsPerWeek:   number;
-  currentWeight:     number | null;
-  targetWeight:      number | null;
-  height:            number | null;
-  age:               number | null;
+  goal:               string;
+  level:              string;
+  planType:           string;
+  workoutsPerWeek:    number;
+  currentWeight:      number | null;
+  targetWeight:       number | null;
+  height:             number | null;
+  age:                number | null;
   availableEquipment: string[];
 }
 
@@ -63,19 +73,26 @@ interface WorkoutPlan {
   standalone: true,
   imports: [CommonModule],
   templateUrl: './admin-users.html',
-  styleUrls: ['./admin-users.css', './admin-users-modal.css']
+  styleUrls: ['./admin-users.css', './admin-users-modal.css', 'admin-users-pagination.css']
 })
 export class AdminUsersComponent implements OnInit {
   private http        = inject(HttpClient);
   private authService = inject(AuthService);
 
-  users     = signal<AdminUser[]>([]);
-  stats     = signal<Stats | null>(null);
-  loading   = signal(false);
-  error     = signal<string | null>(null);
-  actionMsg = signal<string | null>(null);
+  // ── Table state ──
+  users         = signal<AdminUser[]>([]);
+  stats         = signal<Stats | null>(null);
+  loading       = signal(false);
+  error         = signal<string | null>(null);
+  actionMsg     = signal<string | null>(null);
 
-  // Modal state
+  // ── Pagination ──
+  currentPage   = signal(0);
+  totalPages    = signal(0);
+  totalElements = signal(0);
+  pageSize      = signal(20);
+
+  // ── Modal state ──
   selectedUser    = signal<AdminUser | null>(null);
   selectedProfile = signal<UserProfile | null>(null);
   selectedPlans   = signal<WorkoutPlan[]>([]);
@@ -87,14 +104,29 @@ export class AdminUsersComponent implements OnInit {
   isOwner = () => this.authService.isOwner();
 
   ngOnInit(): void {
+    this.loadPage(0);
+    this.loadStats();
+  }
+
+  loadStats(): void {
+    this.http.get<Stats>('/api/v1/admin/stats').subscribe({
+      next: (stats) => this.stats.set(stats),
+      error: () => {}
+    });
+  }
+
+  loadPage(page: number): void {
     this.loading.set(true);
-    forkJoin({
-      users: this.http.get<AdminUser[]>('/api/v1/admin/users'),
-      stats: this.http.get<Stats>('/api/v1/admin/stats')
-    }).subscribe({
-      next: ({ users, stats }) => {
-        this.users.set(users);
-        this.stats.set(stats);
+    this.error.set(null);
+
+    this.http.get<PageResponse<AdminUser>>(
+      `/api/v1/admin/users?page=${page}&size=${this.pageSize()}`
+    ).subscribe({
+      next: (res) => {
+        this.users.set(res.content);
+        this.currentPage.set(res.currentPage);
+        this.totalPages.set(res.totalPages);
+        this.totalElements.set(res.totalElements);
         this.loading.set(false);
       },
       error: () => {
@@ -104,6 +136,41 @@ export class AdminUsersComponent implements OnInit {
     });
   }
 
+  goToPage(page: number): void {
+    if (page < 0 || page >= this.totalPages()) return;
+    this.loadPage(page);
+  }
+
+  // Генеруємо масив номерів сторінок для відображення (макс 7 кнопок)
+  getPageNumbers(): (number | '...')[] {
+    const total = this.totalPages();
+    const current = this.currentPage();
+
+    if (total <= 7) {
+      return Array.from({ length: total }, (_, i) => i);
+    }
+
+    const pages: (number | '...')[] = [];
+
+    // Завжди показуємо першу
+    pages.push(0);
+
+    if (current > 3) pages.push('...');
+
+    // Сусідні сторінки навколо поточної
+    const start = Math.max(1, current - 2);
+    const end   = Math.min(total - 2, current + 2);
+    for (let i = start; i <= end; i++) pages.push(i);
+
+    if (current < total - 4) pages.push('...');
+
+    // Завжди показуємо останню
+    pages.push(total - 1);
+
+    return pages;
+  }
+
+  // ── Modal ──
   openUserModal(user: AdminUser): void {
     if (!this.isOwner()) return;
     this.selectedUser.set(user);
@@ -150,8 +217,7 @@ export class AdminUsersComponent implements OnInit {
         if (this.selectedUser()?.id === userId) {
           this.selectedUser.update(u => u ? { ...u, role: updated.role } : u);
         }
-        const adminCount = this.users().filter(u => u.role === 'ADMIN').length;
-        this.stats.update(s => s ? { ...s, totalAdmins: adminCount } : s);
+        this.loadStats();
         this.showAction(`Роль змінено на ${role}`);
       },
       error: () => this.error.set('Помилка зміни ролі')
@@ -162,12 +228,28 @@ export class AdminUsersComponent implements OnInit {
     if (!confirm(`Видалити користувача ${email}?`)) return;
     this.http.delete(`/api/v1/admin/users/${userId}`).subscribe({
       next: () => {
-        this.users.update(list => list.filter(u => u.id !== userId));
-        this.stats.update(s => s ? { ...s, totalUsers: s.totalUsers - 1 } : s);
+        // Якщо після видалення сторінка порожня — переходимо на попередню
+        const newTotal = this.totalElements() - 1;
+        const maxPage  = Math.max(0, Math.ceil(newTotal / this.pageSize()) - 1);
+        const targetPage = Math.min(this.currentPage(), maxPage);
+        this.loadPage(targetPage);
+        this.loadStats();
         if (this.selectedUser()?.id === userId) this.closeModal();
         this.showAction('Користувача видалено');
       },
       error: () => this.error.set('Помилка видалення')
+    });
+  }
+
+  deleteUserPlan(userId: string, planId: string): void {
+    if (!confirm('Видалити цей план?')) return;
+    this.http.delete(`/api/v1/admin/users/${userId}/plans/${planId}`).subscribe({
+      next: () => {
+        this.selectedPlans.update(list => list.filter(p => p.id !== planId));
+        this.loadStats();
+        this.showAction('План видалено');
+      },
+      error: () => this.error.set('Помилка видалення плану')
     });
   }
 
@@ -180,7 +262,6 @@ export class AdminUsersComponent implements OnInit {
     return ({ OWNER: 'badge-owner', ADMIN: 'badge-admin', USER: 'badge-user' } as any)[role] ?? 'badge-user';
   }
 
-  // Labels
   goalLabel(v: string): string {
     return ({ MASS: 'Набір маси', LOSS: 'Схуднення', ENDURANCE: 'Витривалість', STRENGTH: 'Сила', STRENGTH_AND_MASS: 'Сила + Маса' } as any)[v] ?? v;
   }
@@ -189,9 +270,6 @@ export class AdminUsersComponent implements OnInit {
   }
   planTypeLabel(v: string): string {
     return ({ HYPERTROPHY: 'Гіпертрофія', STRENGTH: 'Сила', STRENGTH_HYPERTROPHY: 'Сила + Маса', FAT_LOSS: 'Спалення жиру', ENDURANCE: 'Витривалість' } as any)[v] ?? v;
-  }
-  intensityLabel(v: string): string {
-    return ({ FULL_BODY: 'Full Body', HEAVY: 'Важкий', MEDIUM: 'Середній', SETS: 'Сети' } as any)[v] ?? v;
   }
   equipmentLabel(v: string): string {
     return ({ BARBELL: 'Штанга', DUMBBELL: 'Гантелі', MACHINE: 'Тренажери', BODYWEIGHT: 'Вага тіла', PULL_UP: 'Турнік', CABLE: 'Блоки/кабелі', BENCH: 'Лава' } as any)[v] ?? v;
@@ -205,15 +283,5 @@ export class AdminUsersComponent implements OnInit {
     return plan.days.filter(d => d.weekNumber === week);
   }
 
-  deleteUserPlan(userId: string, planId: string): void {
-    if (!confirm('Видалити цей план?')) return;
-    this.http.delete(`/api/v1/admin/users/${userId}/plans/${planId}`).subscribe({
-      next: () => {
-        this.selectedPlans.update(list => list.filter(p => p.id !== planId));
-        this.stats.update(s => s ? { ...s, totalPlans: s.totalPlans - 1 } : s);
-        this.showAction('План видалено');
-      },
-      error: () => this.error.set('Помилка видалення плану')
-    });
-  }
+  protected readonly Math = Math;
 }

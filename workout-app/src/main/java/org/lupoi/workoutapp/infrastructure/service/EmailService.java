@@ -1,26 +1,29 @@
-package org.lupoi.workoutapp.infrastructure.service;/*
+package org.lupoi.workoutapp.infrastructure.service;
+
+import lombok.RequiredArgsConstructor;
+import org.lupoi.workoutapp.application.port.EmailPort;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.stereotype.Service;
+
+/*
     @author Andrii
     @project workout
     @class EmailService
     @version 1.0.0
     @since 09.05.2026 - 12.09
 */
-
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.stereotype.Service;
-
 @Service
 @RequiredArgsConstructor
-public class EmailService {
+public class EmailService implements EmailPort {
 
     private final JavaMailSender mailSender;
 
     @Value("${spring.mail.username}")
     private String from;
 
+    @Override
     public void sendPasswordResetEmail(String to, String resetLink) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom(from);

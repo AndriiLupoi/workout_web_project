@@ -1,37 +1,36 @@
-package org.lupoi.workoutapp.application.usecase.user.resetPassword;/*
-    @author Andrii
-    @project workout
-    @class ForgotPasswordUseCase
-    @version 1.0.0
-    @since 09.05.2026 - 12.10
-*/
+package org.lupoi.workoutapp.application.usecase.user.resetPassword;
 
 import lombok.RequiredArgsConstructor;
+import org.lupoi.workoutapp.application.port.EmailPort;
 import org.lupoi.workoutapp.domain.entity.PasswordResetToken;
 import org.lupoi.workoutapp.domain.repository.PasswordResetTokenRepository;
 import org.lupoi.workoutapp.domain.repository.UserRepository;
-import org.lupoi.workoutapp.infrastructure.service.EmailService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+/*
+    @author Andrii
+    @project workout
+    @class ForgotPasswordUseCase
+    @version 1.0.0
+    @since 09.05.2026 - 12.10
+*/
 @Service
 @RequiredArgsConstructor
 public class ForgotPasswordUseCase {
 
     private final UserRepository userRepository;
     private final PasswordResetTokenRepository tokenRepository;
-    private final EmailService emailService;
+    private final EmailPort emailPort;  // ← порт, не конкретна реалізація
 
     @Value("${app.frontend-url}")
     private String frontendUrl;
 
     public void execute(String email) {
-        // Якщо email не знайдено — не кидаємо помилку (безпека)
         userRepository.findByEmail(email).ifPresent(user -> {
-            // Видаляємо старі токени
             tokenRepository.deleteByUserId(user.getId());
 
             String token = UUID.randomUUID().toString();
@@ -46,7 +45,7 @@ public class ForgotPasswordUseCase {
             tokenRepository.save(resetToken);
 
             String resetLink = frontendUrl + "/auth/reset-password?token=" + token;
-            emailService.sendPasswordResetEmail(email, resetLink);
+            emailPort.sendPasswordResetEmail(email, resetLink);
         });
     }
 }

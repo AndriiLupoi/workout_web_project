@@ -2,9 +2,13 @@ package org.lupoi.workoutapp.infrastructure.repoImplement;
 import lombok.RequiredArgsConstructor;
 import org.lupoi.workoutapp.domain.entity.User;
 import org.lupoi.workoutapp.domain.enums.Role;
+import org.lupoi.workoutapp.domain.model.PageResult;
 import org.lupoi.workoutapp.domain.repository.UserRepository;
 import org.lupoi.workoutapp.infrastructure.mapper.UserDocumentMapper;
 import org.lupoi.workoutapp.infrastructure.repository.MongoUserRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -43,6 +47,26 @@ public class UserRepositoryImpl implements UserRepository {
     public List<User> findAll() {
         return mongoRepository.findAll().stream().map(mapper::toDomain).toList();
     }
+
+    @Override
+    public PageResult<User> findAll(int page, int size) {
+        PageRequest pageable = PageRequest.of(
+                page,
+                size,
+                Sort.by(Sort.Direction.DESC, "createdAt")
+        );
+        Page<User> result = mongoRepository.findAll(pageable)
+                .map(mapper::toDomain);
+
+        return new PageResult<>(
+                result.getContent(),
+                result.getNumber(),
+                result.getTotalPages(),
+                result.getTotalElements(),
+                result.getSize()
+        );
+    }
+
 
     @Override
     public User updateRole(String userId, Role role) {
