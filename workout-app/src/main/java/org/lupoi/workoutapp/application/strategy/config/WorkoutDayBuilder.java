@@ -1,10 +1,4 @@
-package org.lupoi.workoutapp.application.strategy.config;/*
-    @author Andrii
-    @project workout
-    @class WorkoutDayBuilder
-    @version 1.0.0
-    @since 09.05.2026 - 18.46
-*/
+package org.lupoi.workoutapp.application.strategy.config;
 
 import org.lupoi.workoutapp.domain.entity.workout.Exercise;
 import org.lupoi.workoutapp.domain.entity.workout.WorkoutDay;
@@ -16,10 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
-Builds a WorkoutDay given a list of target muscles and intensity.
-Separated from strategy classes so each strategy can reuse it.
-*/
 public class WorkoutDayBuilder {
 
     private final ExercisePool pool;
@@ -28,15 +18,6 @@ public class WorkoutDayBuilder {
         this.pool = pool;
     }
 
-    /**
-     * Builds a standard split day.
-     *
-     * @param weekNumber  current week (used for exercise rotation)
-     * @param dayNumber   day within the week
-     * @param muscles     target muscles for this day
-     * @param intensity   intensity type (HEAVY / MEDIUM / SETS)
-     * @return a fully populated WorkoutDay
-     */
     public WorkoutDay buildSplitDay(int weekNumber,
                                     int dayNumber,
                                     List<MuscleGroup> muscles,
@@ -52,8 +33,7 @@ public class WorkoutDayBuilder {
         List<WorkoutExercise> exercises = new ArrayList<>();
         for (MuscleGroup muscle : muscles) {
             int count = pool.exerciseCountFor(muscle);
-            List<Exercise> selected =
-                    pool.forMuscleRotated(muscle, weekNumber, count);
+            List<Exercise> selected = pool.forMuscleRotated(muscle, weekNumber, count);
             for (var ex : selected) {
                 exercises.add(WorkoutExercise.builder()
                         .exerciseId(ex.getId())
@@ -62,6 +42,10 @@ public class WorkoutDayBuilder {
                         .reps(sr.repsLabel())
                         .restSeconds(rest)
                         .plannedWeight(0.0)
+                        // ── розширені поля ──
+                        .muscleGroup(ex.getMuscleGroup() != null ? ex.getMuscleGroup().name() : null)
+                        .equipmentType(ex.getEquipmentType() != null ? ex.getEquipmentType().name() : null)
+                        .description(ex.getDescription())
                         .build());
             }
         }
@@ -75,10 +59,6 @@ public class WorkoutDayBuilder {
                 .build();
     }
 
-    /**
-     * Builds a Full Body day — one exercise per major muscle group.
-     * Used for beginners and returning athletes in their intro phase.
-     */
     public WorkoutDay buildFullBodyDay(int weekNumber,
                                        int dayNumber,
                                        List<MuscleGroup> muscleGroups) {
@@ -88,8 +68,7 @@ public class WorkoutDayBuilder {
 
         List<WorkoutExercise> exercises = new ArrayList<>();
         for (MuscleGroup muscle : muscleGroups) {
-            List<Exercise> selected =
-                    pool.forFullBodyDay(muscle, weekNumber, dayNumber);
+            List<Exercise> selected = pool.forFullBodyDay(muscle, weekNumber, dayNumber);
             for (var ex : selected) {
                 exercises.add(WorkoutExercise.builder()
                         .exerciseId(ex.getId())
@@ -98,6 +77,10 @@ public class WorkoutDayBuilder {
                         .reps(sr.repsLabel())
                         .restSeconds(rest)
                         .plannedWeight(0.0)
+                        // ── розширені поля ──
+                        .muscleGroup(ex.getMuscleGroup() != null ? ex.getMuscleGroup().name() : null)
+                        .equipmentType(ex.getEquipmentType() != null ? ex.getEquipmentType().name() : null)
+                        .description(ex.getDescription())
                         .build());
             }
         }
@@ -111,4 +94,3 @@ public class WorkoutDayBuilder {
                 .build();
     }
 }
-

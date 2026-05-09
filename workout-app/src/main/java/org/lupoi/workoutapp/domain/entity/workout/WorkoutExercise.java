@@ -22,4 +22,8 @@ public class WorkoutExercise {
     private String reps;
     private int restSeconds;
     private Double plannedWeight;
+    private String muscleGroup;
+    private String equipmentType;
+    private String description;
+
 }

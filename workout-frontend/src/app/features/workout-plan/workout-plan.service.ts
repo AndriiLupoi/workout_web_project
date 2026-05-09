@@ -9,6 +9,10 @@ export interface WorkoutExercise {
   reps:          string;
   restSeconds:   number;
   plannedWeight: number | null;
+  muscleGroup:   string | null;
+  equipmentType: string | null;
+  description:   string | null;
+
 }
 
 export interface WorkoutDay {

@@ -21,5 +21,17 @@ public interface WorkoutPlanDtoMapper {
     @Mapping(target = "intensityType", expression = "java(day.getIntensityType() != null ? day.getIntensityType().name() : null)")
     WorkoutDayResponse toResponse(WorkoutDay day);
 
-    WorkoutExerciseResponse toResponse(WorkoutExercise exercise);
+    default WorkoutExerciseResponse toResponse(WorkoutExercise ex) {
+        return new WorkoutExerciseResponse(
+                ex.getExerciseId(),
+                ex.getExerciseName(),
+                ex.getSets(),
+                ex.getReps(),
+                ex.getRestSeconds(),
+                ex.getPlannedWeight(),
+                ex.getMuscleGroup(),
+                ex.getEquipmentType(),
+                ex.getDescription()
+        );
+    }
 }

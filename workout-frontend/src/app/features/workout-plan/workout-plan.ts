@@ -276,6 +276,7 @@ export class WorkoutPlanComponent implements OnInit {
 
   closeCompletedScreen(): void {
     this.completedSummary.set(null);
+    this.loadPlans();
   }
 
 
@@ -480,6 +481,36 @@ export class WorkoutPlanComponent implements OnInit {
     this.liveExercises.update(list =>
       list.map(ex => ex.exerciseId === exerciseId ? { ...ex, reps } : ex)
     );
+  }
+
+  equipmentLabel(eq: string): string {
+    const map: Record<string, string> = {
+      BARBELL:    '🏋️ Штанга',
+      DUMBBELL:   '💪 Гантелі',
+      MACHINE:    '⚙️ Тренажер',
+      CABLE:      '🔗 Блок',
+      BODYWEIGHT: '🤸 Вага тіла',
+      BENCH:      '🪑 Лава',
+      PULL_UP:    '🔛 Турнік',
+    };
+    return map[eq] ?? eq;
+  }
+
+  muscleLabel(mg: string): string {
+    const map: Record<string, string> = {
+      CHEST:     'Груди',
+      BACK:      'Спина',
+      LEGS:      'Ноги',
+      SHOULDERS: 'Плечі',
+      BICEPS:    'Біцепс',
+      TRICEPS:   'Трицепс',
+      ABS:       'Прес',
+      FOREARMS:  'Передпліччя',
+      CALVES:    'Литки',
+      TRAPS:     'Трапеції',
+      CARDIO:    'Кардіо',
+    };
+    return map[mg] ?? mg;
   }
 
 }

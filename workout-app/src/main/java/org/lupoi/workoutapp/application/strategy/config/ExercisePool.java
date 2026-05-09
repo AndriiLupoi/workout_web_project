@@ -78,24 +78,40 @@ public class ExercisePool {
     }
 
     /**
-     * Returns exercises for Full Body days — one per muscle group, beginner-friendly.
-     * Rotated by day to ensure variety within the same week.
+     * Returns exercises for Full Body days — one per muscle group.
+     *
+     * FIX 1: seed тепер враховує dayNumber → різний shuffle в межах одного тижня.
+     * FIX 2: якщо BEGINNER пул занадто малий (< 3), включаємо INTERMEDIATE вправи
+     *         щоб уникнути нескінченного повторення тих самих вправ.
      */
     public List<Exercise> forFullBodyDay(MuscleGroup muscle, int weekNumber, int dayNumber) {
+        Set<String> equipment = availableEquipment();
+
+        // Спочатку пробуємо тільки BEGINNER
         List<Exercise> pool = all.stream()
                 .filter(e -> e.getMuscleGroup() == muscle)
                 .filter(e -> e.getDifficulty() == Difficulty.BEGINNER)
-                .filter(e -> {
-                    Set<String> equipment = availableEquipment();
-                    return equipment.isEmpty()
-                            || e.getEquipmentType() == null
-                            || equipment.contains(e.getEquipmentType().name());
-                })
+                .filter(e -> equipment.isEmpty()
+                        || e.getEquipmentType() == null
+                        || equipment.contains(e.getEquipmentType().name()))
                 .collect(Collectors.toCollection(ArrayList::new));
+
+        // FIX 2: якщо менше 3 вправ — додаємо INTERMEDIATE (але не ADVANCED)
+        if (pool.size() < 3) {
+            List<Exercise> intermediate = all.stream()
+                    .filter(e -> e.getMuscleGroup() == muscle)
+                    .filter(e -> e.getDifficulty() == Difficulty.INTERMEDIATE)
+                    .filter(e -> equipment.isEmpty()
+                            || e.getEquipmentType() == null
+                            || equipment.contains(e.getEquipmentType().name()))
+                    .collect(Collectors.toList());
+            pool.addAll(intermediate);
+        }
 
         if (pool.isEmpty()) return List.of();
 
-        Collections.shuffle(pool, new Random((long) weekNumber * 37 + muscle.ordinal()));
+        // FIX 1: seed враховує і weekNumber, і dayNumber → різний результат кожного дня
+        Collections.shuffle(pool, new Random((long) weekNumber * 37 + dayNumber * 7L + muscle.ordinal()));
         int idx = (dayNumber - 1) % pool.size();
         return List.of(pool.get(idx));
     }

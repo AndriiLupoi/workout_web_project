@@ -6,5 +6,9 @@ public record WorkoutExerciseResponse(
         int sets,
         String reps,
         int restSeconds,
-        Double plannedWeight
+        Double plannedWeight,
+        String muscleGroup,
+        String equipmentType,
+        String description
+
 ) {}

@@ -25,103 +25,125 @@ public class ExerciseDataSeeder implements ApplicationRunner {
     private List<ExerciseDocument> defaultExercises() {
         return List.of(
                 // ── ГРУДИ ──
-                build("Жим штанги лежачи",           "CHEST", "INTERMEDIATE", "BARBELL",    "Класичний жим на горизонтальній лаві"),
-                build("Жим гантелей на похилій лаві", "CHEST", "INTERMEDIATE", "DUMBBELL",   "Жим для верхньої частини грудей"),
-                build("Віджимання",                   "CHEST", "BEGINNER",     "BODYWEIGHT", "Класична вправа з вагою тіла"),
-                build("Зведення рук в тренажері",     "CHEST", "BEGINNER",     "MACHINE",    "Ізоляція грудей (метелик)"),
-                build("Кросовер на блоках",           "CHEST", "INTERMEDIATE", "CABLE",      "Зведення рук на блоках під різними кутами"),
-                build("Жим у тренажері Сміта",        "CHEST", "INTERMEDIATE", "MACHINE",    "Жим лежачи в тренажері Сміта"),
-                build("Віджимання на брусах",         "CHEST", "INTERMEDIATE", "BODYWEIGHT", "Віджимання з акцентом на груди"),
-                build("Жим Хаммер",                   "CHEST", "INTERMEDIATE", "MACHINE",    "Жим на тренажері з блинами"),
-                build("Похилий жим Хаммер",           "CHEST", "INTERMEDIATE", "MACHINE",    "Похилий жим на тренажері з блинами"),
+                build("Жим штанги лежачи",                  "CHEST", "INTERMEDIATE", "BARBELL",    "Класичний жим на горизонтальній лаві"),
+                build("Жим гантелей на похилій лаві",        "CHEST", "INTERMEDIATE", "DUMBBELL",   "Жим для верхньої частини грудей"),
+                build("Віджимання",                          "CHEST", "BEGINNER",     "BODYWEIGHT", "Класична вправа з вагою тіла"),
+                build("Зведення рук в тренажері",            "CHEST", "BEGINNER",     "MACHINE",    "Ізоляція грудей (метелик)"),
+                build("Кросовер на блоках",                  "CHEST", "INTERMEDIATE", "CABLE",      "Зведення рук на блоках під різними кутами"),
+                build("Жим у тренажері Сміта",               "CHEST", "INTERMEDIATE", "MACHINE",    "Жим лежачи в тренажері Сміта"),
+                build("Віджимання на брусах",                "CHEST", "INTERMEDIATE", "BODYWEIGHT", "Віджимання з акцентом на груди"),
+                build("Жим Хаммер",                          "CHEST", "INTERMEDIATE", "MACHINE",    "Жим на тренажері з блинами"),
+                build("Похилий жим Хаммер",                  "CHEST", "INTERMEDIATE", "MACHINE",    "Похилий жим на тренажері з блинами"),
+                // НОВІ BEGINNER для CHEST
+                build("Жим гантелей лежачи",                 "CHEST", "BEGINNER",     "DUMBBELL",   "Жим гантелей на горизонтальній лаві"),
+                build("Зведення гантелей лежачи",            "CHEST", "BEGINNER",     "DUMBBELL",   "Ізоляція грудей з гантелями"),
+                build("Жим у тренажері сидячи",              "CHEST", "BEGINNER",     "MACHINE",    "Горизонтальний жим в тренажері"),
+                build("Віджимання від колін",                 "CHEST", "BEGINNER",     "BODYWEIGHT", "Полегшені віджимання від підлоги"),
+                build("Зведення рук на блоці знизу",         "CHEST", "BEGINNER",     "CABLE",      "Нижня ізоляція грудей на кабелі"),
 
                 // ── СПИНА ──
-                build("Підтягування",                 "BACK", "INTERMEDIATE", "BODYWEIGHT", "Вертикальна тяга для ширини спини"),
-                build("Тяга штанги в нахилі",         "BACK", "INTERMEDIATE", "BARBELL",    "Горизонтальна тяга для товщини спини"),
-                build("Тяга верхнього блоку",         "BACK", "BEGINNER",     "MACHINE",    "Блочна тяга для ширини спини"),
-                build("Тяга нижнього блоку сидячи",   "BACK", "BEGINNER",     "CABLE",      "Горизонтальна тяга на блоці"),
-                build("Тяга Т-грифа",                 "BACK", "INTERMEDIATE", "BARBELL",    "Тяга Т-подібного грифа"),
-                build("Тяга гантелі однією рукою",    "BACK", "BEGINNER",     "DUMBBELL",   "Тяга однією рукою в упорі"),
-                build("Пуловер з гантеллю",           "BACK", "INTERMEDIATE", "DUMBBELL",   "Ізоляція широкого м'яза спини"),
-                build("Тяга в тренажері",             "BACK", "BEGINNER",     "MACHINE",    "Горизонтальна тяга в тренажері"),
-                build("Тяга верхнього блоку широким хватом", "BACK", "BEGINNER", "MACHINE", "Тяга широким хватом"),
+                build("Підтягування",                         "BACK", "INTERMEDIATE", "BODYWEIGHT", "Вертикальна тяга для ширини спини"),
+                build("Тяга штанги в нахилі",                 "BACK", "INTERMEDIATE", "BARBELL",    "Горизонтальна тяга для товщини спини"),
+                build("Тяга верхнього блоку",                 "BACK", "BEGINNER",     "MACHINE",    "Блочна тяга для ширини спини"),
+                build("Тяга нижнього блоку сидячи",           "BACK", "BEGINNER",     "CABLE",      "Горизонтальна тяга на блоці"),
+                build("Тяга Т-грифа",                         "BACK", "INTERMEDIATE", "BARBELL",    "Тяга Т-подібного грифа"),
+                build("Тяга гантелі однією рукою",            "BACK", "BEGINNER",     "DUMBBELL",   "Тяга однією рукою в упорі"),
+                build("Пуловер з гантеллю",                   "BACK", "INTERMEDIATE", "DUMBBELL",   "Ізоляція широкого м'яза спини"),
+                build("Тяга в тренажері",                     "BACK", "BEGINNER",     "MACHINE",    "Горизонтальна тяга в тренажері"),
+                build("Тяга верхнього блоку широким хватом",  "BACK", "BEGINNER",     "MACHINE",    "Тяга широким хватом"),
+                // НОВІ BEGINNER для BACK
+                build("Тяга верхнього блоку зворотнім хватом","BACK", "BEGINNER",     "MACHINE",    "Тяга вузьким зворотнім хватом"),
+                build("Тяга гантелей в нахилі",               "BACK", "BEGINNER",     "DUMBBELL",   "Двостороння тяга гантелей"),
+                build("Гіперекстензія",                       "BACK", "BEGINNER",     "BODYWEIGHT", "Розгинання спини на тренажері"),
+                build("Тяга нижнього блоку вузьким хватом",   "BACK", "BEGINNER",     "CABLE",      "Вузький хват для товщини спини"),
+                build("Підтягування в асисті",                "BACK", "BEGINNER",     "MACHINE",    "Підтягування з допомогою тренажера"),
 
                 // ── НОГИ ──
-                build("Присідання зі штангою",        "LEGS", "INTERMEDIATE", "BARBELL",    "Базова вправа для ніг"),
-                build("Жим ногами",                   "LEGS", "BEGINNER",     "MACHINE",    "Альтернатива присіданням"),
-                build("Румунська тяга",               "LEGS", "INTERMEDIATE", "BARBELL",    "Тяга з акцентом на біцепс стегна"),
-                build("Розгинання ніг у тренажері",   "LEGS", "BEGINNER",     "MACHINE",    "Ізоляція чотириголового м'яза"),
-                build("Згинання ніг у тренажері",     "LEGS", "BEGINNER",     "MACHINE",    "Ізоляція біцепса стегна"),
-                build("Випади з гантелями",           "LEGS", "INTERMEDIATE", "DUMBBELL",   "Ходячі або статичні випади"),
-                build("Підйом на носки стоячи",       "LEGS", "BEGINNER",     "MACHINE",    "Ізоляція литкових м'язів"),
+                build("Присідання зі штангою",               "LEGS", "INTERMEDIATE", "BARBELL",    "Базова вправа для ніг"),
+                build("Жим ногами",                          "LEGS", "BEGINNER",     "MACHINE",    "Альтернатива присіданням"),
+                build("Румунська тяга",                      "LEGS", "INTERMEDIATE", "BARBELL",    "Тяга з акцентом на біцепс стегна"),
+                build("Розгинання ніг у тренажері",          "LEGS", "BEGINNER",     "MACHINE",    "Ізоляція чотириголового м'яза"),
+                build("Згинання ніг у тренажері",            "LEGS", "BEGINNER",     "MACHINE",    "Ізоляція біцепса стегна"),
+                build("Випади з гантелями",                  "LEGS", "INTERMEDIATE", "DUMBBELL",   "Ходячі або статичні випади"),
+                build("Підйом на носки стоячи",              "LEGS", "BEGINNER",     "MACHINE",    "Ізоляція литкових м'язів"),
+                // НОВІ BEGINNER для LEGS
+                build("Присідання з вагою тіла",             "LEGS", "BEGINNER",     "BODYWEIGHT", "Базові присідання без обладнання"),
+                build("Сумо-присідання з гантеллю",          "LEGS", "BEGINNER",     "DUMBBELL",   "Присідання широким хватом"),
+                build("Зворотні випади",                     "LEGS", "BEGINNER",     "BODYWEIGHT", "Випади назад для балансу"),
+                build("Підйом на носки сидячи",              "LEGS", "BEGINNER",     "MACHINE",    "Ізоляція камбалоподібного м'яза"),
+                build("Жим ногами вузьким хватом",           "LEGS", "BEGINNER",     "MACHINE",    "Акцент на квадрицепс"),
+                build("Румунська тяга з гантелями",          "LEGS", "BEGINNER",     "DUMBBELL",   "Тяга гантелей для біцепса стегна"),
 
                 // ── ПЛЕЧІ ──
-                build("Жим штанги стоячи",            "SHOULDERS", "INTERMEDIATE", "BARBELL", "Вертикальний жим для маси плечей"),
-                build("Розведення гантелей в сторони","SHOULDERS", "BEGINNER",     "DUMBBELL","Ізоляція середньої дельти"),
-                build("Зворотній метелик",            "SHOULDERS", "BEGINNER",     "MACHINE", "Ізоляція задньої дельти"),
-                build("Тяга до обличчя",              "SHOULDERS", "BEGINNER",     "CABLE",   "Задня дельта і верхня спина"),
-                build("Тяга штанги до підборіддя",    "SHOULDERS", "INTERMEDIATE", "BARBELL", "Плечі і трапеції"),
-                build("Жим гантелей сидячи",          "SHOULDERS", "INTERMEDIATE", "DUMBBELL","Сидячий або стоячий жим"),
-                build("Підйом диска перед собою",     "SHOULDERS", "BEGINNER",     "BODYWEIGHT","Підйом диска перед собою"),
+                build("Жим штанги стоячи",                   "SHOULDERS", "INTERMEDIATE", "BARBELL",    "Вертикальний жим для маси плечей"),
+                build("Розведення гантелей в сторони",        "SHOULDERS", "BEGINNER",     "DUMBBELL",   "Ізоляція середньої дельти"),
+                build("Зворотній метелик",                    "SHOULDERS", "BEGINNER",     "MACHINE",    "Ізоляція задньої дельти"),
+                build("Тяга до обличчя",                      "SHOULDERS", "BEGINNER",     "CABLE",      "Задня дельта і верхня спина"),
+                build("Тяга штанги до підборіддя",            "SHOULDERS", "INTERMEDIATE", "BARBELL",    "Плечі і трапеції"),
+                build("Жим гантелей сидячи",                  "SHOULDERS", "INTERMEDIATE", "DUMBBELL",   "Сидячий або стоячий жим"),
+                build("Підйом диска перед собою",             "SHOULDERS", "BEGINNER",     "BODYWEIGHT", "Підйом диска перед собою"),
+                // НОВІ BEGINNER для SHOULDERS
+                build("Жим гантелей стоячи",                  "SHOULDERS", "BEGINNER",     "DUMBBELL",   "Вертикальний жим гантелей стоячи"),
+                build("Підйом гантелей перед собою",          "SHOULDERS", "BEGINNER",     "DUMBBELL",   "Ізоляція передньої дельти"),
+                build("Жим у тренажері над головою",          "SHOULDERS", "BEGINNER",     "MACHINE",    "Жим в тренажері для плечей"),
+                build("Розведення на блоці стоячи",           "SHOULDERS", "BEGINNER",     "CABLE",      "Ізоляція середньої дельти на кабелі"),
+                build("Зворотні розведення на блоці",         "SHOULDERS", "BEGINNER",     "CABLE",      "Задня дельта на кабелі"),
 
                 // ── БІЦЕПС ──
-                build("Підйом штанги на біцепс",      "BICEPS", "BEGINNER",     "BARBELL",   "Класична вправа для біцепса"),
-                build("Молоткові згинання",           "BICEPS", "BEGINNER",     "DUMBBELL",  "Згинання для брахіаліса та біцепса"),
-                build("Згинання на лаві Скотта",      "BICEPS", "BEGINNER",     "BARBELL",   "Згинання на лаві Скотта"),
-                build("Згинання на блоці",            "BICEPS", "BEGINNER",     "CABLE",     "Згинання рук на блоці"),
-                build("Концентроване згинання",       "BICEPS", "BEGINNER",     "DUMBBELL",  "Ізоляційне згинання однією рукою"),
-                build("Згинання Арнольда",            "BICEPS", "BEGINNER",     "DUMBBELL",  "Варіація згинання з обертанням"),
-                build("Згинання на блоці через тіло", "BICEPS", "BEGINNER",     "CABLE",     "Тяга блоку через тіло"),
-                build("Згинання гантелей сидячи",     "BICEPS", "BEGINNER",     "DUMBBELL",  "Сидяче згинання на біцепс"),
+                build("Підйом штанги на біцепс",             "BICEPS", "BEGINNER",     "BARBELL",   "Класична вправа для біцепса"),
+                build("Молоткові згинання",                  "BICEPS", "BEGINNER",     "DUMBBELL",  "Згинання для брахіаліса та біцепса"),
+                build("Згинання на лаві Скотта",             "BICEPS", "BEGINNER",     "BARBELL",   "Згинання на лаві Скотта"),
+                build("Згинання на блоці",                   "BICEPS", "BEGINNER",     "CABLE",     "Згинання рук на блоці"),
+                build("Концентроване згинання",              "BICEPS", "BEGINNER",     "DUMBBELL",  "Ізоляційне згинання однією рукою"),
+                build("Згинання Арнольда",                   "BICEPS", "BEGINNER",     "DUMBBELL",  "Варіація згинання з обертанням"),
+                build("Згинання на блоці через тіло",        "BICEPS", "BEGINNER",     "CABLE",     "Тяга блоку через тіло"),
+                build("Згинання з гантелями почергово",      "BICEPS", "BEGINNER",     "DUMBBELL",  "Почергове згинання рук"),
+                build("Підйом EZ-штанги на біцепс",          "BICEPS", "BEGINNER",     "BARBELL",   "EZ-гриф для зниження навантаження на зап'ясток"),
 
                 // ── ТРИЦЕПС ──
-                build("Розгинання на блоці вниз",          "TRICEPS", "BEGINNER",     "CABLE",   "Ізоляція трицепса на блоці"),
-                build("Французький жим",                   "TRICEPS", "INTERMEDIATE", "BARBELL", "Розгинання лежачи"),
-                build("Розгинання гантелі з-за голови",    "TRICEPS", "BEGINNER",     "DUMBBELL","Розгинання над головою"),
-                build("Розгинання на блоці над головою",   "TRICEPS", "BEGINNER",     "CABLE",   "Блочне розгинання над головою"),
-                build("Жим вузьким хватом",                "TRICEPS", "INTERMEDIATE", "BARBELL", "Жим з акцентом на трицепс"),
-                build("Розгинання однією рукою з-за голови","TRICEPS", "BEGINNER",    "DUMBBELL","Розгинання однією рукою"),
-                build("Розгинання в тренажері",            "TRICEPS", "BEGINNER",     "MACHINE", "Ізоляція трицепса в тренажері"),
-
-                // ── ПЕРЕДПЛІЧЧЯ ──
-                build("Згинання зворотнім хватом",    "FOREARMS", "BEGINNER", "BARBELL",  "Згинання зворотнім хватом"),
-                build("Згинання зап'ястків",          "FOREARMS", "BEGINNER", "DUMBBELL", "Ізоляція згиначів передпліччя"),
-
-                // ── ТРАПЕЦІЇ ──
-                build("Шраги зі штангою",             "TRAPS", "BEGINNER",     "BARBELL",  "Класичні шраги зі штангою"),
-                build("Шраги з гантелями",            "TRAPS", "BEGINNER",     "DUMBBELL", "Шраги з гантелями"),
-                build("Шраги в тренажері Сміта",      "TRAPS", "BEGINNER",     "MACHINE",  "Шраги в тренажері Сміта"),
-                build("Шраги за спиною",              "TRAPS", "INTERMEDIATE", "BARBELL",  "Шраги за спиною"),
-                build("Прогулянка фермера",           "TRAPS", "INTERMEDIATE", "DUMBBELL", "Важка хода для трапецій і хвату"),
-                build("Тяга до колін",                "TRAPS", "ADVANCED",     "BARBELL",  "Часткова тяга з акцентом на трапеції"),
-
-                // ── ЛИТКИ ──
-                build("Підйом на носки стоячи",       "CALVES", "BEGINNER",     "MACHINE",   "Підйом на носки стоячи"),
-                build("Підйом на носки сидячи",       "CALVES", "BEGINNER",     "MACHINE",   "Ізоляція литкових м'язів сидячи"),
-                build("Підйом на носки в жимі ногами","CALVES", "BEGINNER",     "MACHINE",   "Підйом на носки в тренажері"),
-                build("Підйом на носки осляча",       "CALVES", "INTERMEDIATE", "BODYWEIGHT","Класична вправа для литок"),
-                build("Підйом на носки на одній нозі","CALVES", "BEGINNER",     "BODYWEIGHT","Однонога робота для литок"),
-                build("Скакалка",                     "CALVES", "BEGINNER",     "BODYWEIGHT","Динамічна витривалість литок"),
+                build("Французький жим лежачи",              "TRICEPS", "INTERMEDIATE", "BARBELL",   "Ізоляція трицепса лежачи"),
+                build("Жим вузьким хватом",                  "TRICEPS", "INTERMEDIATE", "BARBELL",   "Базова вправа для трицепса"),
+                build("Розгинання на блоці",                  "TRICEPS", "BEGINNER",     "CABLE",     "Ізоляція трицепса на блоці"),
+                build("Відведення гантелі назад",            "TRICEPS", "BEGINNER",     "DUMBBELL",  "Ізоляція трицепса в нахилі"),
+                build("Віджимання на брусах для трицепса",   "TRICEPS", "INTERMEDIATE", "BODYWEIGHT","Акцент на трицепс"),
+                build("Розгинання над головою на блоці",     "TRICEPS", "BEGINNER",     "CABLE",     "Довга головка трицепса"),
+                build("Французький жим з гантеллю",          "TRICEPS", "BEGINNER",     "DUMBBELL",  "Французький жим однією рукою"),
+                build("Розгинання на блоці зворотнім хватом","TRICEPS", "BEGINNER",     "CABLE",     "Варіація розгинання на блоці"),
 
                 // ── ПРЕС ──
-                build("Планка",                       "ABS", "BEGINNER", "BODYWEIGHT", "Статична вправа для кора"),
-                build("Скручування",                  "ABS", "BEGINNER", "BODYWEIGHT", "Базова вправа для преса"),
-                build("Альпініст",                    "ABS", "BEGINNER", "BODYWEIGHT", "Динамічна вправа для кора"),
-                build("Скручування на блоці",         "ABS", "BEGINNER", "CABLE",      "Скручування з вагою на блоці"),
+                build("Скручування лежачи",                  "ABS", "BEGINNER",     "BODYWEIGHT", "Базові скручування для прямого м'яза"),
+                build("Підйом ніг лежачи",                   "ABS", "BEGINNER",     "BODYWEIGHT", "Нижній прес"),
+                build("Планка",                              "ABS", "BEGINNER",     "BODYWEIGHT", "Статична вправа для кора"),
+                build("Велосипед",                           "ABS", "BEGINNER",     "BODYWEIGHT", "Косі м'язи живота"),
+                build("Скручування на блоці",                "ABS", "BEGINNER",     "CABLE",      "Скручування з обтяженням"),
+                build("Підйом колін у висі",                 "ABS", "INTERMEDIATE", "BODYWEIGHT", "Нижній прес у висі"),
+                build("Бічна планка",                        "ABS", "BEGINNER",     "BODYWEIGHT", "Косі м'язи і стабілізатори"),
 
-                // ── КАРДІО ──
-                build("Бігова доріжка",               "CARDIO", "BEGINNER", "MACHINE", "Кардіо тренування на витривалість")
+                // ── ПЕРЕДПЛІЧЧЯ ──
+                build("Згинання зап'ясть зі штангою",        "FOREARMS", "BEGINNER", "BARBELL",   "Флексори передпліччя"),
+                build("Зворотні згинання зап'ясть",          "FOREARMS", "BEGINNER", "BARBELL",   "Екстензори передпліччя"),
+                build("Фермерська хода",                     "FOREARMS", "BEGINNER", "DUMBBELL",  "Хват і передпліччя"),
+
+                // ── ЛИТКИ ──
+                build("Підйом на носки в тренажері",         "CALVES", "BEGINNER", "MACHINE",    "Ізоляція литок стоячи"),
+                build("Підйом на носки сидячи",              "CALVES", "BEGINNER", "MACHINE",    "Ізоляція камбалоподібного м'яза"),
+                build("Підйом на носки з гантелями",         "CALVES", "BEGINNER", "DUMBBELL",   "Литки з вільними вагами"),
+
+                // ── ТРАПЕЦІЇ ──
+                build("Шраги зі штангою",                    "TRAPS", "BEGINNER", "BARBELL",    "Ізоляція трапецій"),
+                build("Шраги з гантелями",                   "TRAPS", "BEGINNER", "DUMBBELL",   "Варіація шрагів з гантелями"),
+                build("Шраги в тренажері Сміта",             "TRAPS", "BEGINNER", "MACHINE",    "Контрольовані шраги в тренажері")
         );
     }
 
-    private ExerciseDocument build(String name, String muscle,
-                                   String difficulty, String equipment, String desc) {
+    private ExerciseDocument build(String name, String muscleGroup, String difficulty,
+                                   String equipment, String description) {
         return ExerciseDocument.builder()
                 .name(name)
-                .muscleGroup(muscle)
+                .muscleGroup(muscleGroup)
                 .difficulty(difficulty)
                 .equipmentType(equipment)
-                .description(desc)
+                .description(description)
                 .build();
     }
 }
