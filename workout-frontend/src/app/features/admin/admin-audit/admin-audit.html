@@ -1,30 +1,39 @@
 <div class="audit-page">
+  <h2 class="sr-only">Журнал аудиту адміністратора</h2>
 
-  <!-- ===== ФІЛЬТРИ ===== -->
+  <!-- ===== ФІЛЬТРИ + СТАТИСТИКА ===== -->
   <div class="audit-filters">
-    <div class="filter-group">
-      <label class="filter-label">Тип дії</label>
-      <select class="audit-select" [(ngModel)]="selectedAction" (ngModelChange)="applyFilters()">
-        <option value="">Всі дії</option>
-        @for (action of allActions; track action) {
-          <option [value]="action">{{ actionLabel(action) }}</option>
-        }
-      </select>
-    </div>
+    <div class="audit-stats-row">
+      <div class="astat-card">
+        <span class="astat-label">Всього подій</span>
+        <span class="astat-val">{{ totalElements() }}</span>
+      </div>
+      <div class="filter-row">
+        <div class="filter-field">
+          <label class="filter-label">Тип дії</label>
+          <select class="audit-select" [(ngModel)]="selectedAction" (ngModelChange)="applyFilters()">
+            <option value="">Всі дії</option>
+            @for (action of allActions; track action) {
+              <option [value]="action">{{ actionLabel(action) }}</option>
+            }
+          </select>
+        </div>
 
-    <div class="filter-group">
-      <label class="filter-label">Від дати</label>
-      <input class="audit-input" type="date" [(ngModel)]="dateFrom" (ngModelChange)="applyFilters()" />
-    </div>
+        <div class="filter-field">
+          <label class="filter-label">Від дати</label>
+          <input class="audit-input" type="date" [(ngModel)]="dateFrom" (ngModelChange)="applyFilters()" />
+        </div>
 
-    <div class="filter-group">
-      <label class="filter-label">До дати</label>
-      <input class="audit-input" type="date" [(ngModel)]="dateTo" (ngModelChange)="applyFilters()" />
-    </div>
+        <div class="filter-field">
+          <label class="filter-label">До дати</label>
+          <input class="audit-input" type="date" [(ngModel)]="dateTo" (ngModelChange)="applyFilters()" />
+        </div>
 
-    <button class="btn-clear-audit" (click)="clearFilters()">
-      ✕ Скинути
-    </button>
+        <button class="btn-clear-audit" (click)="clearFilters()">
+          ✕ Скинути
+        </button>
+      </div>
+    </div>
   </div>
 
   <!-- ===== ПОМИЛКА ===== -->
@@ -40,62 +49,48 @@
     </div>
   }
 
-  <!-- ===== ТАБЛИЦЯ ===== -->
+  <!-- ===== ЛОГИ ===== -->
   @if (!loading()) {
-    <div class="audit-table-wrap">
-      <table class="audit-table">
-        <thead>
-        <tr>
-          <th>Дія</th>
-          <th>Актор</th>
-          <th>Роль</th>
-          <th>Ціль</th>
-          <th>Деталі</th>
-          <th>Час</th>
-        </tr>
-        </thead>
-        <tbody>
-          @for (log of logs(); track log.id) {
-            <tr class="audit-row">
-              <td>
-                <span class="audit-action-badge {{ actionColor(log.action) }}">
-                  {{ actionIcon(log.action) }} {{ actionLabel(log.action) }}
-                </span>
-              </td>
-              <td class="audit-actor">
-                <span class="actor-email">{{ log.actorEmail || log.actorId }}</span>
-              </td>
-              <td>
-                <span class="audit-role-badge role-{{ log.actorRole | lowercase }}">
-                  {{ log.actorRole }}
-                </span>
-              </td>
-              <td class="audit-target">
-                @if (log.targetType) {
-                  <span class="target-type">{{ log.targetType }}</span>
-                }
-                @if (log.targetId) {
-                  <span class="target-id">{{ log.targetId | slice:0:8 }}...</span>
-                }
-              </td>
-              <td class="audit-details">
-                {{ log.details || '—' }}
-              </td>
-              <td class="audit-date">
-                {{ formatDate(log.createdAt) }}
-              </td>
-            </tr>
-          }
-          @if (logs().length === 0) {
-            <tr>
-              <td colspan="6" class="audit-empty">
-                <span class="audit-empty-icon">📭</span>
-                Журнал порожній або записи не знайдено
-              </td>
-            </tr>
-          }
-        </tbody>
-      </table>
+    <div class="audit-log-list">
+
+      @for (log of logs(); track log.id) {
+        <div class="log-card">
+
+          <div class="log-badge-wrap">
+            <span class="audit-action-badge {{ actionColor(log.action) }}">
+              {{ actionIcon(log.action) }} {{ actionLabel(log.action) }}
+            </span>
+          </div>
+
+          <div class="log-body">
+            <div class="log-actor-row">
+              <span class="log-actor">{{ log.actorEmail || log.actorId }}</span>
+              <span class="log-role-badge role-{{ log.actorRole | lowercase }}">{{ log.actorRole }}</span>
+            </div>
+
+            <p class="log-detail">{{ log.details || '—' }}</p>
+
+            @if (log.targetType || log.targetId) {
+              <span class="log-target">
+                {{ log.targetType }}
+                @if (log.targetId) { · {{ log.targetId | slice:0:12 }}... }
+              </span>
+            }
+          </div>
+
+          <div class="log-time-col">
+            {{ formatDate(log.createdAt) }}
+          </div>
+
+        </div>
+      }
+
+      @if (logs().length === 0) {
+        <div class="audit-empty">
+          <span class="audit-empty-icon">📭</span>
+          Журнал порожній або записи не знайдено
+        </div>
+      }
     </div>
 
     <!-- ===== ПАГІНАЦІЯ ===== -->

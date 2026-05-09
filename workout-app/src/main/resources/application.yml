@@ -2,6 +2,17 @@ spring:
   mongodb:
     database: workout_db
     uri: mongodb://localhost:27017/workout_db
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: fenglang01012000@gmail.com
+    password: ixuj jpxs spfk xmzt
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
 server:
   port: 8080
 application:
@@ -9,3 +20,5 @@ application:
     jwt:
       secret-key: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
       expiration: 86400000000000
+app:
+  frontend-url: http://localhost:4200

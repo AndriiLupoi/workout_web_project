@@ -453,6 +453,14 @@
   overflow: hidden;
 }
 
+.btn-add-video{
+  width: 60%;
+  background-color: #818cf8;
+  color: white;
+  border-radius: 20px;
+  margin: 2% 20%;
+}
+
 /* ===================== EMPTY / NO RESULTS ===================== */
 
 .no-results {
