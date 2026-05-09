@@ -6,7 +6,7 @@ package org.lupoi.workoutapp.domain.repository;/*
     @since 24.03.2026 - 14.50
 */
 
-import org.lupoi.workoutapp.domain.entity.WorkoutPlan;
+import org.lupoi.workoutapp.domain.entity.workout.WorkoutPlan;
 
 import java.util.List;
 import java.util.Optional;

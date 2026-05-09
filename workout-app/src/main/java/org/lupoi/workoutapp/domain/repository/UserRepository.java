@@ -6,7 +6,7 @@ package org.lupoi.workoutapp.domain.repository;/*
     @since 24.03.2026 - 14.40
 */
 
-import org.lupoi.workoutapp.domain.entity.User;
+import org.lupoi.workoutapp.domain.entity.user.User;
 import org.lupoi.workoutapp.domain.enums.Role;
 import org.lupoi.workoutapp.domain.model.PageResult;
 

@@ -9,7 +9,7 @@ package org.lupoi.workoutapp.application.usecase.user.resetPassword;/*
 import lombok.RequiredArgsConstructor;
 import org.lupoi.workoutapp.application.port.PasswordHasher;
 import org.lupoi.workoutapp.domain.entity.PasswordResetToken;
-import org.lupoi.workoutapp.domain.entity.User;
+import org.lupoi.workoutapp.domain.entity.user.User;
 import org.lupoi.workoutapp.domain.exception.DomainException;
 import org.lupoi.workoutapp.domain.exception.EntityNotFoundException;
 import org.lupoi.workoutapp.domain.repository.PasswordResetTokenRepository;

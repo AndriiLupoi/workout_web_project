@@ -1,7 +1,7 @@
 package org.lupoi.workoutapp.infrastructure.repoImplement;
 
 import lombok.RequiredArgsConstructor;
-import org.lupoi.workoutapp.domain.entity.WorkoutPlan;
+import org.lupoi.workoutapp.domain.entity.workout.WorkoutPlan;
 import org.lupoi.workoutapp.domain.repository.WorkoutPlanRepository;
 import org.lupoi.workoutapp.infrastructure.mapper.WorkoutPlanDocumentMapper;
 import org.lupoi.workoutapp.infrastructure.repository.MongoWorkoutPlanRepository;

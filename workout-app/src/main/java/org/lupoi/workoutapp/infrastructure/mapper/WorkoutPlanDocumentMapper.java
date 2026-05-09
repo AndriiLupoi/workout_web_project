@@ -1,15 +1,15 @@
 package org.lupoi.workoutapp.infrastructure.mapper;
 
-import org.lupoi.workoutapp.domain.entity.WorkoutDay;
-import org.lupoi.workoutapp.domain.entity.WorkoutExercise;
-import org.lupoi.workoutapp.domain.entity.WorkoutPlan;
+import org.lupoi.workoutapp.domain.entity.workout.WorkoutDay;
+import org.lupoi.workoutapp.domain.entity.workout.WorkoutExercise;
+import org.lupoi.workoutapp.domain.entity.workout.WorkoutPlan;
 import org.lupoi.workoutapp.domain.enums.IntensityType;
 import org.lupoi.workoutapp.domain.enums.PlanStatus;
 import org.lupoi.workoutapp.domain.enums.PlanType;
 import org.lupoi.workoutapp.domain.enums.TrainingGoal;
-import org.lupoi.workoutapp.infrastructure.document.WorkoutDayDocument;
-import org.lupoi.workoutapp.infrastructure.document.WorkoutExerciseDocument;
-import org.lupoi.workoutapp.infrastructure.document.WorkoutPlanDocument;
+import org.lupoi.workoutapp.infrastructure.document.workout.WorkoutDayDocument;
+import org.lupoi.workoutapp.infrastructure.document.workout.WorkoutExerciseDocument;
+import org.lupoi.workoutapp.infrastructure.document.workout.WorkoutPlanDocument;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;

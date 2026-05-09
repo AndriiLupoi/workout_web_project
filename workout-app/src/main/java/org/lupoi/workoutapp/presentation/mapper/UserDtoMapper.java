@@ -2,10 +2,10 @@ package org.lupoi.workoutapp.presentation.mapper;
 
 import org.lupoi.workoutapp.application.command.LoginUserCommand;
 import org.lupoi.workoutapp.application.command.RegisterUserCommand;
-import org.lupoi.workoutapp.domain.entity.User;
+import org.lupoi.workoutapp.domain.entity.user.User;
 import org.lupoi.workoutapp.presentation.dto.request.LoginRequest;
 import org.lupoi.workoutapp.presentation.dto.request.RegisterRequest;
-import org.lupoi.workoutapp.presentation.dto.response.UserResponse;
+import org.lupoi.workoutapp.presentation.dto.response.user.UserResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

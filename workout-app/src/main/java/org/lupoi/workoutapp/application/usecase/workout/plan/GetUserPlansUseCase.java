@@ -1,7 +1,7 @@
 package org.lupoi.workoutapp.application.usecase.workout.plan;
 
 import lombok.RequiredArgsConstructor;
-import org.lupoi.workoutapp.domain.entity.WorkoutPlan;
+import org.lupoi.workoutapp.domain.entity.workout.WorkoutPlan;
 import org.lupoi.workoutapp.domain.repository.WorkoutPlanRepository;
 import org.springframework.stereotype.Service;
 

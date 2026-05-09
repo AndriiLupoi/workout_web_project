@@ -1,7 +1,7 @@
 package org.lupoi.workoutapp.application.usecase.user;
 
 import lombok.RequiredArgsConstructor;
-import org.lupoi.workoutapp.domain.entity.UserProfile;
+import org.lupoi.workoutapp.domain.entity.user.UserProfile;
 import org.lupoi.workoutapp.domain.exception.ProfileNotFoundException;
 import org.lupoi.workoutapp.domain.repository.UserProfileRepository;
 import org.springframework.stereotype.Service;

@@ -5,7 +5,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.lupoi.workoutapp.application.command.SaveUserProfileCommand;
-import org.lupoi.workoutapp.domain.entity.UserProfile;
+import org.lupoi.workoutapp.domain.entity.user.UserProfile;
 import org.lupoi.workoutapp.domain.enums.FitnessLevel;
 import org.lupoi.workoutapp.domain.enums.PlanType;
 import org.lupoi.workoutapp.domain.enums.TrainingGoal;

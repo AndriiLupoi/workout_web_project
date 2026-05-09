@@ -1,6 +1,6 @@
 package org.lupoi.workoutapp.domain.repository;
 
-import org.lupoi.workoutapp.domain.entity.BodyWeightLog;
+import org.lupoi.workoutapp.domain.entity.logs.BodyWeightLog;
 
 import java.util.List;
 import java.util.Optional;

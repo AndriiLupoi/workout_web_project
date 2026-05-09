@@ -2,8 +2,8 @@ package org.lupoi.workoutapp.application.usecase.workout.plan;
 
 import lombok.RequiredArgsConstructor;
 import org.lupoi.workoutapp.application.strategy.PlanGenerationStrategy;
-import org.lupoi.workoutapp.domain.entity.UserProfile;
-import org.lupoi.workoutapp.domain.entity.WorkoutPlan;
+import org.lupoi.workoutapp.domain.entity.user.UserProfile;
+import org.lupoi.workoutapp.domain.entity.workout.WorkoutPlan;
 import org.lupoi.workoutapp.domain.exception.ProfileNotFoundException;
 import org.lupoi.workoutapp.domain.repository.ExerciseRepository;
 import org.lupoi.workoutapp.domain.repository.UserProfileRepository;

@@ -1,6 +1,6 @@
 package org.lupoi.workoutapp.infrastructure.repository;
 
-import org.lupoi.workoutapp.infrastructure.document.WorkoutPlanDocument;
+import org.lupoi.workoutapp.infrastructure.document.workout.WorkoutPlanDocument;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.List;

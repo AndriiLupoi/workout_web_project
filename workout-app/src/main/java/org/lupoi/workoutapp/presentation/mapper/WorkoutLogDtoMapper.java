@@ -7,10 +7,10 @@ package org.lupoi.workoutapp.presentation.mapper;/*
 */
 
 import org.lupoi.workoutapp.application.command.LogWorkoutCommand;
-import org.lupoi.workoutapp.domain.entity.LoggedExercise;
-import org.lupoi.workoutapp.domain.entity.WorkoutLog;
+import org.lupoi.workoutapp.domain.entity.logs.LoggedExercise;
+import org.lupoi.workoutapp.domain.entity.logs.WorkoutLog;
 import org.lupoi.workoutapp.presentation.dto.request.LogWorkoutRequest;
-import org.lupoi.workoutapp.presentation.dto.response.WorkoutLogResponse;
+import org.lupoi.workoutapp.presentation.dto.response.logs.WorkoutLogResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

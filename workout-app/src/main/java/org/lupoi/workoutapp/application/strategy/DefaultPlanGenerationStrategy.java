@@ -1,6 +1,10 @@
 package org.lupoi.workoutapp.application.strategy;
 
-import org.lupoi.workoutapp.domain.entity.*;
+import org.lupoi.workoutapp.domain.entity.user.UserProfile;
+import org.lupoi.workoutapp.domain.entity.workout.Exercise;
+import org.lupoi.workoutapp.domain.entity.workout.WorkoutDay;
+import org.lupoi.workoutapp.domain.entity.workout.WorkoutExercise;
+import org.lupoi.workoutapp.domain.entity.workout.WorkoutPlan;
 import org.lupoi.workoutapp.domain.enums.*;
 import org.springframework.stereotype.Component;
 

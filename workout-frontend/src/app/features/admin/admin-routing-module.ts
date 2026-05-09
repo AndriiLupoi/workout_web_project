@@ -1,11 +1,11 @@
 // admin-routing-module.ts
 import { Routes } from '@angular/router';
-import { AdminUsersComponent } from './admin-users';
 import { inject } from '@angular/core';
 import { AuthService } from '../../core/services/auth';
 import { Router } from '@angular/router';
+import {AdminAuditComponent} from './admin-audit/admin-audit';
+import {AdminUsersComponent} from './admin-user/admin-users';
 
-// Guard — пускає тільки ADMIN і OWNER
 export const adminGuard = () => {
   const auth   = inject(AuthService);
   const router = inject(Router);
@@ -14,7 +14,6 @@ export const adminGuard = () => {
   return false;
 };
 
-// Guard — пускає тільки OWNER
 export const ownerGuard = () => {
   const auth   = inject(AuthService);
   const router = inject(Router);
@@ -28,5 +27,10 @@ export const adminRoutes: Routes = [
     path: 'users',
     component: AdminUsersComponent,
     canActivate: [adminGuard]
+  },
+  {
+    path: 'audit',
+    component: AdminAuditComponent,
+    canActivate: [ownerGuard]
   }
 ];

@@ -6,7 +6,7 @@ package org.lupoi.workoutapp.domain.repository;/*
     @since 24.03.2026 - 14.49
 */
 
-import org.lupoi.workoutapp.domain.entity.Exercise;
+import org.lupoi.workoutapp.domain.entity.workout.Exercise;
 import org.lupoi.workoutapp.domain.enums.Difficulty;
 import org.lupoi.workoutapp.domain.enums.EquipmentType;
 import org.lupoi.workoutapp.domain.enums.MuscleGroup;

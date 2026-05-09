@@ -1,7 +1,8 @@
 package org.lupoi.workoutapp.application.usecase.workout.plan;
 
 import lombok.RequiredArgsConstructor;
-import org.lupoi.workoutapp.domain.entity.WorkoutLog;
+import org.lupoi.workoutapp.domain.entity.logs.WorkoutLog;
+import org.lupoi.workoutapp.domain.entity.logs.LoggedExercise;
 import org.lupoi.workoutapp.domain.model.WeightRecommendation;
 import org.lupoi.workoutapp.domain.repository.WorkoutLogRepository;
 import org.springframework.stereotype.Service;
@@ -29,13 +30,13 @@ public class GetWeightRecommendationUseCase {
         List<WorkoutLog> logs = workoutLogRepository.findByUserIdAndPlanId(userId, planId);
 
         for (int i = logs.size() - 1; i >= 0; i--) {
-            Optional<org.lupoi.workoutapp.domain.entity.LoggedExercise> found =
+            Optional<LoggedExercise> found =
                     logs.get(i).getExercises().stream()
                             .filter(e -> e.getExerciseId().equals(exerciseId) && e.getActualWeight() != null)
                             .findFirst();
 
             if (found.isPresent()) {
-                org.lupoi.workoutapp.domain.entity.LoggedExercise ex = found.get();
+                LoggedExercise ex = found.get();
                 double prevWeight = ex.getActualWeight();
                 Boolean feltEasy = ex.isFelt_easy();
 

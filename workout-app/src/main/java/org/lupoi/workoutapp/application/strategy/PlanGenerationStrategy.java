@@ -3,9 +3,9 @@ package org.lupoi.workoutapp.application.strategy;
 
 
 
-import org.lupoi.workoutapp.domain.entity.Exercise;
-import org.lupoi.workoutapp.domain.entity.UserProfile;
-import org.lupoi.workoutapp.domain.entity.WorkoutPlan;
+import org.lupoi.workoutapp.domain.entity.workout.Exercise;
+import org.lupoi.workoutapp.domain.entity.user.UserProfile;
+import org.lupoi.workoutapp.domain.entity.workout.WorkoutPlan;
 
 import java.util.List;
 

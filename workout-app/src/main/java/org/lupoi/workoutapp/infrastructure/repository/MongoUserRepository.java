@@ -1,6 +1,6 @@
 package org.lupoi.workoutapp.infrastructure.repository;
 
-import org.lupoi.workoutapp.infrastructure.document.UserDocument;
+import org.lupoi.workoutapp.infrastructure.document.user.UserDocument;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;

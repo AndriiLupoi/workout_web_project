@@ -10,7 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.lupoi.workoutapp.application.usecase.workout.plan.DeleteWorkoutPlanUseCase;
 import org.lupoi.workoutapp.application.usecase.workout.plan.GenerateWorkoutPlanUseCase;
 import org.lupoi.workoutapp.application.usecase.workout.plan.GetUserPlansUseCase;
-import org.lupoi.workoutapp.presentation.dto.response.WorkoutPlanResponse;
+import org.lupoi.workoutapp.presentation.dto.response.workout.WorkoutPlanResponse;
 import org.lupoi.workoutapp.presentation.mapper.WorkoutPlanDtoMapper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

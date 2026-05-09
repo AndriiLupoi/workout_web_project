@@ -42,6 +42,13 @@ export const routes: Routes = [
       .then(m => m.adminRoutes)
   },
   {
+    path: 'admin-audit',
+    canActivate: [adminGuard],
+    loadChildren: () => import('./features/admin/admin-routing-module')
+      .then(m => m.adminRoutes)
+  },
+
+  {
     path: 'progress',
     canActivate: [authGuard],
     loadChildren: () =>

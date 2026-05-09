@@ -1,0 +1,138 @@
+<div class="audit-page">
+
+  <!-- ===== ФІЛЬТРИ ===== -->
+  <div class="audit-filters">
+    <div class="filter-group">
+      <label class="filter-label">Тип дії</label>
+      <select class="audit-select" [(ngModel)]="selectedAction" (ngModelChange)="applyFilters()">
+        <option value="">Всі дії</option>
+        @for (action of allActions; track action) {
+          <option [value]="action">{{ actionLabel(action) }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="filter-group">
+      <label class="filter-label">Від дати</label>
+      <input class="audit-input" type="date" [(ngModel)]="dateFrom" (ngModelChange)="applyFilters()" />
+    </div>
+
+    <div class="filter-group">
+      <label class="filter-label">До дати</label>
+      <input class="audit-input" type="date" [(ngModel)]="dateTo" (ngModelChange)="applyFilters()" />
+    </div>
+
+    <button class="btn-clear-audit" (click)="clearFilters()">
+      ✕ Скинути
+    </button>
+  </div>
+
+  <!-- ===== ПОМИЛКА ===== -->
+  @if (error()) {
+    <div class="error-banner">{{ error() }}</div>
+  }
+
+  <!-- ===== ЗАВАНТАЖЕННЯ ===== -->
+  @if (loading()) {
+    <div class="audit-loading">
+      <div class="audit-spinner"></div>
+      Завантаження журналу...
+    </div>
+  }
+
+  <!-- ===== ТАБЛИЦЯ ===== -->
+  @if (!loading()) {
+    <div class="audit-table-wrap">
+      <table class="audit-table">
+        <thead>
+        <tr>
+          <th>Дія</th>
+          <th>Актор</th>
+          <th>Роль</th>
+          <th>Ціль</th>
+          <th>Деталі</th>
+          <th>Час</th>
+        </tr>
+        </thead>
+        <tbody>
+          @for (log of logs(); track log.id) {
+            <tr class="audit-row">
+              <td>
+                <span class="audit-action-badge {{ actionColor(log.action) }}">
+                  {{ actionIcon(log.action) }} {{ actionLabel(log.action) }}
+                </span>
+              </td>
+              <td class="audit-actor">
+                <span class="actor-email">{{ log.actorEmail || log.actorId }}</span>
+              </td>
+              <td>
+                <span class="audit-role-badge role-{{ log.actorRole | lowercase }}">
+                  {{ log.actorRole }}
+                </span>
+              </td>
+              <td class="audit-target">
+                @if (log.targetType) {
+                  <span class="target-type">{{ log.targetType }}</span>
+                }
+                @if (log.targetId) {
+                  <span class="target-id">{{ log.targetId | slice:0:8 }}...</span>
+                }
+              </td>
+              <td class="audit-details">
+                {{ log.details || '—' }}
+              </td>
+              <td class="audit-date">
+                {{ formatDate(log.createdAt) }}
+              </td>
+            </tr>
+          }
+          @if (logs().length === 0) {
+            <tr>
+              <td colspan="6" class="audit-empty">
+                <span class="audit-empty-icon">📭</span>
+                Журнал порожній або записи не знайдено
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <!-- ===== ПАГІНАЦІЯ ===== -->
+    @if (totalPages() > 1) {
+      <div class="audit-pagination">
+        <span class="pagination-info">
+          {{ currentPage() * pageSize() + 1 }}–{{ Math.min((currentPage() + 1) * pageSize(), totalElements()) }}
+          з {{ totalElements() }} записів
+        </span>
+
+        <div class="pagination-controls">
+          <button class="page-btn page-btn-nav"
+                  [disabled]="currentPage() === 0"
+                  (click)="goToPage(currentPage() - 1)">‹</button>
+
+          @for (page of getPageNumbers(); track $index) {
+            @if (page === '...') {
+              <span class="page-ellipsis">…</span>
+            } @else {
+              <button class="page-btn"
+                      [class.active]="page === currentPage()"
+                      (click)="goToPage(+page)">
+                {{ +page + 1 }}
+              </button>
+            }
+          }
+
+          <button class="page-btn page-btn-nav"
+                  [disabled]="currentPage() >= totalPages() - 1"
+                  (click)="goToPage(currentPage() + 1)">›</button>
+        </div>
+      </div>
+    } @else if (totalElements() > 0) {
+      <div class="audit-footer">
+        Всього: <strong>{{ totalElements() }}</strong> записів
+      </div>
+    }
+  }
+
+</div>

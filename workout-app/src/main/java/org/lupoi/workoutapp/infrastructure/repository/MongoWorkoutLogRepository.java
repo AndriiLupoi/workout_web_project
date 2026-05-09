@@ -6,7 +6,7 @@ package org.lupoi.workoutapp.infrastructure.repository;/*
     @since 27.04.2026 - 20.43
 */
 
-import org.lupoi.workoutapp.infrastructure.document.WorkoutLogDocument;
+import org.lupoi.workoutapp.infrastructure.document.logs.WorkoutLogDocument;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.List;

@@ -8,13 +8,12 @@ package org.lupoi.workoutapp.application.usecase.admin;/*
 
 import lombok.RequiredArgsConstructor;
 import org.lupoi.workoutapp.application.command.ExerciseCommand;
-import org.lupoi.workoutapp.domain.entity.Exercise;
+import org.lupoi.workoutapp.domain.entity.workout.Exercise;
 import org.lupoi.workoutapp.domain.enums.Difficulty;
 import org.lupoi.workoutapp.domain.enums.EquipmentType;
 import org.lupoi.workoutapp.domain.enums.MuscleGroup;
 import org.lupoi.workoutapp.domain.exception.EntityNotFoundException;
 import org.lupoi.workoutapp.domain.repository.ExerciseRepository;
-import org.lupoi.workoutapp.presentation.dto.request.ExerciseRequest;
 import org.springframework.stereotype.Service;
 
 @Service

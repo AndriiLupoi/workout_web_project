@@ -7,7 +7,7 @@ package org.lupoi.workoutapp.domain.repository;/*
 */
 
 
-import org.lupoi.workoutapp.domain.entity.UserProfile;
+import org.lupoi.workoutapp.domain.entity.user.UserProfile;
 
 import java.util.Optional;
 

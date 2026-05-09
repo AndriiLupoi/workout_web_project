@@ -14,6 +14,11 @@
         👥 Користувачі
       </a>
     }
+    @if (isOwner()) {
+      <a routerLink="/admin/audit" routerLinkActive="active" class="nav-owner">
+        📋 Журнал
+      </a>
+    }
 
   </div>
 

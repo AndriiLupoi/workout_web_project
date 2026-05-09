@@ -6,9 +6,9 @@ package org.lupoi.workoutapp.infrastructure.mapper;/*
     @since 27.04.2026 - 20.54
 */
 
-import org.lupoi.workoutapp.domain.entity.LoggedExercise;
-import org.lupoi.workoutapp.domain.entity.WorkoutLog;
-import org.lupoi.workoutapp.infrastructure.document.WorkoutLogDocument;
+import org.lupoi.workoutapp.domain.entity.logs.LoggedExercise;
+import org.lupoi.workoutapp.domain.entity.logs.WorkoutLog;
+import org.lupoi.workoutapp.infrastructure.document.logs.WorkoutLogDocument;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

@@ -8,17 +8,26 @@ package org.lupoi.workoutapp.presentation.controller;/*
 
 import lombok.RequiredArgsConstructor;
 import org.lupoi.workoutapp.application.command.ExerciseCommand;
+import org.lupoi.workoutapp.application.service.AuditService;
 import org.lupoi.workoutapp.application.usecase.admin.GetStatsUseCase;
 import org.lupoi.workoutapp.application.usecase.admin.ManageExerciseUseCase;
 import org.lupoi.workoutapp.application.usecase.workout.exercises.UpdateExerciseVideoUseCase;
-import org.lupoi.workoutapp.domain.entity.User;
+import org.lupoi.workoutapp.domain.entity.logs.AuditLog;
+import org.lupoi.workoutapp.domain.entity.user.User;
 import org.lupoi.workoutapp.domain.enums.Role;
 import org.lupoi.workoutapp.domain.model.PageResult;
+import org.lupoi.workoutapp.domain.repository.AuditLogRepository;
 import org.lupoi.workoutapp.domain.repository.UserProfileRepository;
 import org.lupoi.workoutapp.domain.repository.UserRepository;
 import org.lupoi.workoutapp.domain.repository.WorkoutPlanRepository;
 import org.lupoi.workoutapp.presentation.dto.request.ExerciseRequest;
 import org.lupoi.workoutapp.presentation.dto.response.*;
+import org.lupoi.workoutapp.presentation.dto.response.logs.AuditLogResponse;
+import org.lupoi.workoutapp.presentation.dto.response.user.ProfileResponse;
+import org.lupoi.workoutapp.presentation.dto.response.user.UserResponse;
+import org.lupoi.workoutapp.presentation.dto.response.workout.ExerciseResponse;
+import org.lupoi.workoutapp.presentation.dto.response.workout.StatsResponse;
+import org.lupoi.workoutapp.presentation.dto.response.workout.WorkoutPlanResponse;
 import org.lupoi.workoutapp.presentation.mapper.ExerciseDtoMapper;
 import org.lupoi.workoutapp.presentation.mapper.ProfileDtoMapper;
 import org.lupoi.workoutapp.presentation.mapper.UserDtoMapper;
@@ -45,6 +54,8 @@ public class AdminController {
     private final UpdateExerciseVideoUseCase updateExerciseVideoUseCase;
     private final ExerciseDtoMapper exerciseDtoMapper;
     private final ManageExerciseUseCase manageExerciseUseCase;
+    private final AuditLogRepository auditLogRepository;
+    private final AuditService auditService;
 
 
     // GET /api/v1/admin/users — список всіх юзерів (ADMIN + OWNER)
@@ -111,7 +122,6 @@ public class AdminController {
             @PathVariable String userId,
             @RequestParam Role role) {
 
-        // OWNER не можна понизити через API — захист
         if (role == Role.OWNER) {
             return ResponseEntity.badRequest().build();
         }
@@ -119,7 +129,6 @@ public class AdminController {
         var user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        // Не можна змінити роль OWNER
         if (user.getRole() == Role.OWNER) {
             return ResponseEntity.status(403).build();
         }
@@ -184,6 +193,41 @@ public class AdminController {
     public ResponseEntity<Void> deleteExercise(@PathVariable String exerciseId) {
         manageExerciseUseCase.delete(exerciseId);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/audit")
+    @PreAuthorize("hasRole('OWNER')")
+    public ResponseEntity<PageResponse<AuditLogResponse>> getAuditLogs(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "50") int size,
+            @RequestParam(required = false) String action,
+            @RequestParam(required = false) String from,
+            @RequestParam(required = false) String to) {
+
+        int safeSize = Math.min(size, 100);
+        PageResult<AuditLog> result;
+
+        if (action != null && !action.isBlank()) {
+            result = auditLogRepository.findByAction(action, page, safeSize);
+        } else if (from != null && to != null) {
+            result = auditLogRepository.findByDateRange(from, to, page, safeSize);
+        } else {
+            result = auditLogRepository.findAll(page, safeSize);
+        }
+
+        List<AuditLogResponse> content = result.content().stream()
+                .map(l -> new AuditLogResponse(
+                        l.getId(), l.getActorId(), l.getActorEmail(), l.getActorRole(),
+                        l.getAction() != null ? l.getAction().name() : null,
+                        l.getTargetId(), l.getTargetType(), l.getDetails(),
+                        l.getCreatedAt() != null ? l.getCreatedAt().toString() : null
+                ))
+                .toList();
+
+        return ResponseEntity.ok(PageResponse.of(
+                content, result.currentPage(), result.totalPages(),
+                result.totalElements(), result.pageSize()
+        ));
     }
 
 }

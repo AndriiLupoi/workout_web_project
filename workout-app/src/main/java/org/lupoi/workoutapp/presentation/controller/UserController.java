@@ -11,7 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.lupoi.workoutapp.application.usecase.user.GetUserUseCase;
 import org.lupoi.workoutapp.application.usecase.user.UpdateUserUseCase;
 import org.lupoi.workoutapp.presentation.dto.request.UpdateUserRequest;
-import org.lupoi.workoutapp.presentation.dto.response.UserResponse;
+import org.lupoi.workoutapp.presentation.dto.response.user.UserResponse;
 import org.lupoi.workoutapp.presentation.mapper.UserDtoMapper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

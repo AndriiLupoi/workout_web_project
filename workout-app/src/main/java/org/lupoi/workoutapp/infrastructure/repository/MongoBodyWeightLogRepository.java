@@ -1,6 +1,6 @@
 package org.lupoi.workoutapp.infrastructure.repository;
 
-import org.lupoi.workoutapp.infrastructure.document.BodyWeightLogDocument;
+import org.lupoi.workoutapp.infrastructure.document.logs.BodyWeightLogDocument;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.time.LocalDate;

@@ -1,10 +1,10 @@
 package org.lupoi.workoutapp.infrastructure.mapper;
 
-import org.lupoi.workoutapp.domain.entity.UserProfile;
+import org.lupoi.workoutapp.domain.entity.user.UserProfile;
 import org.lupoi.workoutapp.domain.enums.FitnessLevel;
 import org.lupoi.workoutapp.domain.enums.PlanType;
 import org.lupoi.workoutapp.domain.enums.TrainingGoal;
-import org.lupoi.workoutapp.infrastructure.document.UserProfileDocument;
+import org.lupoi.workoutapp.infrastructure.document.user.UserProfileDocument;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;

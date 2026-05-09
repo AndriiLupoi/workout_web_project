@@ -1,7 +1,7 @@
 package org.lupoi.workoutapp.infrastructure.mapper;
 
-import org.lupoi.workoutapp.domain.entity.User;
-import org.lupoi.workoutapp.infrastructure.document.UserDocument;
+import org.lupoi.workoutapp.domain.entity.user.User;
+import org.lupoi.workoutapp.infrastructure.document.user.UserDocument;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")

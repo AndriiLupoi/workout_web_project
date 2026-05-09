@@ -2,8 +2,8 @@ package org.lupoi.workoutapp.application.usecase.user;
 
 import lombok.RequiredArgsConstructor;
 import org.lupoi.workoutapp.application.command.SaveUserProfileCommand;
-import org.lupoi.workoutapp.domain.entity.BodyWeightLog;
-import org.lupoi.workoutapp.domain.entity.UserProfile;
+import org.lupoi.workoutapp.domain.entity.logs.BodyWeightLog;
+import org.lupoi.workoutapp.domain.entity.user.UserProfile;
 import org.lupoi.workoutapp.domain.repository.BodyWeightLogRepository;
 import org.lupoi.workoutapp.domain.repository.UserProfileRepository;
 import org.springframework.stereotype.Service;

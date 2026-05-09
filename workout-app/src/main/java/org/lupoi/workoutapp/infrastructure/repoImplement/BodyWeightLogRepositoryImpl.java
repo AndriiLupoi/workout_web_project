@@ -1,7 +1,7 @@
 package org.lupoi.workoutapp.infrastructure.repoImplement;
 
 import lombok.RequiredArgsConstructor;
-import org.lupoi.workoutapp.domain.entity.BodyWeightLog;
+import org.lupoi.workoutapp.domain.entity.logs.BodyWeightLog;
 import org.lupoi.workoutapp.domain.repository.BodyWeightLogRepository;
 import org.lupoi.workoutapp.infrastructure.mapper.BodyWeightLogDocumentMapper;
 import org.lupoi.workoutapp.infrastructure.repository.MongoBodyWeightLogRepository;

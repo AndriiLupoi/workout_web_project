@@ -13,10 +13,10 @@ import org.lupoi.workoutapp.application.usecase.workout.logs.GetWorkoutLogsUseCa
 import org.lupoi.workoutapp.application.usecase.workout.logs.LogWorkoutUseCase;
 import org.lupoi.workoutapp.domain.model.WorkoutLogResult;
 import org.lupoi.workoutapp.presentation.dto.request.LogWorkoutRequest;
-import org.lupoi.workoutapp.presentation.dto.response.PlanProgressResponse;
-import org.lupoi.workoutapp.presentation.dto.response.WeightRecommendationResponse;
-import org.lupoi.workoutapp.presentation.dto.response.WorkoutLogResponse;
-import org.lupoi.workoutapp.presentation.dto.response.WorkoutLogResultResponse;
+import org.lupoi.workoutapp.presentation.dto.response.workout.progress.PlanProgressResponse;
+import org.lupoi.workoutapp.presentation.dto.response.workout.WeightRecommendationResponse;
+import org.lupoi.workoutapp.presentation.dto.response.logs.WorkoutLogResponse;
+import org.lupoi.workoutapp.presentation.dto.response.logs.WorkoutLogResultResponse;
 import org.lupoi.workoutapp.presentation.mapper.WorkoutLogDtoMapper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

@@ -1,9 +1,9 @@
 package org.lupoi.workoutapp.presentation.mapper;
 
 import org.lupoi.workoutapp.application.command.SaveUserProfileCommand;
-import org.lupoi.workoutapp.domain.entity.UserProfile;
+import org.lupoi.workoutapp.domain.entity.user.UserProfile;
 import org.lupoi.workoutapp.presentation.dto.request.SaveProfileRequest;
-import org.lupoi.workoutapp.presentation.dto.response.ProfileResponse;
+import org.lupoi.workoutapp.presentation.dto.response.user.ProfileResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

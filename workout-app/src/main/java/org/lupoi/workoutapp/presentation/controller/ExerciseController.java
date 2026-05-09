@@ -2,11 +2,11 @@ package org.lupoi.workoutapp.presentation.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.lupoi.workoutapp.application.usecase.workout.exercises.GetExercisesUseCase;
-import org.lupoi.workoutapp.domain.entity.Exercise;
+import org.lupoi.workoutapp.domain.entity.workout.Exercise;
 import org.lupoi.workoutapp.domain.enums.Difficulty;
 import org.lupoi.workoutapp.domain.enums.EquipmentType;
 import org.lupoi.workoutapp.domain.enums.MuscleGroup;
-import org.lupoi.workoutapp.presentation.dto.response.ExerciseResponse;
+import org.lupoi.workoutapp.presentation.dto.response.workout.ExerciseResponse;
 import org.lupoi.workoutapp.presentation.mapper.ExerciseDtoMapper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

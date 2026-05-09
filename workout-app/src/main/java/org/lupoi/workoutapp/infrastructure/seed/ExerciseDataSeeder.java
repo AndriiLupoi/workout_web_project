@@ -1,7 +1,7 @@
 package org.lupoi.workoutapp.infrastructure.seed;
 
 import lombok.RequiredArgsConstructor;
-import org.lupoi.workoutapp.infrastructure.document.ExerciseDocument;
+import org.lupoi.workoutapp.infrastructure.document.workout.ExerciseDocument;
 import org.lupoi.workoutapp.infrastructure.repository.MongoExerciseRepository;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
