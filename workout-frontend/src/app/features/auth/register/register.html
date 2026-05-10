@@ -1,97 +1,118 @@
-<div class="auth-container">
-  <div class="auth-card">
-    <h2>Створити обліковий запис</h2>
-    <p class="subtitle">Розпочніть свою фітнес-подорож</p>
+<div class="auth-page">
 
-    <form [formGroup]="form" (ngSubmit)="onSubmit()">
-
-      <div class="row">
-        <div class="field">
-          <label for="firstName">Ім'я</label>
-          <input
-            id="firstName"
-            type="text"
-            formControlName="firstName"
-            placeholder="John"
-            [class.error]="form.get('firstName')?.invalid && form.get('firstName')?.touched"
-          />
-          <span class="error-text"
-                *ngIf="form.get('firstName')?.invalid && form.get('firstName')?.touched">
-            Required
-          </span>
-        </div>
-
-        <div class="field">
-          <label for="lastName">Прізвище</label>
-          <input
-            id="lastName"
-            type="text"
-            formControlName="lastName"
-            placeholder="Doe"
-            [class.error]="form.get('lastName')?.invalid && form.get('lastName')?.touched"
-          />
-          <span class="error-text"
-                *ngIf="form.get('lastName')?.invalid && form.get('lastName')?.touched">
-            Обов'язково
-          </span>
-        </div>
+  <div class="auth-left">
+    <div class="auth-brand">
+      <img src="assets/images/workoutApplogo.png" alt="WorkoutApp" class="brand-logo" />
+      <h1 class="brand-name">WorkoutApp</h1>
+      <p class="brand-tagline">Твій персональний тренер у кишені</p>
+    </div>
+    <div class="auth-features">
+      <div class="feature-item">
+        <span class="feature-icon">🏋️</span>
+        <span>Персоналізовані плани тренувань</span>
       </div>
-
-      <div class="field">
-        <label for="email">Email</label>
-        <input
-          id="email"
-          type="email"
-          formControlName="email"
-          placeholder="you@example.com"
-          [class.error]="form.get('email')?.invalid && form.get('email')?.touched"
-        />
-        <span class="error-text"
-              *ngIf="form.get('email')?.invalid && form.get('email')?.touched">
-          Потрібна дійсна електронна адреса
-        </span>
+      <div class="feature-item">
+        <span class="feature-icon">📈</span>
+        <span>Відстеження прогресу та рекордів</span>
       </div>
-
-      <div class="field">
-        <label for="password">Password</label>
-        <div class="password-input-wrap">
-          <input
-            [type]="showPassword() ? 'text' : 'password'"
-            id="password"
-            type="password"
-            formControlName="password"
-            placeholder="Min 8 characters"
-            [class.error]="form.get('password')?.invalid && form.get('password')?.touched"
-          />
-          <button
-            type="button"
-            class="toggle-password-btn"
-            (click)="showPassword.set(!showPassword())">
-            <lucide-icon
-              [img]="showPassword() ? EyeOff : Eye"
-              size="18">
-            </lucide-icon>
-          </button>
-        </div>
-        <span class="error-text"
-              *ngIf="form.get('password')?.invalid && form.get('password')?.touched">
-          Пароль має містити щонайменше 8 символів
-        </span>
+      <div class="feature-item">
+        <span class="feature-icon">🏆</span>
+        <span>Особисті рекорди та аналітика</span>
       </div>
-
-      <div class="error-banner" *ngIf="errorMessage">
-        {{ errorMessage }}
-      </div>
-
-      <button type="submit" [disabled]="loading" class="btn-primary">
-        {{ loading ? 'Creating account...' : 'Create account' }}
-      </button>
-
-    </form>
-
-    <p class="switch-link">
-      Вже маєте обліковий запис?
-      <a routerLink="/auth/login">Увійти</a>
-    </p>
+    </div>
   </div>
+
+  <div class="auth-right">
+    <div class="auth-card">
+      <h2>Створити акаунт</h2>
+      <p class="subtitle">Розпочни свій фітнес-шлях</p>
+
+      <form [formGroup]="form" (ngSubmit)="onSubmit()">
+
+        <div class="row">
+          <div class="field">
+            <label for="firstName">Ім'я</label>
+            <input
+              id="firstName"
+              type="text"
+              formControlName="firstName"
+              placeholder="Іван"
+              [class.error]="form.get('firstName')?.invalid && form.get('firstName')?.touched"
+            />
+            <span class="error-text"
+                  *ngIf="form.get('firstName')?.invalid && form.get('firstName')?.touched">
+              Обов'язкове поле
+            </span>
+          </div>
+
+          <div class="field">
+            <label for="lastName">Прізвище</label>
+            <input
+              id="lastName"
+              type="text"
+              formControlName="lastName"
+              placeholder="Іваненко"
+              [class.error]="form.get('lastName')?.invalid && form.get('lastName')?.touched"
+            />
+            <span class="error-text"
+                  *ngIf="form.get('lastName')?.invalid && form.get('lastName')?.touched">
+              Обов'язкове поле
+            </span>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="email">Email</label>
+          <input
+            id="email"
+            type="email"
+            formControlName="email"
+            placeholder="you@example.com"
+            [class.error]="form.get('email')?.invalid && form.get('email')?.touched"
+          />
+          <span class="error-text"
+                *ngIf="form.get('email')?.invalid && form.get('email')?.touched">
+            Введіть коректний email
+          </span>
+        </div>
+
+        <div class="field">
+          <label for="password">Пароль</label>
+          <div class="password-input-wrap">
+            <input
+              [type]="showPassword() ? 'text' : 'password'"
+              id="password"
+              formControlName="password"
+              placeholder="Мін. 8 символів"
+              [class.error]="form.get('password')?.invalid && form.get('password')?.touched"
+            />
+            <button
+              type="button"
+              class="toggle-password-btn"
+              (click)="showPassword.set(!showPassword())">
+              <lucide-icon [img]="showPassword() ? EyeOff : Eye" size="18"></lucide-icon>
+            </button>
+          </div>
+          <span class="error-text"
+                *ngIf="form.get('password')?.invalid && form.get('password')?.touched">
+            Мінімум 8 символів
+          </span>
+        </div>
+
+        <div class="error-banner" *ngIf="errorMessage">{{ errorMessage }}</div>
+
+        <button type="submit" [disabled]="loading" class="btn-primary">
+          {{ loading ? 'Створення...' : 'Створити акаунт' }}
+        </button>
+
+      </form>
+
+      <div class="switch-links">
+        <p class="switch-link">
+          Вже є акаунт? <a routerLink="/auth/login">Увійти</a>
+        </p>
+      </div>
+    </div>
+  </div>
+
 </div>

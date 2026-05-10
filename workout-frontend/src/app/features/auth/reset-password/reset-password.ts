@@ -15,7 +15,7 @@ import { Eye, EyeOff, LucideAngularModule } from 'lucide-angular';
     LucideAngularModule
   ],
   templateUrl: './reset-password.html',
-  styleUrls: [ './reset-password.css', '../login/login.css']
+  styleUrls: ['../login/login.css']
 })
 export class ResetPasswordComponent implements OnInit {
 

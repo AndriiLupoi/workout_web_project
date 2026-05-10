@@ -15,7 +15,7 @@ import { Eye, EyeOff, LucideAngularModule } from 'lucide-angular';
     LucideAngularModule
   ],
   templateUrl: './register.html',
-  styleUrl: './register.css'
+  styleUrl: '../login/login.css'
 })
 export class RegisterComponent {
   form: FormGroup;

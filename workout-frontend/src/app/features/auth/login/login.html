@@ -1,72 +1,91 @@
-<div class="auth-container">
-  <div class="auth-card">
-    <h2>З поверненням!</h2>
-    <p class="subtitle">Увійдіть у свій обліковий запис</p>
+<div class="auth-page">
 
-    <form [formGroup]="form" (ngSubmit)="onSubmit()">
-
-      <div class="field">
-        <label for="email">Email</label>
-        <input
-          id="email"
-          type="email"
-          formControlName="email"
-          placeholder="you@example.com"
-          [class.error]="form.get('email')?.invalid && form.get('email')?.touched"
-        />
-        <span class="error-text"
-              *ngIf="form.get('email')?.invalid && form.get('email')?.touched">
-          Потрібна дійсна електронна адреса
-        </span>
-      </div>
-
-      <div class="field">
-        <label for="password">Password</label>
-        <div class="password-input-wrap">
-          <input
-            [type]="showPassword() ? 'text' : 'password'"
-            id="password"
-            type="password"
-            formControlName="password"
-            placeholder="Min 8 characters"
-            [class.error]="form.get('password')?.invalid && form.get('password')?.touched"
-          />
-          <button
-            type="button"
-            class="toggle-password-btn"
-            (click)="showPassword.set(!showPassword())">
-            <lucide-icon
-              [img]="showPassword() ? EyeOff : Eye"
-              size="18">
-            </lucide-icon>
-          </button>
-        </div>
-        <span class="error-text"
-              *ngIf="form.get('password')?.invalid && form.get('password')?.touched">
-          Пароль має містити щонайменше 8 символів
-        </span>
-      </div>
-
-      <div class="error-banner" *ngIf="errorMessage">
-        {{ errorMessage }}
-      </div>
-
-      <button type="submit" [disabled]="loading" class="btn-primary">
-        {{ loading ? 'Signing in...' : 'Sign in' }}
-      </button>
-
-    </form>
-
-    <div class="switch-links">
-      <p class="switch-link">
-        Немає облікового запису?
-        <a routerLink="/auth/register">Зареєструватися</a>
-      </p>
-      <p class="reset-password">
-        Забули пароль?
-        <a routerLink="/auth/forgot-password">Відновити пароль</a>
-      </p>
+  <!-- ЛІВА ПАНЕЛЬ — логотип + бренд -->
+  <div class="auth-left">
+    <div class="auth-brand">
+      <img src="assets/images/workoutApplogo.png" alt="WorkoutApp" class="brand-logo" />
+      <h1 class="brand-name">WorkoutApp</h1>
+      <p class="brand-tagline">Твій персональний тренер у кишені</p>
     </div>
-
+    <div class="auth-features">
+      <div class="feature-item">
+        <span class="feature-icon">🏋️</span>
+        <span>Персоналізовані плани тренувань</span>
+      </div>
+      <div class="feature-item">
+        <span class="feature-icon">📈</span>
+        <span>Відстеження прогресу та рекордів</span>
+      </div>
+      <div class="feature-item">
+        <span class="feature-icon">🏆</span>
+        <span>Особисті рекорди та аналітика</span>
+      </div>
+    </div>
   </div>
+
+  <!-- ПРАВА ПАНЕЛЬ — форма -->
+  <div class="auth-right">
+    <div class="auth-card">
+      <h2>З поверненням!</h2>
+      <p class="subtitle">Увійдіть у свій обліковий запис</p>
+
+      <form [formGroup]="form" (ngSubmit)="onSubmit()">
+
+        <div class="field">
+          <label for="email">Email</label>
+          <input
+            id="email"
+            type="email"
+            formControlName="email"
+            placeholder="you@example.com"
+            [class.error]="form.get('email')?.invalid && form.get('email')?.touched"
+          />
+          <span class="error-text"
+                *ngIf="form.get('email')?.invalid && form.get('email')?.touched">
+            Введіть коректний email
+          </span>
+        </div>
+
+        <div class="field">
+          <label for="password">Password</label>
+          <div class="password-input-wrap">
+            <input
+              [type]="showPassword() ? 'text' : 'password'"
+              id="password"
+              formControlName="password"
+              placeholder="Мін. 8 символів"
+              [class.error]="form.get('password')?.invalid && form.get('password')?.touched"
+            />
+            <button
+              type="button"
+              class="toggle-password-btn"
+              (click)="showPassword.set(!showPassword())">
+              <lucide-icon [img]="showPassword() ? EyeOff : Eye" size="18"></lucide-icon>
+            </button>
+          </div>
+          <span class="error-text"
+                *ngIf="form.get('password')?.invalid && form.get('password')?.touched">
+            Мінімум 8 символів
+          </span>
+        </div>
+
+        <div class="error-banner" *ngIf="errorMessage">{{ errorMessage }}</div>
+
+        <button type="submit" [disabled]="loading" class="btn-primary">
+          {{ loading ? 'Вхід...' : 'Вхід' }}
+        </button>
+
+      </form>
+
+      <div class="switch-links">
+        <p class="switch-link">
+          Немає облікового запису? <a routerLink="/auth/register">Зареєструватися</a>
+        </p>
+        <p class="reset-password">
+          Забули пароль? <a routerLink="/auth/forgot-password">Відновити пароль</a>
+        </p>
+      </div>
+    </div>
+  </div>
+
 </div>
