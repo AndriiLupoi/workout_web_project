@@ -16,19 +16,46 @@
 }
 
 /* ── Brand ── */
+.navbar-brand {
+  display: flex;
+  align-items: center;
+}
+
 .navbar-brand a {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 1.125rem;
-  font-weight: 700;
-  color: var(--text-primary);
+  gap: 12px;
   text-decoration: none;
-  letter-spacing: -0.02em;
-  transition: color var(--transition), opacity var(--transition);
+  color: var(--text-primary);
+  transition:
+    opacity var(--transition),
+    transform var(--transition);
 }
 
-.navbar-brand a:hover { opacity: 0.8; }
+.navbar-brand a:hover {
+  opacity: 0.9;
+  transform: scale(1.02);
+}
+
+/* Логотип */
+.navbar-brand img {
+  width: 60px;
+  height: 60px;
+  object-fit: contain;
+  border-radius: 25px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.18);
+  transition:
+    transform var(--transition),
+    box-shadow var(--transition);
+}
+
+/* Назва */
+.navbar-brand span {
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: var(--text-primary);
+}
 
 /* ── Nav links ── */
 .navbar-links {

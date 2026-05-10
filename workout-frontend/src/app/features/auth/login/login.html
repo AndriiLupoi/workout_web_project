@@ -1,7 +1,7 @@
 <div class="auth-container">
   <div class="auth-card">
-    <h2>Welcome back</h2>
-    <p class="subtitle">Sign in to your account</p>
+    <h2>З поверненням!</h2>
+    <p class="subtitle">Увійдіть у свій обліковий запис</p>
 
     <form [formGroup]="form" (ngSubmit)="onSubmit()">
 
@@ -16,7 +16,7 @@
         />
         <span class="error-text"
               *ngIf="form.get('email')?.invalid && form.get('email')?.touched">
-          Valid email is required
+          Потрібна дійсна електронна адреса
         </span>
       </div>
 
@@ -43,7 +43,7 @@
         </div>
         <span class="error-text"
               *ngIf="form.get('password')?.invalid && form.get('password')?.touched">
-          Password must be at least 8 characters
+          Пароль має містити щонайменше 8 символів
         </span>
       </div>
 
@@ -59,8 +59,8 @@
 
     <div class="switch-links">
       <p class="switch-link">
-        Don't have an account?
-        <a routerLink="/auth/register">Register</a>
+        Немає облікового запису?
+        <a routerLink="/auth/register">Зареєструватися</a>
       </p>
       <p class="reset-password">
         Забули пароль?

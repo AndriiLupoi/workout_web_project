@@ -1,13 +1,13 @@
 <div class="auth-container">
   <div class="auth-card">
-    <h2>Create account</h2>
-    <p class="subtitle">Start your fitness journey</p>
+    <h2>Створити обліковий запис</h2>
+    <p class="subtitle">Розпочніть свою фітнес-подорож</p>
 
     <form [formGroup]="form" (ngSubmit)="onSubmit()">
 
       <div class="row">
         <div class="field">
-          <label for="firstName">First name</label>
+          <label for="firstName">Ім'я</label>
           <input
             id="firstName"
             type="text"
@@ -22,7 +22,7 @@
         </div>
 
         <div class="field">
-          <label for="lastName">Last name</label>
+          <label for="lastName">Прізвище</label>
           <input
             id="lastName"
             type="text"
@@ -32,7 +32,7 @@
           />
           <span class="error-text"
                 *ngIf="form.get('lastName')?.invalid && form.get('lastName')?.touched">
-            Required
+            Обов'язково
           </span>
         </div>
       </div>
@@ -48,7 +48,7 @@
         />
         <span class="error-text"
               *ngIf="form.get('email')?.invalid && form.get('email')?.touched">
-          Valid email is required
+          Потрібна дійсна електронна адреса
         </span>
       </div>
 
@@ -75,7 +75,7 @@
         </div>
         <span class="error-text"
               *ngIf="form.get('password')?.invalid && form.get('password')?.touched">
-          Password must be at least 8 characters
+          Пароль має містити щонайменше 8 символів
         </span>
       </div>
 
@@ -90,8 +90,8 @@
     </form>
 
     <p class="switch-link">
-      Already have an account?
-      <a routerLink="/auth/login">Sign in</a>
+      Вже маєте обліковий запис?
+      <a routerLink="/auth/login">Увійти</a>
     </p>
   </div>
 </div>
