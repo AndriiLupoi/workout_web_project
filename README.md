@@ -30,10 +30,10 @@
 
 Проєкт побудований на принципах **Clean Architecture** з чітким розділенням на 4 шари:
 
--**domain/**          ← Сутності, репозиторії (інтерфейси), виключення, enum-и
--**application/**     ← Use Cases, команди, порти, сервіси, стратегії
--**infrastructure/**  ← MongoDB документи, репозиторії (реалізації), маппери
--**presentation/**    ← REST контролери, DTO, маппери
+- **domain/**          ← Сутності, репозиторії (інтерфейси), виключення, enum-и
+- **application/**     ← Use Cases, команди, порти, сервіси, стратегії
+- **infrastructure/**  ← MongoDB документи, репозиторії (реалізації), маппери
+- **presentation/**    ← REST контролери, DTO, маппери
 
 Дотримання архітектурних правил перевіряється автоматично через **ArchUnit** тести.
 
@@ -169,48 +169,54 @@ npm test
 
 ## 📁 Структура проєкту
 
-workout-app/                    ← Spring Boot backend
+```
+workout-app/                          ← Spring Boot backend
+│
 ├── domain/
-│   ├── entity/                 ← User, UserProfile, WorkoutPlan, Exercise, logs...
-│   ├── repository/             ← Інтерфейси репозиторіїв
-│   ├── enums/                  ← Role, PlanType, MuscleGroup, Difficulty...
-│   └── exception/              ← DomainException і підкласи
+│   ├── entity/                       ← User, UserProfile, WorkoutPlan, Exercise, logs...
+│   ├── repository/                   ← Інтерфейси репозиторіїв
+│   ├── enums/                        ← Role, PlanType, MuscleGroup, Difficulty...
+│   └── exception/                    ← DomainException і підкласи
+│
 ├── application/
-│   ├── usecase/                ← Бізнес-логіка (один клас = одна дія)
-│   ├── strategy/               ← Генерація планів (5 стратегій)
-│   ├── service/                ← AuditService, EmailService, CurrentUserService
-│   └── command/                ← Command objects для use cases
+│   ├── usecase/                      ← Бізнес-логіка (один клас = одна дія)
+│   ├── strategy/                     ← Генерація планів (5 стратегій)
+│   ├── service/                      ← AuditService, EmailService, CurrentUserService
+│   └── command/                      ← Command objects для use cases
+│
 ├── infrastructure/
-│   ├── document/               ← MongoDB документи
-│   ├── repository/             ← Spring Data MongoDB репозиторії
-│   ├── repoImplement/          ← Реалізації domain-репозиторіїв
-│   ├── mapper/                 ← MapStruct маппери
-│   └── security/               ← JwtService, JwtFilter, BCryptPasswordHasher
+│   ├── document/                     ← MongoDB документи
+│   ├── repository/                   ← Spring Data MongoDB репозиторії
+│   ├── repoImplement/                ← Реалізації domain-репозиторіїв
+│   ├── mapper/                       ← MapStruct маппери
+│   └── security/                     ← JwtService, JwtFilter, BCryptPasswordHasher
+│
 └── presentation/
-├── controller/             ← REST контролери
-├── dto/                    ← Request/Response DTO
-└── mapper/                 ← Presentation маппери
-workout-frontend/               ← Angular 21 frontend
-├── src/app/
-│   ├── core/
-│   │   ├── services/           ← AuthService, WorkoutLogService, UserProfileService
-│   │   ├── guards/             ← authGuard
-│   │   ├── interceptors/       ← jwtInterceptor
-│   │   └── layout/             ← NavbarComponent
-│   └── features/
-│       ├── auth/               ← Login, Register, ForgotPassword, ResetPassword
-│       ├── workout-plan/       ← Плани тренувань + Live Mode
-│       ├── exercises/          ← База вправ
-│       ├── progress/           ← Графіки прогресу
-│       ├── profile/            ← Профіль користувача
-│       └── admin/              ← Адмін-панель + Журнал аудиту
+    ├── controller/                   ← REST контролери
+    ├── dto/                          ← Request/Response DTO
+    └── mapper/                       ← Presentation маппери
 
----
+workout-frontend/                     ← Angular 21 frontend
+│
+└── src/app/
+    ├── core/
+    │   ├── services/                 ← AuthService, WorkoutLogService, UserProfileService
+    │   ├── guards/                   ← authGuard
+    │   ├── interceptors/             ← jwtInterceptor
+    │   └── layout/                   ← NavbarComponent
+    │
+    └── features/
+        ├── auth/                     ← Login, Register, ForgotPassword, ResetPassword
+        ├── workout-plan/             ← Плани тренувань + Live Mode
+        ├── exercises/                ← База вправ
+        ├── progress/                 ← Графіки прогресу
+        ├── profile/                  ← Профіль користувача
+        └── admin/                    ← Адмін-панель + Журнал аудиту
+```
 
 ## 🎨 UI/UX
 
 - **Світла та темна теми** (перемикаються в navbar, зберігаються в localStorage)
-- Повністю **адаптивний дизайн** (mobile-first)
 - CSS Variables для консистентної кольорової схеми
 - Анімації та hover-ефекти
 - Інтерфейс повністю **українською мовою**
