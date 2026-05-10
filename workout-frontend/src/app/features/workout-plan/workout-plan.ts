@@ -37,6 +37,8 @@ export interface ExerciseSummary {
   volume: number;
   isPR: boolean;
   prDelta: number | null;
+  muscleGroup: string | null;
+  equipmentType: string | null;
 }
 
 
@@ -335,7 +337,9 @@ export class WorkoutPlanComponent implements OnInit {
 
           isPR: !!pr,
 
-          prDelta: pr?.delta ?? null
+          prDelta: pr?.delta ?? null,
+          muscleGroup:   ex.muscleGroup ?? null,
+          equipmentType: ex.equipmentType ?? null,
         };
       });
 

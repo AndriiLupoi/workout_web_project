@@ -9,34 +9,34 @@
       <div class="completed-hero">
         <div class="trophy-icon">🏆</div>
         <h2>Тренування завершено!</h2>
-        <p class="completed-subtitle">
-          Тиждень {{ summary.weekNumber }} · День {{ summary.dayNumber }} · {{ summary.focus }}
-        </p>
+        <p class="completed-subtitle">Тиждень {{ summary.weekNumber }} · День {{ summary.dayNumber }} · {{ summary.focus }}</p>
       </div>
       <div class="completed-stats">
         <div class="cstat">
           <span class="cstat-val accent">{{ formatDuration(summary.durationMs) }}</span>
-          <span class="cstat-label">Час тренування</span>
+          <span class="cstat-label">Час</span>
         </div>
         <div class="cstat">
           <span class="cstat-val">{{ summary.exercises.length }}</span>
-          <span class="cstat-label">Вправ виконано</span>
+          <span class="cstat-label">Вправ</span>
         </div>
         <div class="cstat">
-          <span class="cstat-val" [class.pr-color]="summary.prCount > 0">
-            {{ summary.prCount > 0 ? '🏆 ' + summary.prCount : '—' }}
-          </span>
-          <span class="cstat-label">Особистих рекордів</span>
+        <span class="cstat-val" [class.pr-color]="summary.prCount > 0">
+          {{ summary.prCount > 0 ? '🏆 ' + summary.prCount : '—' }}
+        </span>
+          <span class="cstat-label">Рекордів</span>
         </div>
       </div>
-      <hr class="completed-divider" />
-      <p class="completed-section-title">Вправи</p>
       <div class="completed-ex-list">
         @for (ex of summary.exercises; track ex.exerciseId) {
           <div class="completed-ex-row" [class.is-pr]="ex.isPR">
-            <div class="completed-ex-info">
+            <div class="completed-ex-left">
               <span class="completed-ex-name">{{ ex.exerciseName }}</span>
-              <span class="completed-ex-meta">{{ ex.sets }} × {{ ex.reps }}</span>
+              <div class="completed-ex-tags">
+                @if (ex.muscleGroup) { <span class="ex-tag muscle">{{ muscleLabel(ex.muscleGroup) }}</span> }
+                @if (ex.equipmentType) { <span class="ex-tag equip">{{ equipmentLabel(ex.equipmentType) }}</span> }
+                <span class="ex-tag sets">{{ ex.sets }} × {{ ex.reps }}</span>
+              </div>
             </div>
             <div class="completed-ex-right">
               <span class="completed-ex-weight">{{ ex.actualWeight !== null ? ex.actualWeight + ' кг' : '—' }}</span>
@@ -55,7 +55,7 @@
   @if (isLiveMode() && liveDay(); as day) {
     <div class="live-overlay">
       <div class="live-header">
-        <div class="live-badge"><span class="live-dot"></span>LIVE ТРЕНУВАННЯ</div>
+        <div class="live-badge"><span class="live-dot"></span>LIVE</div>
         <div class="live-title">
           <h2>Тиждень {{ day.weekNumber }} · День {{ day.dayNumber }}</h2>
           <span class="live-focus">{{ day.focus }}</span>
@@ -68,41 +68,58 @@
       }
       <div class="live-exercises">
         @for (ex of liveExercises(); track ex.exerciseId) {
-          <div class="live-exercise-row" [class.skipped-row]="ex.skipped">
-            <div class="live-ex-info">
-              <span class="live-ex-name">{{ ex.exerciseName }}</span>
-              <span class="live-ex-params">{{ ex.sets }} підходи × {{ ex.reps }} повт · <span class="live-ex-rest">⏱ {{ ex.restSeconds }}с</span></span>
-              <button class="btn-skip" (click)="toggleSkip(ex.exerciseId)" [class.active]="ex.skipped">
-                {{ ex.skipped ? '↩ Відновити' : '✕ Пропустити' }}
-              </button>
+          <div class="live-exercise-card" [class.skipped-row]="ex.skipped">
+            <div class="live-card-top">
+              <div class="live-card-meta">
+                <span class="live-ex-name">{{ ex.exerciseName }}</span>
+                <div class="live-ex-tags">
+                  @if (ex.muscleGroup) { <span class="ex-tag muscle">{{ muscleLabel(ex.muscleGroup) }}</span> }
+                  @if (ex.equipmentType) { <span class="ex-tag equip">{{ equipmentLabel(ex.equipmentType) }}</span> }
+                  <span class="ex-tag sets">{{ ex.sets }} підх · {{ ex.reps }} повт</span>
+                  <span class="ex-tag rest">⏱ {{ ex.restSeconds }}с</span>
+                </div>
+                @if (ex.description) {
+                  <span class="live-ex-desc">{{ ex.description }}</span>
+                }
+              </div>
             </div>
-            <div class="live-weight-block">
-              <span class="live-block-label">Вага</span>
-              @if (ex.recommendationLabel) {
-                <span class="prev-weight-hint recommended">{{ ex.recommendationLabel }}<span class="hint-reason">{{ ex.recommendationHint }}</span></span>
-              } @else {
-                <span class="prev-weight-hint none">Перше тренування</span>
-              }
-              <div class="weight-input-row">
-                <button class="weight-btn minus" (click)="updateLiveWeight(ex.exerciseId, (ex.liveWeight ?? 0) - 2.5)">−</button>
+            <div class="live-card-controls">
+              <!-- Вага -->
+              <div class="live-control-group">
+                @if (ex.recommendationLabel) {
+                  <span class="prev-weight-hint recommended">{{ ex.recommendationLabel }}</span>
+                } @else {
+                  <span class="prev-weight-hint none">Перше тренування</span>
+                }
+                <button class="weight-btn" (click)="updateLiveWeight(ex.exerciseId, (ex.liveWeight ?? 0) - 2.5)">−</button>
                 <input class="weight-input" type="number" step="2.5" min="0"
                        [ngModel]="ex.liveWeight" (ngModelChange)="updateLiveWeight(ex.exerciseId, $event)" placeholder="0" />
                 <span class="weight-unit">кг</span>
-                <button class="weight-btn plus" (click)="updateLiveWeight(ex.exerciseId, (ex.liveWeight ?? 0) + 2.5)">+</button>
+                <button class="weight-btn" (click)="updateLiveWeight(ex.exerciseId, (ex.liveWeight ?? 0) + 2.5)">+</button>
               </div>
-            </div>
-            <div class="live-reps-block">
-              <span class="live-block-label">Повтори</span>
-              <div class="weight-input-row">
+
+              <div class="live-controls-divider"></div>
+
+              <!-- Повтори -->
+              <div class="live-control-group">
+                <span class="live-block-label">Повт:</span>
                 <input class="weight-input" type="text" style="width:60px"
                        [ngModel]="ex.reps" (ngModelChange)="updateLiveReps(ex.exerciseId, $event)" />
               </div>
-            </div>
-            <div class="felt-easy-block">
-              <span class="felt-easy-label">Як пройшло?</span>
-              <div class="felt-easy-btns">
+
+              <div class="live-controls-divider"></div>
+
+              <!-- Як пройшло -->
+              <div class="live-control-group">
                 <button class="felt-btn easy" [class.active]="ex.feltEasy === true" (click)="updateFeltEasy(ex.exerciseId, true)">😊 Легко</button>
                 <button class="felt-btn hard" [class.active]="ex.feltEasy === false" (click)="updateFeltEasy(ex.exerciseId, false)">😤 Важко</button>
+              </div>
+
+              <!-- Пропустити — справа -->
+              <div style="margin-left: auto">
+                <button class="btn-skip" (click)="toggleSkip(ex.exerciseId)" [class.active]="ex.skipped">
+                  {{ ex.skipped ? '↩ Відновити' : '✕ Пропустити' }}
+                </button>
               </div>
             </div>
           </div>

@@ -33,8 +33,33 @@ public interface WorkoutPlanDocumentMapper {
     @Mapping(target = "intensityType", source = "intensityType", qualifiedByName = "intensityToString")
     WorkoutDayDocument toDocument(WorkoutDay day);
 
-    WorkoutExercise toDomain(WorkoutExerciseDocument doc);
-    WorkoutExerciseDocument toDocument(WorkoutExercise ex);
+    default WorkoutExercise toDomain(WorkoutExerciseDocument doc) {
+        return WorkoutExercise.builder()
+                .exerciseId(doc.getExerciseId())
+                .exerciseName(doc.getExerciseName())
+                .sets(doc.getSets())
+                .reps(doc.getReps())
+                .restSeconds(doc.getRestSeconds())
+                .plannedWeight(doc.getPlannedWeight())
+                .muscleGroup(doc.getMuscleGroup())
+                .equipmentType(doc.getEquipmentType())
+                .description(doc.getDescription())
+                .build();
+    }
+
+    default WorkoutExerciseDocument toDocument(WorkoutExercise ex) {
+        return WorkoutExerciseDocument.builder()
+                .exerciseId(ex.getExerciseId())
+                .exerciseName(ex.getExerciseName())
+                .sets(ex.getSets())
+                .reps(ex.getReps())
+                .restSeconds(ex.getRestSeconds())
+                .plannedWeight(ex.getPlannedWeight())
+                .muscleGroup(ex.getMuscleGroup())
+                .equipmentType(ex.getEquipmentType())
+                .description(ex.getDescription())
+                .build();
+    }
 
     @Named("stringToGoal")
     default TrainingGoal stringToGoal(String value) {

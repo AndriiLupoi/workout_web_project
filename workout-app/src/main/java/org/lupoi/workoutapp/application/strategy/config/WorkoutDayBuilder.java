@@ -82,6 +82,7 @@ public class WorkoutDayBuilder {
                         .equipmentType(ex.getEquipmentType() != null ? ex.getEquipmentType().name() : null)
                         .description(ex.getDescription())
                         .build());
+
             }
         }
 
