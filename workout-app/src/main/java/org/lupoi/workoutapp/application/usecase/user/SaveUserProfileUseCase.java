@@ -23,6 +23,10 @@ public class SaveUserProfileUseCase {
     public UserProfile execute(String userId, SaveUserProfileCommand command) {
         UserProfile existing = userProfileRepository.findByUserId(userId).orElse(null);
 
+        Double initialWeight = existing != null && existing.getInitialWeight() != null
+                ? existing.getInitialWeight()
+                : command.currentWeight();
+
         UserProfile profile = UserProfile.builder()
                 .id(existing != null ? existing.getId() : null)
                 .userId(userId)
@@ -32,10 +36,12 @@ public class SaveUserProfileUseCase {
                 .workoutsPerWeek(command.workoutsPerWeek())
                 .currentWeight(command.currentWeight())
                 .targetWeight(command.targetWeight())
+                .initialWeight(initialWeight)
                 .height(command.height())
                 .age(command.age())
                 .availableEquipment(command.availableEquipment())
                 .build();
+
 
         UserProfile saved = userProfileRepository.save(profile);
 

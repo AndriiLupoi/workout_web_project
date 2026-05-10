@@ -453,13 +453,41 @@
   overflow: hidden;
 }
 
-.btn-add-video{
+.btn-add-video {
   width: 60%;
-  background-color: #818cf8;
-  color: white;
-  border-radius: 20px;
   margin: 2% 20%;
+  border-radius: 20px;
+  background: var(--accent);
+  color: #ffffff;
+  border: 1.5px solid var(--accent);
+  font-size: 13px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  padding: 8px 0;
+  transition: background 0.15s, border-color 0.15s, color 0.15s, transform 0.1s;
 }
+
+.btn-add-video:hover {
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+/* В темній темі — прозорий стиль з обводкою замість суцільного фону */
+[data-theme="dark"] .btn-add-video {
+  background: var(--accent-soft);
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+[data-theme="dark"] .btn-add-video:hover {
+  background: var(--accent);
+  color: #ffffff;
+  border-color: var(--accent);
+}
+
 
 /* ===================== EMPTY / NO RESULTS ===================== */
 

@@ -200,9 +200,23 @@
   align-items: center;
   justify-content: center;
   transition: all 0.15s;
+  color: var(--text-secondary);
 }
 
-.btn-view:hover { border-color: var(--accent); background: var(--accent-soft); }
+.btn-view:hover {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+[data-theme="dark"] .btn-view {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .btn-view:hover {
+  color: var(--accent);
+}
+
 
 .btn-role {
   padding: 5px 10px;

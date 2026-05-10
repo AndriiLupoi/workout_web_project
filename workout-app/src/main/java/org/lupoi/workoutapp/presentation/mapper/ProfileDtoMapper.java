@@ -18,6 +18,7 @@ public interface ProfileDtoMapper {
                 request.workoutsPerWeek(),
                 request.currentWeight(),
                 request.targetWeight(),
+                request.initialWeight(),
                 request.height(),
                 request.age(),
                 request.availableEquipment()

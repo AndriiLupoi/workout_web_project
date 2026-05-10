@@ -13,6 +13,7 @@ public record SaveUserProfileCommand(
         Integer workoutsPerWeek,
         Double currentWeight,
         Double targetWeight,
+        Double initialWeight,
         Double height,
         Integer age,
         List<String> availableEquipment

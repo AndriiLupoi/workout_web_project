@@ -24,6 +24,7 @@ public record SaveProfileRequest(
 
         Double currentWeight,
         Double targetWeight,
+        Double initialWeight,
         Double height,
 
         @Min(value = 10) @Max(value = 100)

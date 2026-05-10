@@ -7,6 +7,7 @@ package org.lupoi.workoutapp.presentation.controller;/*
 */
 
 import lombok.RequiredArgsConstructor;
+import org.lupoi.workoutapp.application.usecase.workout.plan.GetTrainingDaysUseCase;
 import org.lupoi.workoutapp.application.usecase.workout.plan.GetWeightRecommendationUseCase;
 import org.lupoi.workoutapp.application.usecase.workout.progress.GetPlanProgressUseCase;
 import org.lupoi.workoutapp.application.usecase.workout.logs.GetWorkoutLogsUseCase;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/logs")
@@ -33,6 +35,7 @@ public class WorkoutLogController {
     private final GetWorkoutLogsUseCase getLogsUseCase;
     private final GetPlanProgressUseCase getPlanProgressUseCase;
     private final GetWeightRecommendationUseCase getWeightRecommendationUseCase;
+    private final GetTrainingDaysUseCase getTrainingDaysUseCase;
     private final WorkoutLogDtoMapper mapper;
 
     // POST /api/v1/logs — зберегти тренування, отримати PR у відповідь
@@ -89,6 +92,14 @@ public class WorkoutLogController {
                 .map(r -> ResponseEntity.ok(new WeightRecommendationResponse(r.weight(), r.label(), r.hint())))
                 .orElse(ResponseEntity.noContent().build());
     }
+
+    // GET /api/v1/logs/week → { "trainedDays": [0, 2, 4] }
+    @GetMapping("/week")
+    public ResponseEntity<Map<String, List<Integer>>> getTrainingDaysThisWeek(Principal principal) {
+        List<Integer> trainedDays = getTrainingDaysUseCase.execute(principal.getName());
+        return ResponseEntity.ok(Map.of("trainedDays", trainedDays));
+    }
+
 
     private WorkoutLogResultResponse toResultResponse(WorkoutLogResult result) {
         List<WorkoutLogResultResponse.ExercisePrResponse> prs = result.personalRecords().stream()

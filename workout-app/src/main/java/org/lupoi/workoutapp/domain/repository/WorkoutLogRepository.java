@@ -8,6 +8,7 @@ package org.lupoi.workoutapp.domain.repository;/*
 
 import org.lupoi.workoutapp.domain.entity.logs.WorkoutLog;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,5 +18,9 @@ public interface WorkoutLogRepository {
     List<WorkoutLog> findByUserId(String userId);
     Optional<WorkoutLog> findByUserIdAndPlanIdAndWeekAndDay(
             String userId, String planId, int weekNumber, int dayNumber);
+
+    List<WorkoutLog> findByUserIdAndCompletedAtBetween(
+            String userId, LocalDateTime from, LocalDateTime to);
+
 }
 

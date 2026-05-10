@@ -2,30 +2,27 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
-// Відповідає LogWorkoutRequest.LoggedExerciseRequest на бекенді
 export interface LoggedExerciseRequest {
   exerciseId:    string;
   exerciseName:  string;
-  plannedSets:   number;        // int — НЕ може бути null
+  plannedSets:   number;
   plannedReps:   string;
-  plannedWeight: number | null; // Double — може бути null
-  actualSets:    number;        // int — НЕ може бути null
+  plannedWeight: number | null;
+  actualSets:    number;
   actualReps:    string;
-  actualWeight:  number | null; // Double — може бути null
+  actualWeight:  number | null;
   feltEasy:      boolean;
   notes:         string;
 }
 
-// Відповідає LogWorkoutRequest на бекенді
 export interface LogWorkoutRequest {
   planId:     string;
-  weekNumber: number; // int — НЕ може бути null
-  dayNumber:  number; // int — НЕ може бути null
+  weekNumber: number;
+  dayNumber:  number;
   exercises:  LoggedExerciseRequest[];
   notes:      string;
 }
 
-// Відповідає WorkoutLogResponse на бекенді
 export interface WorkoutLogResponse {
   id:          string;
   planId:      string;
@@ -74,6 +71,10 @@ export interface WorkoutLogResultResponse {
   personalRecords: PersonalRecordResponse[];
 }
 
+export interface TrainingDaysResponse {
+  trainedDays: number[]; // індекси: 0=Пн, 1=Вт, ..., 6=Нд
+}
+
 @Injectable({ providedIn: 'root' })
 export class WorkoutLogService {
   private readonly api = '/api/v1/logs';
@@ -81,20 +82,13 @@ export class WorkoutLogService {
   constructor(private http: HttpClient) {}
 
   saveLog(payload: LogWorkoutRequest): Observable<WorkoutLogResultResponse> {
-    return this.http.post<WorkoutLogResultResponse>(
-      '/api/v1/logs',
-      payload
-    );
+    return this.http.post<WorkoutLogResultResponse>(this.api, payload);
   }
 
-  // GET /api/v1/logs?planId=xxx
   getLogsByPlan(planId: string): Observable<WorkoutLogResponse[]> {
-    return this.http.get<WorkoutLogResponse[]>(this.api, {
-      params: { planId }
-    });
+    return this.http.get<WorkoutLogResponse[]>(this.api, { params: { planId } });
   }
 
-  // GET /api/v1/logs/day?planId=xxx&week=1&day=2
   getLogForDay(planId: string, week: number, day: number): Observable<WorkoutLogResponse> {
     return this.http.get<WorkoutLogResponse>(`${this.api}/day`, {
       params: { planId, week, day }
@@ -110,17 +104,13 @@ export class WorkoutLogService {
     exerciseId: string,
     plannedWeight: number | null
   ): Observable<WeightRecommendationResponse> {
+    return this.http.get<WeightRecommendationResponse>(`${this.api}/recommendation`, {
+      params: { planId, exerciseId, plannedWeight: plannedWeight?.toString() ?? '0' }
+    });
+  }
 
-    return this.http.get<WeightRecommendationResponse>(
-      `/api/v1/logs/recommendation`,
-      {
-        params: {
-          planId,
-          exerciseId,
-          plannedWeight: plannedWeight?.toString() ?? '0'
-        }
-      }
-    );
+  // GET /api/v1/logs/week → { trainedDays: [0, 2, 4] }
+  getTrainingDaysThisWeek(): Observable<TrainingDaysResponse> {
+    return this.http.get<TrainingDaysResponse>(`${this.api}/week`);
   }
 }
-

@@ -29,6 +29,7 @@ public class UserProfile {
     private Integer workoutsPerWeek;
     private Double currentWeight;
     private Double targetWeight;
+    private Double initialWeight;
     private Double height;
     private Integer age;
     private List<String> availableEquipment;

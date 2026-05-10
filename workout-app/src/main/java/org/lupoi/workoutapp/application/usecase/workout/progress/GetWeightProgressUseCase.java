@@ -33,15 +33,22 @@ public class GetWeightProgressUseCase {
             return new WeightProgressResult(0, 0, 0, "Вага не вказана");
         }
 
+        // Поточна вага — останній лог або значення з профілю
         List<BodyWeightLog> logs = bodyWeightLogRepository.findByUserId(userId);
         double currentWeight = logs.isEmpty()
                 ? profile.getCurrentWeight()
                 : logs.get(logs.size() - 1).getWeight();
 
         double targetWeight = profile.getTargetWeight();
-        double startWeight = logs.isEmpty()
-                ? profile.getCurrentWeight()
-                : logs.get(0).getWeight();
+
+        double startWeight;
+        if (profile.getInitialWeight() != null) {
+            startWeight = profile.getInitialWeight();
+        } else if (!logs.isEmpty()) {
+            startWeight = logs.get(0).getWeight();
+        } else {
+            startWeight = profile.getCurrentWeight();
+        }
 
         int percent;
         String message;
@@ -53,14 +60,17 @@ public class GetWeightProgressUseCase {
             double totalToLose = startWeight - targetWeight;
             double alreadyLost = Math.max(0, startWeight - currentWeight);
             percent = (int) Math.min(100, (alreadyLost / totalToLose) * 100);
-            message = String.format("Ще %.1f кг до цілі", currentWeight - targetWeight);
+            double remaining = currentWeight - targetWeight;
+            message = String.format("Ще %.1f кг до цілі", remaining);
         } else {
             double totalToGain = targetWeight - startWeight;
             double alreadyGained = Math.max(0, currentWeight - startWeight);
             percent = (int) Math.min(100, (alreadyGained / totalToGain) * 100);
-            message = String.format("Ще %.1f кг до набору", targetWeight - currentWeight);
+            double remaining = targetWeight - currentWeight;
+            message = String.format("Ще %.1f кг до набору", remaining);
         }
 
         return new WeightProgressResult(currentWeight, targetWeight, percent, message);
     }
 }
+

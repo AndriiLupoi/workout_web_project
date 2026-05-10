@@ -13,6 +13,7 @@ import org.lupoi.workoutapp.infrastructure.mapper.WorkoutLogDocumentMapper;
 import org.lupoi.workoutapp.infrastructure.repository.MongoWorkoutLogRepository;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -47,4 +48,12 @@ public class WorkoutLogRepositoryImpl implements WorkoutLogRepository {
                         userId, planId, weekNumber, dayNumber)
                 .map(mapper::toDomain);
     }
+
+    @Override
+    public List<WorkoutLog> findByUserIdAndCompletedAtBetween(
+            String userId, LocalDateTime from, LocalDateTime to) {
+        return mongo.findByUserIdAndCompletedAtBetween(userId, from, to)
+                .stream().map(mapper::toDomain).toList();
+    }
+
 }

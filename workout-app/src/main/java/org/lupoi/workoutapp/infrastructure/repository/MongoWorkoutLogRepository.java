@@ -9,6 +9,7 @@ package org.lupoi.workoutapp.infrastructure.repository;/*
 import org.lupoi.workoutapp.infrastructure.document.logs.WorkoutLogDocument;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,5 +18,8 @@ public interface MongoWorkoutLogRepository extends MongoRepository<WorkoutLogDoc
     List<WorkoutLogDocument> findByUserId(String userId);
     Optional<WorkoutLogDocument> findByUserIdAndPlanIdAndWeekNumberAndDayNumber(
             String userId, String planId, int weekNumber, int dayNumber);
+
+    List<WorkoutLogDocument> findByUserIdAndCompletedAtBetween(
+            String userId, LocalDateTime from, LocalDateTime to);
 }
 

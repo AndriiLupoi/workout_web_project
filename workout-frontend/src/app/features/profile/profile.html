@@ -1,103 +1,113 @@
-<div class="profile-container">
-
-  <!-- Header -->
-  <div class="profile-header">
-    <h1>Мій профіль</h1>
-    <div class="header-actions">
-      <button class="edit-btn" (click)="toggleEditMode()">
-        {{ isEditMode() ? 'Скасувати' : 'Редагувати профіль' }}
-      </button>
-    </div>
-  </div>
+<div class="pg">
 
   @if (isLoading()) {
-    <div class="loading">Завантаження...</div>
+    <div class="pg-loading">Завантаження...</div>
   }
 
-  <!-- ==================== VIEW MODE ==================== -->
+  <!-- ═══════════════ VIEW MODE ═══════════════ -->
   @if (!isEditMode() && !isLoading()) {
-    <div class="profile-view">
 
-      <!-- Аватар + ім'я -->
-      <div class="profile-card hero-card">
-        <div class="avatar-block">
-          <div class="avatar">
-            {{ (profileForm.get('firstName')?.value || '?')[0].toUpperCase() }}{{ (profileForm.get('lastName')?.value || '?')[0].toUpperCase() }}
-          </div>
-          <div class="hero-info">
-            <h2>{{ profileForm.get('firstName')?.value }} {{ profileForm.get('lastName')?.value }}</h2>
-            <span class="hero-level">{{ getLevelLabel(profileForm.get('experienceLevel')?.value) }}</span>
-          </div>
+    <header class="hero">
+      <div class="hero-left">
+        <div class="hero-initials">
+          {{ (profileForm.get('firstName')?.value || '?')[0].toUpperCase() }}{{ (profileForm.get('lastName')?.value || '?')[0].toUpperCase() }}
         </div>
-
-        <!-- Швидкі статси -->
-        <div class="quick-stats">
-          <div class="quick-stat">
-            <span class="qs-value">{{ profileForm.get('age')?.value || '—' }}</span>
-            <span class="qs-label">років</span>
-          </div>
-          <div class="quick-stat">
-            <span class="qs-value">{{ profileForm.get('height')?.value || '—' }}</span>
-            <span class="qs-label">см</span>
-          </div>
-          <div class="quick-stat">
-            <span class="qs-value">{{ profileForm.get('currentWeight')?.value || '—' }}</span>
-            <span class="qs-label">кг зараз</span>
-          </div>
-          <div class="quick-stat">
-            <span class="qs-value">{{ profileForm.get('trainingDaysPerWeek')?.value || '—' }}</span>
-            <span class="qs-label">днів/тиждень</span>
+        <div>
+          <h1 class="hero-name">
+            {{ profileForm.get('firstName')?.value }} {{ profileForm.get('lastName')?.value }}
+          </h1>
+          <div class="hero-tags">
+            <span class="tag tag-accent">{{ getLevelLabel(profileForm.get('experienceLevel')?.value) }}</span>
+            <span class="tag">{{ getGoalLabel(profileForm.get('goal')?.value) }}</span>
           </div>
         </div>
       </div>
+      <button class="btn-edit" (click)="toggleEditMode()">Редагувати</button>
+    </header>
 
-      <!-- Ціль + прогрес ваги -->
-      <div class="cards-row">
+    <div class="dash">
 
-        <div class="profile-card goal-card">
-          <div class="card-icon">🎯</div>
-          <div class="card-content">
-            <span class="card-label">Ціль тренувань</span>
-            <span class="card-value">{{ getGoalLabel(profileForm.get('goal')?.value) }}</span>
+      <div class="card s1">
+        <span class="card-lbl">Вік</span>
+        <span class="card-big">{{ profileForm.get('age')?.value || '—' }}<span class="card-unit">р</span></span>
+      </div>
+
+      <div class="card s1">
+        <span class="card-lbl">Зріст</span>
+        <span class="card-big">{{ profileForm.get('height')?.value || '—' }}<span class="card-unit">см</span></span>
+      </div>
+
+      <div class="card s1">
+        <span class="card-lbl">Вага зараз</span>
+        <span class="card-big">{{ profileForm.get('currentWeight')?.value || '—' }}<span class="card-unit">кг</span></span>
+        @if (profileForm.get('targetWeight')?.value) {
+          <span class="card-sub">ціль — {{ profileForm.get('targetWeight')?.value }} кг</span>
+        }
+      </div>
+
+      <div class="card s1">
+        <span class="card-lbl">Тренувань</span>
+        <span class="card-big">{{ profileForm.get('trainingDaysPerWeek')?.value || '—' }}<span class="card-unit">/тижд</span></span>
+      </div>
+
+      @if (profileForm.get('currentWeight')?.value && profileForm.get('targetWeight')?.value) {
+        <div class="card s2">
+          <span class="card-lbl">Прогрес до цілі</span>
+          <div class="prog-nums">
+            <span class="prog-from">{{ profileForm.get('currentWeight')?.value }}</span>
+            <span class="prog-arrow">→</span>
+            <span class="prog-to">{{ profileForm.get('targetWeight')?.value }} кг</span>
           </div>
-        </div>
-
-        <div class="profile-card plan-card">
-          <div class="card-icon">📋</div>
-          <div class="card-content">
-            <span class="card-label">Тип плану</span>
-            <span class="card-value">{{ getPlanTypeLabel(profileForm.get('planType')?.value) }}</span>
+          <div class="bar-wrap">
+            <div class="bar-fill bar-purple"
+                 [style.width.%]="weightProgress()?.progressPercent ?? 0"></div>
           </div>
+          <span class="bar-msg">{{ weightProgress()?.message }}</span>
         </div>
+      }
 
-        <!-- Прогрес ваги -->
-        @if (profileForm.get('currentWeight')?.value && profileForm.get('targetWeight')?.value) {
-          <div class="profile-card weight-progress-card">
-            <div class="card-icon">⚖️</div>
-            <div class="card-content full-width">
-              <span class="card-label">Прогрес до цілі</span>
-              <div class="weight-row">
-                <span class="weight-val current">{{ profileForm.get('currentWeight')?.value }} кг</span>
-                <div class="weight-arrow">→</div>
-                <span class="weight-val target">{{ profileForm.get('targetWeight')?.value }} кг</span>
-              </div>
-              <div class="progress-bar-wrap">
-                <div class="progress-bar-fill"
-                     [style.width.%]="weightProgress()?.progressPercent ?? 0">
-                </div>
-              </div>
-              <span class="progress-label">{{ weightProgress()?.message }}</span>
+      @if (profileForm.get('currentWeight')?.value && profileForm.get('height')?.value) {
+        <div class="card s2">
+          <span class="card-lbl">Індекс маси тіла</span>
+          <div class="bmi-row">
+            <span class="bmi-num">{{ getBmi() }}</span>
+            <span class="bmi-badge" [ngClass]="getBmiClass()">{{ getBmiLabel() }}</span>
+          </div>
+          <div class="bmi-scale-wrap">
+            <div class="bmi-scale-track">
+              <div class="bmi-marker" [style.left]="getBmiPercent() + '%'"></div>
+            </div>
+            <div class="bmi-scale-lbls">
+              <span>Низька</span><span>Норма</span><span>Надлишок</span><span>Ожиріння</span>
             </div>
           </div>
-        }
+        </div>
+      }
 
+      <div class="card s2">
+        <span class="card-lbl">Тип плану</span>
+        <span class="plan-name">{{ getPlanTypeLabel(profileForm.get('planType')?.value) }}</span>
       </div>
 
-      <!-- Обладнання -->
+      <div class="card s2 card-motive">
+        <span class="card-lbl">Мотивація</span>
+        <p class="motive-text">{{ getMotivationMessage() }}</p>
+      </div>
+
+      <div class="card s2">
+        <span class="card-lbl">Тиждень</span>
+        <div class="week-row">
+          @for (d of weekDays; track d.key) {
+            <div class="wday" [class.wday-on]="isTrainingDay(d.idx)">{{ d.label }}</div>
+          }
+        </div>
+        <span class="card-sub" style="margin-top:10px">{{ trainedDays().length }} з 7 днів цього тижня</span>
+      </div>
+
       @if ((profileForm.get('availableEquipment')?.value || []).length > 0) {
-        <div class="profile-card equipment-card">
-          <h3 class="section-title">🏋️ Доступне обладнання</h3>
-          <div class="equipment-chips">
+        <div class="card s-full">
+          <span class="card-lbl">Доступне обладнання</span>
+          <div class="eq-chips">
             @for (eq of getSelectedEquipment(); track eq.value) {
               <span class="eq-chip">{{ eq.label }}</span>
             }
@@ -108,13 +118,18 @@
     </div>
   }
 
-  <!-- ==================== EDIT MODE ==================== -->
+  <!-- ═══════════════ EDIT MODE ═══════════════ -->
   @if (isEditMode()) {
-    <div class="profile-edit">
+    <header class="hero hero-edit">
+      <h1 class="hero-name" style="font-size:30px">Редагування профілю</h1>
+      <button class="btn-edit" (click)="toggleEditMode()">Скасувати</button>
+    </header>
+
+    <div class="edit-wrap">
       <form [formGroup]="profileForm" (ngSubmit)="onSubmit()">
 
-        <div class="form-section">
-          <h2>Особисті дані</h2>
+        <div class="edit-section">
+          <h2 class="edit-title">Особисті дані</h2>
           <div class="form-grid">
             <div class="form-field">
               <label>Ім'я</label>
@@ -124,80 +139,73 @@
               <label>Прізвище</label>
               <input formControlName="lastName" type="text" placeholder="Ваше прізвище">
             </div>
-          </div>
-          <div class="form-grid">
             <div class="form-field">
-              <label>Вік (роки)</label>
-              <input formControlName="age" type="number" placeholder="Наприклад: 25">
+              <label>Вік</label>
+              <input formControlName="age" type="number" placeholder="25">
             </div>
             <div class="form-field">
               <label>Зріст (см)</label>
-              <input formControlName="height" type="number" placeholder="Наприклад: 180">
+              <input formControlName="height" type="number" placeholder="180">
             </div>
-          </div>
-          <div class="form-grid">
             <div class="form-field">
               <label>Поточна вага (кг)</label>
-              <input formControlName="currentWeight" type="number" step="0.1" placeholder="Наприклад: 78.5">
+              <input formControlName="currentWeight" type="number" step="0.1" placeholder="78.5">
             </div>
             <div class="form-field">
               <label>Бажана вага (кг)</label>
-              <input formControlName="targetWeight" type="number" step="0.1" placeholder="Наприклад: 75">
+              <input formControlName="targetWeight" type="number" step="0.1" placeholder="85">
             </div>
           </div>
         </div>
 
-        <div class="form-section">
-          <h2>Цілі та рівень підготовки</h2>
-          <div class="form-field">
-            <label>Ціль тренувань</label>
-            <select formControlName="goal">
-              <option *ngFor="let g of goals" [value]="g.value">{{ g.label }}</option>
-            </select>
-          </div>
-          <div class="form-field">
-            <label>Рівень підготовки</label>
-            <select formControlName="experienceLevel">
-              <option *ngFor="let level of experienceLevels" [value]="level.value">{{ level.label }}</option>
-            </select>
-          </div>
-          <div class="form-field">
-            <label>Тип плану тренувань</label>
-            <select formControlName="planType">
-              <option *ngFor="let p of planTypes" [value]="p.value">{{ p.label }}</option>
-            </select>
-          </div>
-          <div class="form-field">
-            <label>Кількість тренувань на тиждень</label>
-            <input formControlName="trainingDaysPerWeek" type="number" min="2" max="6" placeholder="3-6 днів">
+        <div class="edit-section">
+          <h2 class="edit-title">Цілі та підготовка</h2>
+          <div class="form-grid">
+            <div class="form-field">
+              <label>Ціль тренувань</label>
+              <select formControlName="goal">
+                <option *ngFor="let g of goals" [value]="g.value">{{ g.label }}</option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label>Рівень підготовки</label>
+              <select formControlName="experienceLevel">
+                <option *ngFor="let l of experienceLevels" [value]="l.value">{{ l.label }}</option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label>Тип плану</label>
+              <select formControlName="planType">
+                <option *ngFor="let p of planTypes" [value]="p.value">{{ p.label }}</option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label>Тренувань на тиждень</label>
+              <input formControlName="trainingDaysPerWeek" type="number" min="1" max="7">
+            </div>
           </div>
         </div>
 
-        <div class="form-section">
-          <h2>Доступне обладнання</h2>
+        <div class="edit-section">
+          <h2 class="edit-title">Обладнання</h2>
           <div class="checkbox-group">
             <label *ngFor="let eq of equipmentOptions" class="checkbox-label">
               <input type="checkbox" [value]="eq.value"
                      [checked]="isEquipmentSelected(eq.value)"
-                     (change)="onEquipmentChange($event)" />
+                     (change)="onEquipmentChange($event)">
               <span>{{ eq.label }}</span>
             </label>
           </div>
         </div>
 
         <div class="messages">
-          @if (successMessage()) {
-            <div class="success-message">{{ successMessage() }}</div>
-          }
-          @if (errorMessage()) {
-            <div class="error-message">{{ errorMessage() }}</div>
-          }
+          @if (successMessage()) { <div class="msg-ok">✓ {{ successMessage() }}</div> }
+          @if (errorMessage())   { <div class="msg-err">✕ {{ errorMessage() }}</div> }
         </div>
 
-        <button type="submit" class="btn-primary" [disabled]="isLoading()">
+        <button type="submit" class="btn-save" [disabled]="isLoading()">
           {{ isLoading() ? 'Збереження...' : 'Зберегти зміни' }}
         </button>
-
       </form>
     </div>
   }

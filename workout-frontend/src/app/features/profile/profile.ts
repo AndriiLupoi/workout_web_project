@@ -2,8 +2,9 @@ import { Component, inject, OnInit, signal } from '@angular/core';
 import { forkJoin } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import {ProfileService, WeightProgressResponse} from './profile.service';
+import { ProfileService, WeightProgressResponse } from './profile.service';
 import { UserService } from './user.service';
+import { WorkoutLogService } from '../../core/services/workout-log/workout-log.service';
 
 @Component({
   selector: 'app-profile',
@@ -14,15 +15,17 @@ import { UserService } from './user.service';
 })
 export class ProfileComponent implements OnInit {
 
-  private fb = inject(FormBuilder);
+  private fb             = inject(FormBuilder);
   private profileService = inject(ProfileService);
-  private userService = inject(UserService);
+  private userService    = inject(UserService);
+  private logService     = inject(WorkoutLogService);
 
-  isEditMode   = signal(false);
-  isLoading    = signal(false);
+  isEditMode     = signal(false);
+  isLoading      = signal(false);
   successMessage = signal('');
   errorMessage   = signal('');
   weightProgress = signal<WeightProgressResponse | null>(null);
+  trainedDays    = signal<number[]>([]); // 0=Пн, 1=Вт, ..., 6=Нд
 
   profileForm: FormGroup;
 
@@ -59,6 +62,16 @@ export class ProfileComponent implements OnInit {
     { value: 'BENCH',      label: 'Лава для жиму' },
   ];
 
+  weekDays = [
+    { key: 'mon', label: 'Пн', idx: 0 },
+    { key: 'tue', label: 'Вт', idx: 1 },
+    { key: 'wed', label: 'Ср', idx: 2 },
+    { key: 'thu', label: 'Чт', idx: 3 },
+    { key: 'fri', label: 'Пт', idx: 4 },
+    { key: 'sat', label: 'Сб', idx: 5 },
+    { key: 'sun', label: 'Нд', idx: 6 },
+  ];
+
   constructor() {
     this.profileForm = this.fb.group({
       firstName:           ['', [Validators.required, Validators.minLength(2)]],
@@ -70,18 +83,21 @@ export class ProfileComponent implements OnInit {
       goal:                ['MASS', Validators.required],
       experienceLevel:     ['BEGINNER', Validators.required],
       planType:            ['HYPERTROPHY', Validators.required],
-      trainingDaysPerWeek: [3, [Validators.required, Validators.min(2), Validators.max(6)]],
+      trainingDaysPerWeek: [3, [Validators.required, Validators.min(1), Validators.max(7)]],
       availableEquipment:  [[] as string[]]
     });
   }
 
-  ngOnInit(): void { this.loadProfile(); }
+  ngOnInit(): void {
+    this.loadProfile();
+    this.loadTrainedDays();
+  }
 
   loadProfile(): void {
     this.isLoading.set(true);
     forkJoin({
-      user: this.userService.getUser(),
-      profile: this.profileService.getProfile(),
+      user:           this.userService.getUser(),
+      profile:        this.profileService.getProfile(),
       weightProgress: this.profileService.getWeightProgress()
     }).subscribe({
       next: ({ user, profile, weightProgress }: any) => {
@@ -96,20 +112,22 @@ export class ProfileComponent implements OnInit {
           experienceLevel:     profile.level         || 'BEGINNER',
           planType:            profile.planType       || 'HYPERTROPHY',
           trainingDaysPerWeek: profile.workoutsPerWeek || 3,
-
         });
         this.weightProgress.set(weightProgress);
         this.profileForm.get('availableEquipment')?.setValue(profile.availableEquipment || []);
         this.isLoading.set(false);
-
-        this.profileService.getWeightProgress().subscribe({
-          next: (progress) => this.weightProgress.set(progress)
-        });
       },
       error: () => {
         this.errorMessage.set('Не вдалося завантажити профіль');
         this.isLoading.set(false);
       }
+    });
+  }
+
+  loadTrainedDays(): void {
+    this.logService.getTrainingDaysThisWeek().subscribe({
+      next: (res) => this.trainedDays.set(res.trainedDays),
+      error: ()   => this.trainedDays.set([]) // не критично — просто порожній тиждень
     });
   }
 
@@ -125,7 +143,7 @@ export class ProfileComponent implements OnInit {
     this.errorMessage.set('');
     const v = this.profileForm.value;
     forkJoin({
-      user: this.userService.updateUser({ firstName: v.firstName, lastName: v.lastName }),
+      user:    this.userService.updateUser({ firstName: v.firstName, lastName: v.lastName }),
       profile: this.profileService.updateProfile({
         goal:               v.goal,
         level:              v.experienceLevel,
@@ -142,6 +160,7 @@ export class ProfileComponent implements OnInit {
         this.successMessage.set('Профіль успішно збережено!');
         this.isEditMode.set(false);
         this.isLoading.set(false);
+        this.loadTrainedDays();
       },
       error: () => {
         this.errorMessage.set('Помилка збереження профілю');
@@ -163,7 +182,11 @@ export class ProfileComponent implements OnInit {
     return (this.profileForm.get('availableEquipment')?.value as string[] || []).includes(equipment);
   }
 
-  // ===== Хелпери для View Mode =====
+  isTrainingDay(idx: number): boolean {
+    return this.trainedDays().includes(idx);
+  }
+
+  // ── view helpers ────────────────────────────────────────────────────────────
 
   getGoalLabel(value: string): string {
     return this.goals.find(g => g.value === value)?.label ?? value;
@@ -180,5 +203,48 @@ export class ProfileComponent implements OnInit {
   getSelectedEquipment(): { value: string; label: string }[] {
     const selected: string[] = this.profileForm.get('availableEquipment')?.value || [];
     return this.equipmentOptions.filter(eq => selected.includes(eq.value));
+  }
+
+  getBmi(): string {
+    const weight = this.profileForm.get('currentWeight')?.value;
+    const height = this.profileForm.get('height')?.value;
+    if (!weight || !height) return '—';
+    return (weight / Math.pow(height / 100, 2)).toFixed(1);
+  }
+
+  getBmiLabel(): string {
+    const bmi = parseFloat(this.getBmi());
+    if (isNaN(bmi)) return '';
+    if (bmi < 18.5) return 'Недостатня вага';
+    if (bmi < 25)   return 'Норма';
+    if (bmi < 30)   return 'Надлишкова вага';
+    return 'Ожиріння';
+  }
+
+  getBmiClass(): string {
+    const bmi = parseFloat(this.getBmi());
+    if (isNaN(bmi)) return '';
+    if (bmi < 18.5) return 'bmi-badge bmi-low';
+    if (bmi < 25)   return 'bmi-badge bmi-normal';
+    if (bmi < 30)   return 'bmi-badge bmi-high';
+    return 'bmi-badge bmi-obese';
+  }
+
+  getBmiPercent(): number {
+    const bmi = parseFloat(this.getBmi());
+    if (isNaN(bmi)) return 0;
+    return Math.min(Math.max(((bmi - 15) / 25) * 100, 0), 100);
+  }
+
+  getMotivationMessage(): string {
+    const goal = this.profileForm.get('goal')?.value;
+    const map: Record<string, string> = {
+      MASS:              'Кожне тренування — це цеглинка до твоєї кращої версії. Не зупиняйся.',
+      LOSS:              'Результат складається з маленьких рішень. Ти вже зробив правильне.',
+      ENDURANCE:         'Витривалість — це не те, що ти маєш. Це те, що ти будуєш щодня.',
+      STRENGTH:          'Сила — це не лише про м\'язи. Це характер, виплавлений важкою роботою.',
+      STRENGTH_AND_MASS: 'Поєднання сили і маси — найамбітніша ціль. Ти готовий до неї.',
+    };
+    return map[goal] ?? 'Кожне тренування наближає тебе до мети. Тримай темп!';
   }
 }

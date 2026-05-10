@@ -26,6 +26,7 @@ public class UserProfileDocument {
     private Integer workoutsPerWeek;
     private Double currentWeight;
     private Double targetWeight;
+    private Double initialWeight;
     private Double height;
     private Integer age;
 
