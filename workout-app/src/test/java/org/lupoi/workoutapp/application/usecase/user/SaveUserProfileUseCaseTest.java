@@ -5,6 +5,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.lupoi.workoutapp.application.command.SaveUserProfileCommand;
+import org.lupoi.workoutapp.application.service.AuditService;
 import org.lupoi.workoutapp.domain.entity.UserProfile;
 import org.lupoi.workoutapp.domain.enums.FitnessLevel;
 import org.lupoi.workoutapp.domain.enums.PlanType;
@@ -38,6 +39,9 @@ class SaveUserProfileUseCaseTest {
 
     @Mock
     private BodyWeightLogRepository bodyWeightLogRepository;
+
+    @Mock
+    private AuditService auditService;
 
     @InjectMocks
     private SaveUserProfileUseCase saveUserProfileUseCase;

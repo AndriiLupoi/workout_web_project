@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.lupoi.workoutapp.application.command.RegisterUserCommand;
 import org.lupoi.workoutapp.application.port.PasswordHasher;
+import org.lupoi.workoutapp.application.service.AuditService;
 import org.lupoi.workoutapp.domain.entity.User;
 import org.lupoi.workoutapp.domain.exception.EmailAlreadyExistsException;
 import org.lupoi.workoutapp.domain.repository.UserRepository;
@@ -33,6 +34,9 @@ class RegisterUserUseCaseTest {
 
     @Mock
     private PasswordHasher passwordHasher;
+
+    @Mock
+    private AuditService auditService;
 
     @InjectMocks
     private RegisterUserUseCase registerUserUseCase;

@@ -3,6 +3,7 @@ package org.lupoi.workoutapp.application.usecase.workout;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.lupoi.workoutapp.application.service.AuditService;
 import org.lupoi.workoutapp.application.usecase.workout.plan.DeleteWorkoutPlanUseCase;
 import org.lupoi.workoutapp.domain.entity.WorkoutPlan;
 import org.lupoi.workoutapp.domain.exception.EntityNotFoundException;
@@ -29,6 +30,9 @@ class DeleteWorkoutPlanUseCaseTest {
 
     @Mock
     private WorkoutPlanRepository workoutPlanRepository;
+
+    @Mock
+    private AuditService auditService;
 
     @InjectMocks
     private DeleteWorkoutPlanUseCase deleteWorkoutPlanUseCase;

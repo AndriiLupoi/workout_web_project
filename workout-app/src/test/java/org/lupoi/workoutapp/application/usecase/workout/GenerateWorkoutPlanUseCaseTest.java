@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.lupoi.workoutapp.application.service.AuditService;
 import org.lupoi.workoutapp.application.strategy.PlanGenerationStrategy;
 import org.lupoi.workoutapp.application.usecase.workout.plan.GenerateWorkoutPlanUseCase;
 import org.lupoi.workoutapp.domain.entity.Exercise;
@@ -46,6 +47,9 @@ class GenerateWorkoutPlanUseCaseTest {
 
     @Mock
     private PlanGenerationStrategy planGenerationStrategy;
+
+    @Mock
+    private AuditService auditService;
 
     @InjectMocks
     private GenerateWorkoutPlanUseCase generateWorkoutPlanUseCase;
