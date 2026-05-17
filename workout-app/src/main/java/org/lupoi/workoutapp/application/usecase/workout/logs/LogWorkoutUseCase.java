@@ -9,8 +9,8 @@ package org.lupoi.workoutapp.application.usecase.workout.logs;/*
 import lombok.RequiredArgsConstructor;
 import org.lupoi.workoutapp.application.command.LogWorkoutCommand;
 import org.lupoi.workoutapp.application.service.AuditService;
-import org.lupoi.workoutapp.domain.entity.logs.LoggedExercise;
-import org.lupoi.workoutapp.domain.entity.logs.WorkoutLog;
+import org.lupoi.workoutapp.domain.entity.LoggedExercise;
+import org.lupoi.workoutapp.domain.entity.WorkoutLog;
 import org.lupoi.workoutapp.domain.enums.AuditAction;
 import org.lupoi.workoutapp.domain.model.WorkoutLogResult;
 import org.lupoi.workoutapp.domain.repository.WorkoutLogRepository;

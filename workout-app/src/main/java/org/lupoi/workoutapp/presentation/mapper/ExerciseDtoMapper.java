@@ -1,6 +1,6 @@
 package org.lupoi.workoutapp.presentation.mapper;
 
-import org.lupoi.workoutapp.domain.entity.workout.Exercise;
+import org.lupoi.workoutapp.domain.entity.Exercise;
 import org.lupoi.workoutapp.presentation.dto.response.workout.ExerciseResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

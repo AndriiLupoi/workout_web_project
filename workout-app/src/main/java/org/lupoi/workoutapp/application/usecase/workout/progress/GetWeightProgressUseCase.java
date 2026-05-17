@@ -1,7 +1,7 @@
 package org.lupoi.workoutapp.application.usecase.workout.progress;
 
 import lombok.RequiredArgsConstructor;
-import org.lupoi.workoutapp.domain.entity.logs.BodyWeightLog;
+import org.lupoi.workoutapp.domain.entity.BodyWeightLog;
 import org.lupoi.workoutapp.domain.exception.ProfileNotFoundException;
 import org.lupoi.workoutapp.domain.model.WeightProgressResult;
 import org.lupoi.workoutapp.domain.repository.BodyWeightLogRepository;

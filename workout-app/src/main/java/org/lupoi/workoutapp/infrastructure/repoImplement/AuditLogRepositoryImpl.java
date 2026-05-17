@@ -7,7 +7,7 @@ package org.lupoi.workoutapp.infrastructure.repoImplement;/*
 */
 
 import lombok.RequiredArgsConstructor;
-import org.lupoi.workoutapp.domain.entity.logs.AuditLog;
+import org.lupoi.workoutapp.domain.entity.AuditLog;
 import org.lupoi.workoutapp.domain.enums.AuditAction;
 import org.lupoi.workoutapp.domain.model.PageResult;
 import org.lupoi.workoutapp.domain.repository.AuditLogRepository;

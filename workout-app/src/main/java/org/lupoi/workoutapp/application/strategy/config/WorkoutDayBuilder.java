@@ -1,8 +1,8 @@
 package org.lupoi.workoutapp.application.strategy.config;
 
-import org.lupoi.workoutapp.domain.entity.workout.Exercise;
-import org.lupoi.workoutapp.domain.entity.workout.WorkoutDay;
-import org.lupoi.workoutapp.domain.entity.workout.WorkoutExercise;
+import org.lupoi.workoutapp.domain.entity.Exercise;
+import org.lupoi.workoutapp.domain.entity.WorkoutDay;
+import org.lupoi.workoutapp.domain.entity.WorkoutExercise;
 import org.lupoi.workoutapp.domain.enums.IntensityType;
 import org.lupoi.workoutapp.domain.enums.MuscleGroup;
 

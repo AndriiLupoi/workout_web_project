@@ -1,8 +1,8 @@
 package org.lupoi.workoutapp.application.usecase.workout.plan;
 
 import lombok.RequiredArgsConstructor;
-import org.lupoi.workoutapp.domain.entity.logs.WorkoutLog;
-import org.lupoi.workoutapp.domain.entity.logs.LoggedExercise;
+import org.lupoi.workoutapp.domain.entity.WorkoutLog;
+import org.lupoi.workoutapp.domain.entity.LoggedExercise;
 import org.lupoi.workoutapp.domain.model.WeightRecommendation;
 import org.lupoi.workoutapp.domain.repository.WorkoutLogRepository;
 import org.springframework.stereotype.Service;

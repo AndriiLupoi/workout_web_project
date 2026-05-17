@@ -6,7 +6,7 @@ package org.lupoi.workoutapp.domain.repository;/*
     @since 09.05.2026 - 14.58
 */
 
-import org.lupoi.workoutapp.domain.entity.logs.AuditLog;
+import org.lupoi.workoutapp.domain.entity.AuditLog;
 import org.lupoi.workoutapp.domain.model.PageResult;
 
 public interface AuditLogRepository {

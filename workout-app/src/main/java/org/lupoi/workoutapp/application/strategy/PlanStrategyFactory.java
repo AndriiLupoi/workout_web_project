@@ -6,9 +6,9 @@ package org.lupoi.workoutapp.application.strategy;/*
     @since 09.05.2026 - 18.43
 */
 
-import org.lupoi.workoutapp.domain.entity.user.UserProfile;
-import org.lupoi.workoutapp.domain.entity.workout.Exercise;
-import org.lupoi.workoutapp.domain.entity.workout.WorkoutPlan;
+import org.lupoi.workoutapp.domain.entity.UserProfile;
+import org.lupoi.workoutapp.domain.entity.Exercise;
+import org.lupoi.workoutapp.domain.entity.WorkoutPlan;
 import org.lupoi.workoutapp.domain.enums.PlanType;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;

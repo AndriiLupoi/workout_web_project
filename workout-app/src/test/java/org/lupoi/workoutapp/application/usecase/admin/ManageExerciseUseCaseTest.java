@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.lupoi.workoutapp.application.command.ExerciseCommand;
 import org.lupoi.workoutapp.application.service.AuditService;
-import org.lupoi.workoutapp.domain.entity.workout.Exercise;
+import org.lupoi.workoutapp.domain.entity.Exercise;
 import org.lupoi.workoutapp.domain.exception.EntityNotFoundException;
 import org.lupoi.workoutapp.domain.repository.ExerciseRepository;
 import org.mockito.InjectMocks;

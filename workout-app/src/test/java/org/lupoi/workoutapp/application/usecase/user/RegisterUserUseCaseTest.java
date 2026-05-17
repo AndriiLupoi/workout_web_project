@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.lupoi.workoutapp.application.command.RegisterUserCommand;
 import org.lupoi.workoutapp.application.port.PasswordHasher;
-import org.lupoi.workoutapp.domain.entity.user.User;
+import org.lupoi.workoutapp.domain.entity.User;
 import org.lupoi.workoutapp.domain.exception.EmailAlreadyExistsException;
 import org.lupoi.workoutapp.domain.repository.UserRepository;
 import org.mockito.InjectMocks;

@@ -7,7 +7,7 @@ package org.lupoi.workoutapp.application.usecase.workout.logs;/*
 */
 
 import lombok.RequiredArgsConstructor;
-import org.lupoi.workoutapp.domain.entity.logs.WorkoutLog;
+import org.lupoi.workoutapp.domain.entity.WorkoutLog;
 import org.lupoi.workoutapp.domain.repository.WorkoutLogRepository;
 import org.springframework.stereotype.Service;
 

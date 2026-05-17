@@ -12,10 +12,10 @@ import org.junit.jupiter.api.Test;
 import org.lupoi.workoutapp.application.strategy.PlanGenerationStrategy;
 import org.lupoi.workoutapp.application.strategy.PlanStrategyFactory;
 import org.lupoi.workoutapp.application.strategy.plans.*;
-import org.lupoi.workoutapp.domain.entity.user.UserProfile;
-import org.lupoi.workoutapp.domain.entity.workout.Exercise;
-import org.lupoi.workoutapp.domain.entity.workout.WorkoutDay;
-import org.lupoi.workoutapp.domain.entity.workout.WorkoutPlan;
+import org.lupoi.workoutapp.domain.entity.UserProfile;
+import org.lupoi.workoutapp.domain.entity.Exercise;
+import org.lupoi.workoutapp.domain.entity.WorkoutDay;
+import org.lupoi.workoutapp.domain.entity.WorkoutPlan;
 import org.lupoi.workoutapp.domain.enums.*;
 
 import java.util.ArrayList;

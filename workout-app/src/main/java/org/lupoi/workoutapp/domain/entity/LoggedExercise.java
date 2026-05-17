@@ -1,4 +1,4 @@
-package org.lupoi.workoutapp.domain.entity.logs;/*
+package org.lupoi.workoutapp.domain.entity;/*
     @author Andrii
     @project workout
     @class LoggedExercise

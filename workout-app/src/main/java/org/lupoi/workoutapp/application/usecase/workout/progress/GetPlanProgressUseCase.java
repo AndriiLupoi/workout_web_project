@@ -7,7 +7,7 @@ package org.lupoi.workoutapp.application.usecase.workout.progress;/*
 */
 
 import lombok.RequiredArgsConstructor;
-import org.lupoi.workoutapp.domain.entity.logs.WorkoutLog;
+import org.lupoi.workoutapp.domain.entity.WorkoutLog;
 import org.lupoi.workoutapp.domain.exception.EntityNotFoundException;
 import org.lupoi.workoutapp.domain.model.PlanProgressResult;
 import org.lupoi.workoutapp.domain.repository.WorkoutLogRepository;

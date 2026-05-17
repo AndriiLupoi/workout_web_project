@@ -1,4 +1,4 @@
-package org.lupoi.workoutapp.domain.entity.user;/*
+package org.lupoi.workoutapp.domain.entity;/*
     @author Andrii
     @project workout
     @class UserProfile

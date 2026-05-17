@@ -5,7 +5,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.lupoi.workoutapp.application.command.SaveUserProfileCommand;
-import org.lupoi.workoutapp.domain.entity.user.UserProfile;
+import org.lupoi.workoutapp.domain.entity.UserProfile;
 import org.lupoi.workoutapp.domain.enums.FitnessLevel;
 import org.lupoi.workoutapp.domain.enums.PlanType;
 import org.lupoi.workoutapp.domain.enums.TrainingGoal;
@@ -53,6 +53,7 @@ class SaveUserProfileUseCaseTest {
                 3,
                 80.0,
                 75.0,
+                80.0,
                 180.0,
                 25,
                 List.of("BARBELL", "DUMBBELL")
@@ -112,7 +113,7 @@ class SaveUserProfileUseCaseTest {
         // given
         SaveUserProfileCommand noWeightCmd = new SaveUserProfileCommand(
                 TrainingGoal.MASS, FitnessLevel.BEGINNER, PlanType.HYPERTROPHY,
-                3, null, null, null, null, List.of()
+                3, null, null, null, null, null, List.of()
         );
         when(userProfileRepository.findByUserId("user-id")).thenReturn(Optional.empty());
         when(userProfileRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));

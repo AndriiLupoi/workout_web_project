@@ -10,7 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.lupoi.workoutapp.application.port.PasswordHasher;
 import org.lupoi.workoutapp.application.service.AuditService;
 import org.lupoi.workoutapp.domain.entity.PasswordResetToken;
-import org.lupoi.workoutapp.domain.entity.user.User;
+import org.lupoi.workoutapp.domain.entity.User;
 import org.lupoi.workoutapp.domain.enums.AuditAction;
 import org.lupoi.workoutapp.domain.exception.DomainException;
 import org.lupoi.workoutapp.domain.exception.EntityNotFoundException;

@@ -1,6 +1,6 @@
 package org.lupoi.workoutapp.infrastructure.mapper;
 
-import org.lupoi.workoutapp.domain.entity.logs.BodyWeightLog;
+import org.lupoi.workoutapp.domain.entity.BodyWeightLog;
 import org.lupoi.workoutapp.infrastructure.document.logs.BodyWeightLogDocument;
 import org.mapstruct.Mapper;
 

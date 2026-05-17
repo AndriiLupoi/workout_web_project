@@ -1,0 +1,22 @@
+spring:
+  mongodb:
+    uri: mongodb://localhost:27017/workout_test_db
+    database: workout_test_db
+  mail:
+    host: localhost
+    port: 25
+    username: test@test.com
+    password: test
+    properties:
+      mail:
+        smtp:
+          auth: false
+          starttls:
+            enable: false
+application:
+  security:
+    jwt:
+      secret-key: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
+      expiration: 86400000
+app:
+  frontend-url: http://localhost:4200

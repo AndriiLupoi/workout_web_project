@@ -6,7 +6,7 @@ import org.lupoi.workoutapp.application.usecase.user.LoginUserUseCase;
 import org.lupoi.workoutapp.application.usecase.user.RegisterUserUseCase;
 import org.lupoi.workoutapp.application.usecase.user.resetPassword.ForgotPasswordUseCase;
 import org.lupoi.workoutapp.application.usecase.user.resetPassword.ResetPasswordUseCase;
-import org.lupoi.workoutapp.domain.entity.user.User;
+import org.lupoi.workoutapp.domain.entity.User;
 import org.lupoi.workoutapp.presentation.dto.request.LoginRequest;
 import org.lupoi.workoutapp.presentation.dto.request.RegisterRequest;
 import org.lupoi.workoutapp.presentation.dto.request.password.ForgotPasswordRequest;

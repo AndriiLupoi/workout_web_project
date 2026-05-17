@@ -1,4 +1,4 @@
-package org.lupoi.workoutapp.domain.entity.logs;
+package org.lupoi.workoutapp.domain.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

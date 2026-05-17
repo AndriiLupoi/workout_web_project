@@ -3,7 +3,7 @@ package org.lupoi.workoutapp.application.usecase.admin;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.lupoi.workoutapp.domain.entity.user.User;
+import org.lupoi.workoutapp.domain.entity.User;
 import org.lupoi.workoutapp.domain.enums.Role;
 import org.lupoi.workoutapp.domain.model.StatsResult;
 import org.lupoi.workoutapp.domain.repository.UserRepository;

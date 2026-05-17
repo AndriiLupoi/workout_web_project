@@ -1,8 +1,8 @@
 package org.lupoi.workoutapp.infrastructure.mapper;
 
-import org.lupoi.workoutapp.domain.entity.workout.WorkoutDay;
-import org.lupoi.workoutapp.domain.entity.workout.WorkoutExercise;
-import org.lupoi.workoutapp.domain.entity.workout.WorkoutPlan;
+import org.lupoi.workoutapp.domain.entity.WorkoutDay;
+import org.lupoi.workoutapp.domain.entity.WorkoutExercise;
+import org.lupoi.workoutapp.domain.entity.WorkoutPlan;
 import org.lupoi.workoutapp.domain.enums.IntensityType;
 import org.lupoi.workoutapp.domain.enums.PlanStatus;
 import org.lupoi.workoutapp.domain.enums.PlanType;

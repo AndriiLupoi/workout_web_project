@@ -7,7 +7,7 @@ package org.lupoi.workoutapp.application.service;/*
 */
 
 import lombok.RequiredArgsConstructor;
-import org.lupoi.workoutapp.domain.entity.logs.AuditLog;
+import org.lupoi.workoutapp.domain.entity.AuditLog;
 import org.lupoi.workoutapp.domain.enums.AuditAction;
 import org.lupoi.workoutapp.domain.repository.AuditLogRepository;
 import org.springframework.stereotype.Service;

@@ -6,7 +6,7 @@ package org.lupoi.workoutapp.domain.repository;/*
     @since 27.04.2026 - 20.39
 */
 
-import org.lupoi.workoutapp.domain.entity.logs.WorkoutLog;
+import org.lupoi.workoutapp.domain.entity.WorkoutLog;
 
 import java.time.LocalDateTime;
 import java.util.List;

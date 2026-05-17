@@ -1,8 +1,8 @@
 package org.lupoi.workoutapp.presentation.mapper;
 
-import org.lupoi.workoutapp.domain.entity.workout.WorkoutDay;
-import org.lupoi.workoutapp.domain.entity.workout.WorkoutExercise;
-import org.lupoi.workoutapp.domain.entity.workout.WorkoutPlan;
+import org.lupoi.workoutapp.domain.entity.WorkoutDay;
+import org.lupoi.workoutapp.domain.entity.WorkoutExercise;
+import org.lupoi.workoutapp.domain.entity.WorkoutPlan;
 import org.lupoi.workoutapp.presentation.dto.response.workout.WorkoutDayResponse;
 import org.lupoi.workoutapp.presentation.dto.response.workout.WorkoutExerciseResponse;
 import org.lupoi.workoutapp.presentation.dto.response.workout.WorkoutPlanResponse;

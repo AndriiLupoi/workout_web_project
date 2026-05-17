@@ -9,7 +9,7 @@ package org.lupoi.workoutapp.application.usecase.admin;/*
 import lombok.RequiredArgsConstructor;
 import org.lupoi.workoutapp.application.command.ExerciseCommand;
 import org.lupoi.workoutapp.application.service.AuditService;
-import org.lupoi.workoutapp.domain.entity.workout.Exercise;
+import org.lupoi.workoutapp.domain.entity.Exercise;
 import org.lupoi.workoutapp.domain.enums.AuditAction;
 import org.lupoi.workoutapp.domain.enums.Difficulty;
 import org.lupoi.workoutapp.domain.enums.EquipmentType;

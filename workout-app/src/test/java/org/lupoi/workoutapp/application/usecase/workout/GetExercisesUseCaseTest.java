@@ -4,7 +4,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.lupoi.workoutapp.application.usecase.workout.exercises.GetExercisesUseCase;
-import org.lupoi.workoutapp.domain.entity.workout.Exercise;
+import org.lupoi.workoutapp.domain.entity.Exercise;
 import org.lupoi.workoutapp.domain.enums.Difficulty;
 import org.lupoi.workoutapp.domain.enums.EquipmentType;
 import org.lupoi.workoutapp.domain.enums.MuscleGroup;

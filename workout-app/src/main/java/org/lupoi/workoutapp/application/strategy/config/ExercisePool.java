@@ -1,7 +1,7 @@
 package org.lupoi.workoutapp.application.strategy.config;
 
-import org.lupoi.workoutapp.domain.entity.user.UserProfile;
-import org.lupoi.workoutapp.domain.entity.workout.Exercise;
+import org.lupoi.workoutapp.domain.entity.UserProfile;
+import org.lupoi.workoutapp.domain.entity.Exercise;
 import org.lupoi.workoutapp.domain.enums.Difficulty;
 import org.lupoi.workoutapp.domain.enums.MuscleGroup;
 

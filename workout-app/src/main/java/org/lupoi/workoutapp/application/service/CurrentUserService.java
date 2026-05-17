@@ -7,7 +7,7 @@ package org.lupoi.workoutapp.application.service;/*
 */
 
 import lombok.RequiredArgsConstructor;
-import org.lupoi.workoutapp.domain.entity.user.User;
+import org.lupoi.workoutapp.domain.entity.User;
 import org.lupoi.workoutapp.domain.repository.UserRepository;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
