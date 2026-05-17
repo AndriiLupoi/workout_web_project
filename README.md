@@ -7,13 +7,13 @@
 ## 🧩 Технологічний стек
 
 ### Backend
-- **Java 17** + **Spring Boot 4.0**
+- **Java 21** + **Spring Boot 4.0.4**
 - **Spring Security** + **JWT** автентифікація
 - **MongoDB** (Spring Data MongoDB)
 - **MapStruct** для маппінгу між шарами
-- **Lombok** для скорочення boilerplate
+- **Lombok 1.18.36** для скорочення boilerplate
 - **JavaMailSender** для email-сповіщень
-- **ArchUnit** для архітектурних тестів
+- **ArchUnit 1.3.0** для архітектурних тестів
 - **JUnit 5** + **Mockito** для unit-тестів
 
 ### Frontend
